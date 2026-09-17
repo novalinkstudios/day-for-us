@@ -1133,7 +1133,7 @@ async function sendNote() {
   if (!msg) return;
   input.value = '';
   try {
-    await airtableCreate('notes', { Message: msg, Author: { name: state.noteAuthor } });
+    await airtableCreate('notes', { Message: msg, Author: state.noteAuthor });
     fetchAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
@@ -1229,9 +1229,9 @@ async function submitTask() {
   if (!name) return;
   const fields = {
     Name: name,
-    Status: { name: document.getElementById('m_status').value },
-    Assigned: { name: document.getElementById('m_assigned').value },
-    Type: { name: document.getElementById('m_type').value }
+    Status: document.getElementById('m_status').value,
+    Assigned: document.getElementById('m_assigned').value,
+    Type: document.getElementById('m_type').value
   };
   const other = document.getElementById('m_other')?.value.trim();
   if (other) fields['Other Assignee'] = other;
@@ -1298,9 +1298,9 @@ function openEditTask(id) {
 async function submitEditTask(id) {
   const fields = {
     Name: document.getElementById('m_name').value.trim(),
-    Status: { name: document.getElementById('m_status').value },
-    Assigned: { name: document.getElementById('m_assigned').value },
-    Type: { name: document.getElementById('m_type').value },
+    Status: document.getElementById('m_status').value,
+    Assigned: document.getElementById('m_assigned').value,
+    Type: document.getElementById('m_type').value,
     'Other Assignee': document.getElementById('m_other')?.value.trim() || '',
     'Session Date': document.getElementById('m_date').value || null,
     Notes: document.getElementById('m_notes').value.trim()
@@ -1443,12 +1443,12 @@ async function submitRoadmap() {
   if (!name) return;
   const fields = {
     Name: name,
-    Phase: { name: document.getElementById('m_phase').value }
+    Phase: document.getElementById('m_phase').value
   };
   const desc = document.getElementById('m_desc').value.trim();
   if (desc) fields.Description = desc;
   const assigned = document.getElementById('m_assigned').value;
-  if (assigned) fields.Assigned = { name: assigned };
+  if (assigned) fields.Assigned = assigned;
   const other = document.getElementById('m_other')?.value.trim();
   if (other) fields['Other Assignee'] = other;
   try {
@@ -1500,11 +1500,11 @@ function openEditRoadmap(id) {
 async function submitEditRoadmap(id) {
   const fields = {
     Name: document.getElementById('m_name').value.trim(),
-    Phase: { name: document.getElementById('m_phase').value },
+    Phase: document.getElementById('m_phase').value,
     Description: document.getElementById('m_desc').value.trim()
   };
   const assigned = document.getElementById('m_assigned').value;
-  if (assigned) fields.Assigned = { name: assigned };
+  if (assigned) fields.Assigned = assigned;
   else fields.Assigned = null;
   const other = document.getElementById('m_other')?.value.trim();
   fields['Other Assignee'] = other || '';
