@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Day for Us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --bg: #0e0e12;
+  --surface: #18181e;
+  --surface2: #1e1e26;
+  --border: #2a2a33;
+  --ink: #f0f0f4;
+  --ink-muted: #9595a4;
+  --primary: #8B5CF6;
+  --primary-hover: #7C3AED;
+  --primary-glow: rgba(139,92,246,0.15);
+  --deep: #6D28D9;
+  --lavender: #C084FC;
+  --pink: #F472B6;
+  --pop: #FDE68A;
+  --green: #34D399;
+  --red: #F87171;
+  --glass: rgba(139,92,246,0.06);
+  --glass-border: rgba(139,92,246,0.12);
+  --glass-bg: rgba(24,24,30,0.7);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.25);
+  --transition: 0.2s cubic-bezier(.4,0,.2,1);
+  --zoom: 1;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f0ff; --surface: #ffffff; --surface2: #f0ecf8;
+    --border: #e0d8ee; --ink: #1a1424; --ink-muted: #6e6580;
+    --primary: #7C3AED; --primary-hover: #6D28D9;
+    --primary-glow: rgba(124,58,237,0.1);
+    --deep: #5B21B6; --lavender: #A78BFA; --pink: #EC4899; --pop: #F59E0B;
+    --green: #059669; --red: #DC2626;
+    --glass: rgba(124,58,237,0.04); --glass-border: rgba(124,58,237,0.1);
+    --glass-bg: rgba(255,255,255,0.7);
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e0e12; --surface: #18181e; --surface2: #1e1e26;
+  --border: #2a2a33; --ink: #f0f0f4; --ink-muted: #9595a4;
+  --primary: #8B5CF6; --primary-hover: #7C3AED;
+  --primary-glow: rgba(139,92,246,0.15);
+  --deep: #6D28D9; --lavender: #C084FC; --pink: #F472B6; --pop: #FDE68A;
+  --green: #34D399; --red: #F87171;
+  --glass: rgba(139,92,246,0.06); --glass-border: rgba(139,92,246,0.12);
+  --glass-bg: rgba(24,24,30,0.7);
+  --shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+:root[data-theme="light"] {
+  --bg: #f5f0ff; --surface: #ffffff; --surface2: #f0ecf8;
+  --border: #e0d8ee; --ink: #1a1424; --ink-muted: #6e6580;
+  --primary: #7C3AED; --primary-hover: #6D28D9;
+  --primary-glow: rgba(124,58,237,0.1);
+  --deep: #5B21B6; --lavender: #A78BFA; --pink: #EC4899; --pop: #F59E0B;
+  --green: #059669; --red: #DC2626;
+  --glass: rgba(124,58,237,0.04); --glass-border: rgba(124,58,237,0.1);
+  --glass-bg: rgba(255,255,255,0.7);
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  zoom: var(--zoom);
+}
+button, input, select, textarea {
+  font-family: inherit; font-size: inherit; color: inherit;
+  border: none; outline: none; background: none;
+}
+button { cursor: pointer; }
+
+/* ── SETUP SCREEN ── */
+.setup {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100dvh; padding: 24px 16px; text-align: center;
+}
+.setup-brand {
+  font-family: var(--font-display); font-weight: 800; font-size: 36px;
+  background: linear-gradient(135deg, var(--primary), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 8px;
+}
+.setup-sub { color: var(--ink-muted); font-size: 14px; margin-bottom: 32px; }
+.setup-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; width: 100%; max-width: 400px;
+}
+.setup-card label {
+  display: block; text-align: left; font-weight: 600; font-size: 13px;
+  margin-bottom: 8px; color: var(--ink-muted);
+}
+.setup-card input {
+  width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface2);
+  font-family: var(--font-mono); font-size: 13px;
+}
+.setup-card input:focus { border-color: var(--primary); }
+.setup-card .btn-primary { width: 100%; margin-top: 16px; }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  padding: 12px 24px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--primary), var(--deep));
+  color: #fff; font-family: var(--font-display); font-weight: 700;
+  font-size: 14px; transition: all var(--transition);
+  box-shadow: 0 4px 16px rgba(139,92,246,0.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
+.btn-ghost {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); color: var(--ink-muted);
+  font-size: 13px; font-weight: 500; transition: all var(--transition);
+}
+.btn-ghost:hover { border-color: var(--primary); color: var(--ink); }
+
+/* ── APP SHELL ── */
+.app { display: none; flex-direction: column; min-height: 100dvh; }
+.app.active { display: flex; }
+
+/* Header */
+.header {
+  display: flex; align-items: center; padding: 14px 16px; gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.brand {
+  font-family: var(--font-display); font-weight: 800; font-size: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; flex-shrink: 0;
+}
+.header-spacer { flex: 1; }
+.sync-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+  flex-shrink: 0; transition: background var(--transition);
+}
+.sync-dot.syncing { background: var(--pop); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.header-btn {
+  width: 32px; height: 32px; border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-muted); transition: all var(--transition); font-size: 16px;
+}
+.header-btn:hover { background: var(--glass); color: var(--ink); }
+
+/* Tab bar */
+.tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  background: var(--surface); overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-item {
+  flex: 1; min-width: fit-content; padding: 12px 16px; text-align: center;
+  font-family: var(--font-display); font-weight: 600; font-size: 13px;
+  color: var(--ink-muted); border-bottom: 2px solid transparent;
+  transition: all var(--transition); white-space: nowrap;
+}
+.tab-item:hover { color: var(--ink); }
+.tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Content */
+.content { flex: 1; padding: 16px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeUp 0.25s ease-out; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── GLASS CARD ── */
+.glass {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); transition: all var(--transition);
+}
+.glass:hover { border-color: var(--primary); }
+
+/* ── DASHBOARD ── */
+.bento {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.bento-full { grid-column: 1 / -1; }
+.tile { padding: 16px; }
+.tile-label {
+  font-family: var(--font-display); font-weight: 700; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted);
+  margin-bottom: 10px;
+}
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.stat-item {
+  text-align: center; padding: 10px 4px; border-radius: var(--radius-sm);
+  background: var(--glass); cursor: pointer; transition: all var(--transition);
+}
+.stat-item:hover { background: var(--primary-glow); }
+.stat-num {
+  font-family: var(--font-display); font-weight: 800; font-size: 24px; line-height: 1;
+}
+.stat-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-muted); margin-top: 4px;
+}
+.session-card { display: flex; align-items: center; gap: 12px; }
+.session-date-box {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--deep));
+  color: #fff; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; flex-shrink: 0;
+}
+.session-date-month {
+  font-family: var(--font-display); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8;
+}
+.session-date-day { font-family: var(--font-display); font-size: 22px; font-weight: 800; line-height: 1; }
+.session-info-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.session-info-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+.session-countdown {
+  margin-left: auto; padding: 5px 12px; border-radius: var(--radius-xs);
+  background: var(--primary-glow); color: var(--primary);
+  font-family: var(--font-display); font-weight: 700; font-size: 12px; flex-shrink: 0;
+}
+.person-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 10px; color: #fff;
+}
+.person-name { font-family: var(--font-display); font-weight: 600; font-size: 13px; }
+.mini-task { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12px; }
+.mini-check {
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 2px solid var(--ink-muted); opacity: 0.4; flex-shrink: 0;
+}
+.roadmap-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.roadmap-pill {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+  border-radius: var(--radius-sm); background: var(--glass); font-size: 13px; font-weight: 500;
+}
+.roadmap-pill .phase-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.roadmap-pill .phase-count {
+  margin-left: auto; font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; color: var(--ink-muted);
+}
+.notes-row { display: flex; gap: 10px; overflow-x: auto; }
+.note-preview {
+  flex: 1; min-width: 0; padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--glass); font-size: 12px; line-height: 1.4;
+}
+.note-meta { font-size: 10px; color: var(--ink-muted); margin-top: 4px; }
+.empty-state {
+  text-align: center; padding: 32px 16px; color: var(--ink-muted); font-size: 14px;
+}
+.empty-state-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+
+/* ── FILTER CHIPS ── */
+.filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--ink-muted);
+  font-family: var(--font-display); transition: all var(--transition);
+}
+.chip:hover { border-color: var(--primary); color: var(--ink); }
+.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ── TASK CARDS ── */
+.task-group-label {
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted);
+  margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
+}
+.task-group-label:first-child { margin-top: 0; }
+.task-group-count {
+  background: var(--glass); padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 700;
+}
+.task-card {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
+  transition: all var(--transition); cursor: pointer; position: relative;
+  border-left: 3px solid transparent;
+}
+.task-card:hover { border-color: var(--primary); transform: translateX(2px); }
+.task-card[data-status="On Deck"] { border-left-color: var(--primary); }
+.task-card[data-status="Tackling"] { border-left-color: var(--pink); }
+.task-card[data-status="Done"] { border-left-color: var(--green); opacity: 0.7; }
+.task-card[data-status="Backlog"] { border-left-color: var(--ink-muted); }
+.task-card-header { display: flex; align-items: center; gap: 8px; }
+.task-card-name {
+  font-family: var(--font-display); font-weight: 600; font-size: 14px; flex: 1;
+}
+.task-card[data-status="Done"] .task-card-name { text-decoration: line-through; opacity: 0.6; }
+.task-card-badge {
+  padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;
+  font-family: var(--font-display); letter-spacing: 0.04em;
+}
+.task-card-meta {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  font-size: 11px; color: var(--ink-muted);
+}
+.task-card-actions {
+  display: flex; gap: 4px; margin-left: auto;
+}
+.task-action-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--ink-muted); transition: all var(--transition);
+}
+.task-action-btn:hover { background: var(--glass); color: var(--ink); }
+
+/* ── CALENDAR (Session Timeline) ── */
+.timeline-event {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+  border-left: 3px solid var(--primary); transition: all var(--transition);
+}
+.timeline-event:hover { border-color: var(--primary); }
+.timeline-date {
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  color: var(--primary); margin-bottom: 4px;
+}
+.timeline-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+.timeline-desc { font-size: 13px; color: var(--ink-muted); margin-top: 6px; line-height: 1.4; }
+
+/* ── NOTES ── */
+.note-card {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
+  transition: all var(--transition);
+}
+.note-card:hover { border-color: var(--primary); }
+.note-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.note-card-author {
+  font-family: var(--font-display); font-weight: 600; font-size: 12px;
+}
+.note-card-time { font-size: 11px; color: var(--ink-muted); margin-left: auto; }
+.note-card-msg { font-size: 14px; line-height: 1.5; }
+.note-input-bar {
+  display: flex; gap: 8px; padding: 12px 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 16px;
+  position: sticky; top: 56px; z-index: 10;
+}
+.note-input-bar input {
+  flex: 1; background: transparent; font-size: 14px;
+}
+.note-input-bar input::placeholder { color: var(--ink-muted); }
+.note-send-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  transition: all var(--transition); flex-shrink: 0;
+}
+.note-send-btn:hover { background: var(--primary-hover); }
+.note-author-toggle {
+  display: flex; gap: 4px; margin-bottom: 12px;
+}
+.note-author-btn {
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); font-family: var(--font-display);
+  transition: all var(--transition);
+}
+
+/* ── ROADMAP ── */
+.roadmap-section { margin-bottom: 24px; }
+.roadmap-section-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.roadmap-section-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.roadmap-section-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 16px;
+}
+.roadmap-section-count {
+  padding: 2px 10px; border-radius: 10px; background: var(--glass);
+  font-size: 11px; font-weight: 700; color: var(--ink-muted);
+  font-family: var(--font-display);
+}
+.roadmap-item {
+  background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
+  transition: all var(--transition); cursor: pointer;
+}
+.roadmap-item:hover { border-color: var(--primary); }
+.roadmap-item-name { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.roadmap-item-desc { font-size: 12px; color: var(--ink-muted); margin-top: 4px; line-height: 1.4; }
+.roadmap-item-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+
+/* ── FAB ── */
+.fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 90;
+  width: 52px; height: 52px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--deep));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 300;
+  box-shadow: 0 6px 24px rgba(139,92,246,0.4);
+  transition: all var(--transition);
+}
+.fab:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 32px rgba(139,92,246,0.5); }
+.fab:active { transform: scale(0.95); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  z-index: 200; display: none; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+.modal-overlay.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0; padding: 24px 20px 32px;
+  width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
+  animation: slideUp 0.3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+@media (min-width: 600px) {
+  .modal-overlay { align-items: center; }
+  .modal { border-radius: var(--radius); max-height: 80vh; }
+}
+.modal-handle {
+  width: 36px; height: 4px; border-radius: 2px; background: var(--border);
+  margin: 0 auto 16px;
+}
+@media (min-width: 600px) { .modal-handle { display: none; } }
+.modal-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  margin-bottom: 20px;
+}
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; font-weight: 600; font-size: 12px; color: var(--ink-muted);
+  margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 10px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface2);
+  font-size: 14px; transition: border-color var(--transition);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
+.form-select { appearance: none; cursor: pointer; }
+.form-textarea { min-height: 80px; resize: vertical; font-family: var(--font-body); }
+.form-actions { display: flex; gap: 8px; margin-top: 20px; }
+.form-actions .btn-primary { flex: 1; }
+.form-actions .btn-ghost { flex: 0; }
+
+/* ── TOAST ── */
+.toast-container {
+  position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
+  z-index: 300; display: flex; flex-direction: column; gap: 8px;
+  align-items: center; pointer-events: none;
+}
+.toast {
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  background: var(--ink); color: var(--bg);
+  font-size: 13px; font-weight: 500; pointer-events: auto;
+  animation: toastIn 0.3s ease-out;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow);
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.toast-undo {
+  color: var(--primary); font-weight: 700; cursor: pointer;
+  font-family: var(--font-display);
+}
+
+/* ── SETTINGS PANEL ── */
+.settings-panel {
+  position: fixed; top: 0; right: -320px; width: 300px; height: 100dvh;
+  background: var(--surface); border-left: 1px solid var(--border);
+  z-index: 250; padding: 20px; overflow-y: auto;
+  transition: right 0.3s cubic-bezier(.4,0,.2,1);
+}
+.settings-panel.open { right: 0; }
+.settings-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.3);
+  z-index: 240; display: none;
+}
+.settings-backdrop.open { display: block; }
+.settings-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  margin-bottom: 20px;
+}
+.settings-group { margin-bottom: 20px; }
+.settings-group-label {
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted);
+  margin-bottom: 10px;
+}
+.theme-options { display: flex; gap: 6px; }
+.theme-opt {
+  flex: 1; padding: 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); text-align: center;
+  font-family: var(--font-display); font-weight: 600; font-size: 12px;
+  color: var(--ink-muted); transition: all var(--transition);
+}
+.theme-opt:hover { border-color: var(--primary); }
+.theme-opt.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.font-scale-row { display: flex; align-items: center; gap: 10px; }
+.font-scale-row span { font-size: 12px; color: var(--ink-muted); min-width: 28px; text-align: center; }
+.font-scale-slider {
+  flex: 1; -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 2px; background: var(--border); outline: none;
+}
+.font-scale-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--primary); cursor: pointer;
+}
+.settings-danger-btn {
+  padding: 10px; width: 100%; border-radius: var(--radius-sm);
+  border: 1px solid var(--red); color: var(--red);
+  font-weight: 600; font-size: 13px; text-align: center;
+  transition: all var(--transition);
+}
+.settings-danger-btn:hover { background: var(--red); color: #fff; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 420px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .roadmap-row { grid-template-columns: 1fr; }
+  .notes-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div class="setup" id="setupScreen">
+  <div class="setup-brand">Day for Us</div>
+  <p class="setup-sub">Collaborative working session hub</p>
+  <div class="setup-card">
+    <label>Airtable Personal Access Token</label>
+    <input type="password" id="tokenInput" placeholder="pat..." autocomplete="off">
+    <button class="btn-primary" onclick="saveToken()">Connect</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="header">
+    <div class="brand">Day for Us</div>
+    <div class="header-spacer"></div>
+    <div class="sync-dot" id="syncDot" title="Synced"></div>
+    <button class="header-btn" onclick="toggleSettings()" title="Settings">&#9881;</button>
+  </div>
+
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-item active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-item" data-tab="tasks">Tasks</button>
+    <button class="tab-item" data-tab="calendar">Calendar</button>
+    <button class="tab-item" data-tab="notes">Notes</button>
+    <button class="tab-item" data-tab="roadmap">Roadmap</button>
+  </div>
+
+  <div class="content">
+    <!-- Dashboard -->
+    <div class="tab-content active" id="tab-dashboard"></div>
+    <!-- Tasks -->
+    <div class="tab-content" id="tab-tasks"></div>
+    <!-- Calendar -->
+    <div class="tab-content" id="tab-calendar"></div>
+    <!-- Notes -->
+    <div class="tab-content" id="tab-notes"></div>
+    <!-- Roadmap -->
+    <div class="tab-content" id="tab-roadmap"></div>
+  </div>
+
+  <button class="fab" id="fab" onclick="openAddModal()">+</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent">
+    <div class="modal-handle"></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- SETTINGS -->
+<div class="settings-backdrop" id="settingsBackdrop" onclick="toggleSettings()"></div>
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-title">Settings</div>
+  <div class="settings-group">
+    <div class="settings-group-label">Theme</div>
+    <div class="theme-options">
+      <button class="theme-opt" data-theme="light" onclick="setTheme('light')">Light</button>
+      <button class="theme-opt active" data-theme="system" onclick="setTheme(null)">System</button>
+      <button class="theme-opt" data-theme="dark" onclick="setTheme('dark')">Dark</button>
+    </div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-group-label">Font Size</div>
+    <div class="font-scale-row">
+      <span>A</span>
+      <input type="range" class="font-scale-slider" id="fontScale" min="80" max="130" value="100" step="5" oninput="setFontScale(this.value)">
+      <span style="font-size:16px">A</span>
+    </div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-group-label">Data</div>
+    <button class="settings-danger-btn" onclick="logout()">Disconnect &amp; Clear</button>
+  </div>
+</div>
+
+<script>
+const CFG = {
+  baseId: 'appRlcL5eYnjxfXV0',
+  tables: {
+    tasks: { id: 'tblK7L4tLSfhCW09B', fields: {
+      name: 'fldcH8NvHiS9xQw20', status: 'fldUEqIaK2bQVfrpZ',
+      assigned: 'fldIVuz1yJa70PWDl', otherAssignee: 'fldkqAQQUz3zc1io8',
+      type: 'fldWTi9f9tSwxofRg', sessionDate: 'fld1XSvF2EhaDubat',
+      notes: 'fldgjh4qtdpBIGDvz', created: 'fldw3LTGj5mKuFYXM'
+    }},
+    sessions: { id: 'tblUj37fhp2O1UAQ6', fields: {
+      name: 'fld7WmcEXjAIzKcl4', date: 'fldyvmr4xTVb4rmG8',
+      description: 'fldeyu19xWk9CUGYs', created: 'fldFOwoVhrcwLM85t'
+    }},
+    notes: { id: 'tblvmOOFMvW35yMk2', fields: {
+      message: 'fldLjMeDRbY4OU9fB', author: 'fldDJDdJIjz2N1ESd',
+      created: 'fldCz46I4Q9QxvDaz'
+    }},
+    roadmap: { id: 'tblSe6DM956iA6OVK', fields: {
+      name: 'fldQ2BeRrDfqAAMjM', phase: 'fldi8tRCnr316FF5v',
+      description: 'fldAuBHobur6EU5LX', assigned: 'fldeXwZMujDLPrE8p',
+      otherAssignee: 'fldxQvNRXBPYkOBH3', created: 'fldoZJlPHLI9SKhpT'
+    }}
+  }
+};
+
+let state = {
+  token: null, tab: 'dashboard',
+  tasks: [], sessions: [], notes: [], roadmap: [],
+  filter: 'All', noteAuthor: 'Anjanette',
+  undoTimers: {}
+};
+let pollInterval = null;
+
+function init() {
+  const token = localStorage.getItem('dfu_token');
+  const theme = localStorage.getItem('dfu_theme');
+  const scale = localStorage.getItem('dfu_scale') || '100';
+
+  if (theme) {
+    if (theme === 'system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', theme);
+  }
+  setFontScale(scale, true);
+
+  document.querySelectorAll('.theme-opt').forEach(b => {
+    const t = b.dataset.theme;
+    b.classList.toggle('active', theme ? t === theme : t === 'system');
+  });
+
+  if (token) {
+    state.token = token;
+    showApp();
+    fetchAll();
+    pollInterval = setInterval(fetchAll, 15000);
+  }
+
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.addEventListener('click', () => switchTab(t.dataset.tab));
+  });
+}
+
+function saveToken() {
+  const v = document.getElementById('tokenInput').value.trim();
+  if (!v) return;
+  state.token = v;
+  localStorage.setItem('dfu_token', v);
+  showApp();
+  fetchAll();
+  pollInterval = setInterval(fetchAll, 15000);
+}
+
+function showApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+}
+
+function logout() {
+  localStorage.removeItem('dfu_token');
+  localStorage.removeItem('dfu_theme');
+  localStorage.removeItem('dfu_scale');
+  if (pollInterval) clearInterval(pollInterval);
+  location.reload();
+}
+
+async function airtableFetch(tableKey, params = '') {
+  const t = CFG.tables[tableKey];
+  const url = `https://api.airtable.com/v0/${CFG.baseId}/${t.id}?${params}`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${state.token}` } });
+  if (!res.ok) throw new Error(`Airtable ${res.status}`);
+  return res.json();
+}
+
+async function airtableCreate(tableKey, fields) {
+  const t = CFG.tables[tableKey];
+  const res = await fetch(`https://api.airtable.com/v0/${CFG.baseId}/${t.id}`, {
+    method: 'POST', headers: {
+      Authorization: `Bearer ${state.token}`, 'Content-Type': 'application/json'
+    }, body: JSON.stringify({ fields })
+  });
+  if (!res.ok) throw new Error(`Create failed ${res.status}`);
+  return res.json();
+}
+
+async function airtableUpdate(tableKey, id, fields) {
+  const t = CFG.tables[tableKey];
+  const res = await fetch(`https://api.airtable.com/v0/${CFG.baseId}/${t.id}/${id}`, {
+    method: 'PATCH', headers: {
+      Authorization: `Bearer ${state.token}`, 'Content-Type': 'application/json'
+    }, body: JSON.stringify({ fields })
+  });
+  if (!res.ok) throw new Error(`Update failed ${res.status}`);
+  return res.json();
+}
+
+async function airtableDelete(tableKey, id) {
+  const t = CFG.tables[tableKey];
+  const res = await fetch(`https://api.airtable.com/v0/${CFG.baseId}/${t.id}/${id}`, {
+    method: 'DELETE', headers: { Authorization: `Bearer ${state.token}` }
+  });
+  if (!res.ok) throw new Error(`Delete failed ${res.status}`);
+  return res.json();
+}
+
+async function fetchAll() {
+  setSyncState('syncing');
+  try {
+    const [tasks, sessions, notes, roadmap] = await Promise.all([
+      airtableFetch('tasks', 'sort%5B0%5D%5Bfield%5D=Created&sort%5B0%5D%5Bdirection%5D=desc'),
+      airtableFetch('sessions', 'sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=asc'),
+      airtableFetch('notes', 'sort%5B0%5D%5Bfield%5D=Created&sort%5B0%5D%5Bdirection%5D=desc'),
+      airtableFetch('roadmap', 'sort%5B0%5D%5Bfield%5D=Created&sort%5B0%5D%5Bdirection%5D=desc')
+    ]);
+    state.tasks = tasks.records || [];
+    state.sessions = sessions.records || [];
+    state.notes = notes.records || [];
+    state.roadmap = roadmap.records || [];
+    setSyncState('ok');
+    render();
+  } catch (e) {
+    console.error(e);
+    setSyncState('error');
+  }
+}
+
+function setSyncState(s) {
+  const dot = document.getElementById('syncDot');
+  dot.className = 'sync-dot' + (s === 'syncing' ? ' syncing' : s === 'error' ? ' error' : '');
+  dot.title = s === 'syncing' ? 'Syncing...' : s === 'error' ? 'Sync error' : 'Synced';
+}
+
+function f(record, fieldName) {
+  return record.fields?.[fieldName] ?? '';
+}
+
+function personColor(name) {
+  if (name === 'Anjanette') return 'var(--pink)';
+  if (name === 'Chanelle') return 'var(--lavender)';
+  if (name === 'Both') return 'var(--primary)';
+  return 'var(--ink-muted)';
+}
+
+function personInitial(name) {
+  if (!name) return '?';
+  return name.charAt(0).toUpperCase();
+}
+
+function statusColor(s) {
+  if (s === 'On Deck') return 'var(--primary)';
+  if (s === 'Tackling') return 'var(--pink)';
+  if (s === 'Done') return 'var(--green)';
+  return 'var(--ink-muted)';
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date(d + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function daysUntil(d) {
+  if (!d) return null;
+  const target = new Date(d + 'T00:00:00');
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.ceil((target - now) / 86400000);
+}
+
+function timeAgo(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  return days + 'd ago';
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function switchTab(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
+  render();
+}
+
+function render() {
+  renderDashboard();
+  renderTasks();
+  renderCalendar();
+  renderNotes();
+  renderRoadmap();
+}
+
+function renderDashboard() {
+  const el = document.getElementById('tab-dashboard');
+  const tasks = state.tasks;
+  const onDeck = tasks.filter(t => f(t,'Status') === 'On Deck').length;
+  const tackling = tasks.filter(t => f(t,'Status') === 'Tackling').length;
+  const done = tasks.filter(t => f(t,'Status') === 'Done').length;
+  const backlog = tasks.filter(t => f(t,'Status') === 'Backlog').length;
+
+  const nextSession = state.sessions.find(s => {
+    const d = daysUntil(f(s,'Date'));
+    return d !== null && d >= 0;
+  });
+
+  const aTasks = tasks.filter(t => f(t,'Assigned') === 'Anjanette' && f(t,'Status') !== 'Done').slice(0,3);
+  const cTasks = tasks.filter(t => f(t,'Assigned') === 'Chanelle' && f(t,'Status') !== 'Done').slice(0,3);
+
+  const phases = { Now: 0, Next: 0, Future: 0 };
+  state.roadmap.forEach(r => { const p = f(r,'Phase'); if (phases[p] !== undefined) phases[p]++; });
+
+  const recentNotes = state.notes.slice(0, 2);
+
+  let html = '<div class="bento">';
+
+  html += `<div class="glass tile bento-full">
+    <div class="tile-label">Overview</div>
+    <div class="stats-row">
+      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--primary)">${onDeck}</div><div class="stat-label">On Deck</div></div>
+      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--pink)">${tackling}</div><div class="stat-label">Tackling</div></div>
+      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-label">Done</div></div>
+      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--ink-muted)">${backlog}</div><div class="stat-label">Backlog</div></div>
+    </div>
+  </div>`;
+
+  if (nextSession) {
+    const date = new Date(f(nextSession,'Date') + 'T00:00:00');
+    const days = daysUntil(f(nextSession,'Date'));
+    html += `<div class="glass tile bento-full">
+      <div class="tile-label">Next Session</div>
+      <div class="session-card">
+        <div class="session-date-box">
+          <div class="session-date-month">${date.toLocaleDateString('en-US',{month:'short'})}</div>
+          <div class="session-date-day">${date.getDate()}</div>
+        </div>
+        <div>
+          <div class="session-info-title">${esc(f(nextSession,'Name'))}</div>
+          <div class="session-info-sub">${onDeck + tackling} tasks active</div>
+        </div>
+        <div class="session-countdown">${days === 0 ? 'Today!' : days + 'd'}</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="glass tile bento-full">
+      <div class="tile-label">Next Session</div>
+      <div class="empty-state" style="padding:12px"><span style="opacity:0.5">No upcoming sessions</span></div>
+    </div>`;
+  }
+
+  html += `<div class="glass tile">
+    <div class="person-header">
+      <div class="avatar" style="background:var(--pink)">A</div>
+      <div class="person-name">Anjanette</div>
+    </div>
+    ${aTasks.length ? aTasks.map(t => `<div class="mini-task"><div class="mini-check"></div>${esc(f(t,'Name'))}</div>`).join('') :
+    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>'}
+  </div>`;
+
+  html += `<div class="glass tile">
+    <div class="person-header">
+      <div class="avatar" style="background:var(--lavender)">C</div>
+      <div class="person-name">Chanelle</div>
+    </div>
+    ${cTasks.length ? cTasks.map(t => `<div class="mini-task"><div class="mini-check"></div>${esc(f(t,'Name'))}</div>`).join('') :
+    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>'}
+  </div>`;
+
+  html += `<div class="glass tile bento-full">
+    <div class="tile-label">Roadmap</div>
+    <div class="roadmap-row">
+      <div class="roadmap-pill" onclick="switchTab('roadmap')">
+        <div class="phase-dot" style="background:var(--primary)"></div><span>Now</span>
+        <span class="phase-count">${phases.Now}</span>
+      </div>
+      <div class="roadmap-pill" onclick="switchTab('roadmap')">
+        <div class="phase-dot" style="background:var(--lavender)"></div><span>Next</span>
+        <span class="phase-count">${phases.Next}</span>
+      </div>
+      <div class="roadmap-pill" onclick="switchTab('roadmap')">
+        <div class="phase-dot" style="background:var(--ink-muted)"></div><span>Future</span>
+        <span class="phase-count">${phases.Future}</span>
+      </div>
+    </div>
+  </div>`;
+
+  html += `<div class="glass tile bento-full">
+    <div class="tile-label">Recent Notes</div>
+    ${recentNotes.length ? `<div class="notes-row">${recentNotes.map(n =>
+      `<div class="note-preview">${esc(f(n,'Message'))}<div class="note-meta">${esc(f(n,'Author'))} &middot; ${timeAgo(f(n,'Created'))}</div></div>`
+    ).join('')}</div>` :
+    '<div style="font-size:12px;color:var(--ink-muted)">No notes yet</div>'}
+  </div>`;
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderTasks() {
+  const el = document.getElementById('tab-tasks');
+  let tasks = state.tasks;
+  if (state.filter !== 'All') {
+    tasks = tasks.filter(t => f(t,'Assigned') === state.filter);
+  }
+
+  const groups = ['Tackling', 'On Deck', 'Backlog', 'Done'];
+  let html = `<div class="filters">
+    ${['All','Anjanette','Chanelle','Both'].map(v =>
+      `<button class="chip ${state.filter===v?'active':''}" onclick="state.filter='${v}';render()">${v}</button>`
+    ).join('')}
+  </div>`;
+
+  groups.forEach(status => {
+    const items = tasks.filter(t => f(t,'Status') === status);
+    if (!items.length) return;
+    html += `<div class="task-group-label">${status} <span class="task-group-count">${items.length}</span></div>`;
+    items.forEach(t => {
+      const assigned = f(t,'Assigned');
+      const displayAssigned = assigned === 'Other' ? (f(t,'Other Assignee') || 'Other') : assigned;
+      const date = f(t,'Session Date');
+      html += `<div class="task-card" data-status="${esc(status)}">
+        <div class="task-card-header">
+          <div class="task-card-name">${esc(f(t,'Name'))}</div>
+          ${f(t,'Type') === 'Project' ? '<span class="task-card-badge" style="background:var(--primary-glow);color:var(--primary)">Project</span>' : ''}
+        </div>
+        <div class="task-card-meta">
+          <div class="avatar" style="background:${personColor(assigned)};width:18px;height:18px;font-size:8px">${personInitial(displayAssigned)}</div>
+          <span>${esc(displayAssigned)}</span>
+          ${date ? `<span>&middot; ${formatDate(date)}</span>` : ''}
+          <div class="task-card-actions">
+            ${status !== 'Done' ? `<button class="task-action-btn" onclick="event.stopPropagation();advanceTask('${t.id}')" title="Advance">&#9654;</button>` : ''}
+            ${status !== 'Backlog' && status !== 'Done' ? `<button class="task-action-btn" onclick="event.stopPropagation();bumpTask('${t.id}')" title="Bump to Backlog">&#8630;</button>` : ''}
+            <button class="task-action-btn" onclick="event.stopPropagation();openEditTask('${t.id}')" title="Edit">&#9998;</button>
+            <button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo('tasks','${t.id}','${esc(f(t,'Name'))}')" title="Delete" style="color:var(--red)">&#10005;</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  });
+
+  if (!tasks.length) {
+    html += '<div class="empty-state"><div class="empty-state-icon">&#9776;</div>No tasks yet. Tap + to add one.</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function renderCalendar() {
+  const el = document.getElementById('tab-calendar');
+  const sessions = state.sessions;
+  let html = '';
+
+  if (!sessions.length) {
+    html = '<div class="empty-state"><div class="empty-state-icon">&#128197;</div>No sessions scheduled. Tap + to create one.</div>';
+  } else {
+    const upcoming = sessions.filter(s => daysUntil(f(s,'Date')) >= 0);
+    const past = sessions.filter(s => daysUntil(f(s,'Date')) < 0).reverse();
+
+    if (upcoming.length) {
+      html += '<div class="task-group-label">Upcoming</div>';
+      upcoming.forEach(s => {
+        const days = daysUntil(f(s,'Date'));
+        html += `<div class="timeline-event" onclick="openEditSession('${s.id}')">
+          <div class="timeline-date">${formatDate(f(s,'Date'))} ${days === 0 ? '&mdash; Today!' : `&mdash; ${days}d away`}</div>
+          <div class="timeline-name">${esc(f(s,'Name'))}</div>
+          ${f(s,'Description') ? `<div class="timeline-desc">${esc(f(s,'Description'))}</div>` : ''}
+        </div>`;
+      });
+    }
+    if (past.length) {
+      html += '<div class="task-group-label" style="margin-top:24px">Past Sessions</div>';
+      past.forEach(s => {
+        html += `<div class="timeline-event" style="opacity:0.6" onclick="openEditSession('${s.id}')">
+          <div class="timeline-date">${formatDate(f(s,'Date'))}</div>
+          <div class="timeline-name">${esc(f(s,'Name'))}</div>
+        </div>`;
+      });
+    }
+  }
+
+  el.innerHTML = html;
+}
+
+function renderNotes() {
+  const el = document.getElementById('tab-notes');
+  let html = `<div class="note-author-toggle">
+    <button class="note-author-btn ${state.noteAuthor==='Anjanette'?'active':''}"
+      style="${state.noteAuthor==='Anjanette'?'background:var(--pink);color:#fff;border-color:var(--pink)':''}"
+      onclick="state.noteAuthor='Anjanette';render()">Anjanette</button>
+    <button class="note-author-btn ${state.noteAuthor==='Chanelle'?'active':''}"
+      style="${state.noteAuthor==='Chanelle'?'background:var(--lavender);color:#fff;border-color:var(--lavender)':''}"
+      onclick="state.noteAuthor='Chanelle';render()">Chanelle</button>
+  </div>`;
+
+  html += `<div class="note-input-bar">
+    <input type="text" id="noteInput" placeholder="Type a quick message..." onkeydown="if(event.key==='Enter')sendNote()">
+    <button class="note-send-btn" onclick="sendNote()">&#10148;</button>
+  </div>`;
+
+  state.notes.forEach(n => {
+    const author = f(n,'Author');
+    html += `<div class="note-card">
+      <div class="note-card-header">
+        <div class="avatar" style="background:${personColor(author)};width:20px;height:20px;font-size:9px">${personInitial(author)}</div>
+        <span class="note-card-author">${esc(author)}</span>
+        <span class="note-card-time">${timeAgo(f(n,'Created'))}</span>
+      </div>
+      <div class="note-card-msg">${esc(f(n,'Message'))}</div>
+    </div>`;
+  });
+
+  if (!state.notes.length) {
+    html += '<div class="empty-state" style="margin-top:20px"><div class="empty-state-icon">&#128172;</div>No messages yet</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function renderRoadmap() {
+  const el = document.getElementById('tab-roadmap');
+  const phases = [
+    { key: 'Now', color: 'var(--primary)' },
+    { key: 'Next', color: 'var(--lavender)' },
+    { key: 'Future', color: 'var(--ink-muted)' }
+  ];
+  let html = '';
+  phases.forEach(phase => {
+    const items = state.roadmap.filter(r => f(r,'Phase') === phase.key);
+    html += `<div class="roadmap-section">
+      <div class="roadmap-section-header">
+        <div class="roadmap-section-dot" style="background:${phase.color}"></div>
+        <div class="roadmap-section-title">${phase.key}</div>
+        <div class="roadmap-section-count">${items.length}</div>
+      </div>`;
+    if (items.length) {
+      items.forEach(r => {
+        const assigned = f(r,'Assigned');
+        const displayAssigned = assigned === 'Other' ? (f(r,'Other Assignee') || 'Other') : assigned;
+        html += `<div class="roadmap-item" onclick="openEditRoadmap('${r.id}')">
+          <div class="roadmap-item-name">${esc(f(r,'Name'))}</div>
+          ${f(r,'Description') ? `<div class="roadmap-item-desc">${esc(f(r,'Description'))}</div>` : ''}
+          <div class="roadmap-item-meta">
+            ${assigned ? `<div class="avatar" style="background:${personColor(assigned)};width:18px;height:18px;font-size:8px">${personInitial(displayAssigned)}</div><span style="font-size:11px;color:var(--ink-muted)">${esc(displayAssigned)}</span>` : ''}
+            <button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo('roadmap','${r.id}','${esc(f(r,'Name'))}')" title="Delete" style="color:var(--red);margin-left:auto">&#10005;</button>
+          </div>
+        </div>`;
+      });
+    } else {
+      html += '<div style="font-size:12px;color:var(--ink-muted);padding:8px 0">No items</div>';
+    }
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+async function advanceTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  const flow = { 'Backlog': 'On Deck', 'On Deck': 'Tackling', 'Tackling': 'Done' };
+  const next = flow[f(task,'Status')];
+  if (!next) return;
+  try {
+    await airtableUpdate('tasks', id, { Status: next });
+    toast(`Moved to ${next}`);
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function bumpTask(id) {
+  try {
+    await airtableUpdate('tasks', id, { Status: 'Backlog' });
+    toast('Bumped to Backlog');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function sendNote() {
+  const input = document.getElementById('noteInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  try {
+    await airtableCreate('notes', { Message: msg, Author: { name: state.noteAuthor } });
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function deleteWithUndo(tableKey, id, name) {
+  const record = state[tableKey === 'tasks' ? 'tasks' : tableKey].find(r => r.id === id);
+  if (!record) return;
+
+  if (tableKey === 'tasks') state.tasks = state.tasks.filter(t => t.id !== id);
+  else if (tableKey === 'roadmap') state.roadmap = state.roadmap.filter(r => r.id !== id);
+  render();
+
+  const undoId = Date.now().toString();
+  let cancelled = false;
+
+  showUndoToast(name, () => {
+    cancelled = true;
+    if (tableKey === 'tasks') state.tasks.push(record);
+    else if (tableKey === 'roadmap') state.roadmap.push(record);
+    render();
+    toast('Restored');
+  });
+
+  setTimeout(async () => {
+    if (cancelled) return;
+    try {
+      await airtableDelete(tableKey, id);
+    } catch(e) { toast('Delete error'); fetchAll(); }
+  }, 5000);
+}
+
+function openModal(html) {
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function openAddModal() {
+  const tab = state.tab;
+  if (tab === 'tasks' || tab === 'dashboard') openAddTask();
+  else if (tab === 'calendar') openAddSession();
+  else if (tab === 'notes') document.getElementById('noteInput')?.focus();
+  else if (tab === 'roadmap') openAddRoadmap();
+}
+
+function openAddTask() {
+  openModal(`
+    <div class="modal-title">New Task</div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="m_name" placeholder="What needs to be done?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="m_status">
+        <option>Backlog</option><option selected>On Deck</option><option>Tackling</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assigned</label>
+      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
+        <option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group" id="m_other_row" style="display:none">
+      <label class="form-label">Other Name</label>
+      <input class="form-input" id="m_other" placeholder="Name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="m_type"><option>Task</option><option>Project</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Session Date</label>
+      <input class="form-input" id="m_date" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="m_notes" placeholder="Optional details..."></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitTask()">Add Task</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById('m_name')?.focus(), 100);
+}
+
+async function submitTask() {
+  const name = document.getElementById('m_name').value.trim();
+  if (!name) return;
+  const fields = {
+    Name: name,
+    Status: { name: document.getElementById('m_status').value },
+    Assigned: { name: document.getElementById('m_assigned').value },
+    Type: { name: document.getElementById('m_type').value }
+  };
+  const other = document.getElementById('m_other')?.value.trim();
+  if (other) fields['Other Assignee'] = other;
+  const date = document.getElementById('m_date').value;
+  if (date) fields['Session Date'] = date;
+  const notes = document.getElementById('m_notes').value.trim();
+  if (notes) fields.Notes = notes;
+
+  try {
+    closeModal();
+    await airtableCreate('tasks', fields);
+    toast('Task added');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function openEditTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  const assigned = f(task,'Assigned');
+  openModal(`
+    <div class="modal-title">Edit Task</div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="m_name" value="${esc(f(task,'Name'))}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="m_status">
+        ${['Backlog','On Deck','Tackling','Done'].map(s => `<option ${f(task,'Status')===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assigned</label>
+      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
+        ${['Anjanette','Chanelle','Both','Other'].map(a => `<option ${assigned===a?'selected':''}>${a}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" id="m_other_row" style="display:${assigned==='Other'?'block':'none'}">
+      <label class="form-label">Other Name</label>
+      <input class="form-input" id="m_other" value="${esc(f(task,'Other Assignee'))}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="m_type">
+        ${['Task','Project'].map(t => `<option ${f(task,'Type')===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Session Date</label>
+      <input class="form-input" id="m_date" type="date" value="${f(task,'Session Date')}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="m_notes">${esc(f(task,'Notes'))}</textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitEditTask('${id}')">Save</button>
+    </div>
+  `);
+}
+
+async function submitEditTask(id) {
+  const fields = {
+    Name: document.getElementById('m_name').value.trim(),
+    Status: { name: document.getElementById('m_status').value },
+    Assigned: { name: document.getElementById('m_assigned').value },
+    Type: { name: document.getElementById('m_type').value },
+    'Other Assignee': document.getElementById('m_other')?.value.trim() || '',
+    'Session Date': document.getElementById('m_date').value || null,
+    Notes: document.getElementById('m_notes').value.trim()
+  };
+  if (!fields.Name) return;
+  try {
+    closeModal();
+    await airtableUpdate('tasks', id, fields);
+    toast('Task updated');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function openAddSession() {
+  openModal(`
+    <div class="modal-title">New Session</div>
+    <div class="form-group">
+      <label class="form-label">Session Name</label>
+      <input class="form-input" id="m_name" placeholder="e.g. Fall Planning Sprint">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input class="form-input" id="m_date" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="m_desc" placeholder="What's the focus?"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitSession()">Create Session</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById('m_name')?.focus(), 100);
+}
+
+async function submitSession() {
+  const name = document.getElementById('m_name').value.trim();
+  if (!name) return;
+  const fields = { Name: name };
+  const date = document.getElementById('m_date').value;
+  if (date) fields.Date = date;
+  const desc = document.getElementById('m_desc').value.trim();
+  if (desc) fields.Description = desc;
+  try {
+    closeModal();
+    await airtableCreate('sessions', fields);
+    toast('Session created');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function openEditSession(id) {
+  const s = state.sessions.find(s => s.id === id);
+  if (!s) return;
+  openModal(`
+    <div class="modal-title">Edit Session</div>
+    <div class="form-group">
+      <label class="form-label">Session Name</label>
+      <input class="form-input" id="m_name" value="${esc(f(s,'Name'))}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input class="form-input" id="m_date" type="date" value="${f(s,'Date')}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="m_desc">${esc(f(s,'Description'))}</textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitEditSession('${id}')">Save</button>
+      <button class="btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="deleteSession('${id}')">Delete</button>
+    </div>
+  `);
+}
+
+async function submitEditSession(id) {
+  const fields = {
+    Name: document.getElementById('m_name').value.trim(),
+    Date: document.getElementById('m_date').value || null,
+    Description: document.getElementById('m_desc').value.trim()
+  };
+  if (!fields.Name) return;
+  try {
+    closeModal();
+    await airtableUpdate('sessions', id, fields);
+    toast('Session updated');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function deleteSession(id) {
+  try {
+    closeModal();
+    await airtableDelete('sessions', id);
+    toast('Session deleted');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function openAddRoadmap() {
+  openModal(`
+    <div class="modal-title">New Roadmap Item</div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="m_name" placeholder="What's the idea?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phase</label>
+      <select class="form-select" id="m_phase">
+        <option>Now</option><option>Next</option><option selected>Future</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="m_desc" placeholder="Details..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assigned</label>
+      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
+        <option value="">Unassigned</option>
+        <option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group" id="m_other_row" style="display:none">
+      <label class="form-label">Other Name</label>
+      <input class="form-input" id="m_other" placeholder="Name">
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitRoadmap()">Add Item</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById('m_name')?.focus(), 100);
+}
+
+async function submitRoadmap() {
+  const name = document.getElementById('m_name').value.trim();
+  if (!name) return;
+  const fields = {
+    Name: name,
+    Phase: { name: document.getElementById('m_phase').value }
+  };
+  const desc = document.getElementById('m_desc').value.trim();
+  if (desc) fields.Description = desc;
+  const assigned = document.getElementById('m_assigned').value;
+  if (assigned) fields.Assigned = { name: assigned };
+  const other = document.getElementById('m_other')?.value.trim();
+  if (other) fields['Other Assignee'] = other;
+  try {
+    closeModal();
+    await airtableCreate('roadmap', fields);
+    toast('Roadmap item added');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function openEditRoadmap(id) {
+  const r = state.roadmap.find(r => r.id === id);
+  if (!r) return;
+  const assigned = f(r,'Assigned');
+  openModal(`
+    <div class="modal-title">Edit Roadmap Item</div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="m_name" value="${esc(f(r,'Name'))}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phase</label>
+      <select class="form-select" id="m_phase">
+        ${['Now','Next','Future'].map(p => `<option ${f(r,'Phase')===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="m_desc">${esc(f(r,'Description'))}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assigned</label>
+      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
+        <option value="">Unassigned</option>
+        ${['Anjanette','Chanelle','Both','Other'].map(a => `<option ${assigned===a?'selected':''}>${a}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" id="m_other_row" style="display:${assigned==='Other'?'block':'none'}">
+      <label class="form-label">Other Name</label>
+      <input class="form-input" id="m_other" value="${esc(f(r,'Other Assignee'))}">
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitEditRoadmap('${id}')">Save</button>
+    </div>
+  `);
+}
+
+async function submitEditRoadmap(id) {
+  const fields = {
+    Name: document.getElementById('m_name').value.trim(),
+    Phase: { name: document.getElementById('m_phase').value },
+    Description: document.getElementById('m_desc').value.trim()
+  };
+  const assigned = document.getElementById('m_assigned').value;
+  if (assigned) fields.Assigned = { name: assigned };
+  else fields.Assigned = null;
+  const other = document.getElementById('m_other')?.value.trim();
+  fields['Other Assignee'] = other || '';
+  if (!fields.Name) return;
+  try {
+    closeModal();
+    await airtableUpdate('roadmap', id, fields);
+    toast('Roadmap item updated');
+    fetchAll();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function toast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function showUndoToast(name, onUndo) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `Deleted "${esc(name)}" <span class="toast-undo" onclick="this.parentElement.remove()">Undo</span>`;
+  t.querySelector('.toast-undo').addEventListener('click', (e) => {
+    e.stopPropagation();
+    onUndo();
+    t.remove();
+  });
+  c.appendChild(t);
+  setTimeout(() => { if (t.parentElement) { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); } }, 5000);
+}
+
+function toggleSettings() {
+  document.getElementById('settingsPanel').classList.toggle('open');
+  document.getElementById('settingsBackdrop').classList.toggle('open');
+}
+
+function setTheme(theme) {
+  if (theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('dfu_theme', theme);
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('dfu_theme', 'system');
+  }
+  document.querySelectorAll('.theme-opt').forEach(b => {
+    const t = b.dataset.theme;
+    b.classList.toggle('active', theme === null ? t === 'system' : t === theme);
+  });
+}
+
+function setFontScale(val, skipSave) {
+  document.documentElement.style.setProperty('--zoom', val / 100);
+  const slider = document.getElementById('fontScale');
+  if (slider) slider.value = val;
+  if (!skipSave) localStorage.setItem('dfu_scale', val);
+}
+
+init();
+</script>
+</body>
+</html>
