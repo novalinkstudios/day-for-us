@@ -614,6 +614,8 @@ button { cursor: pointer; }
 </div>
 
 <script>
+const INJECTED_TOKEN = '__DFU_AIRTABLE_TOKEN__';
+
 const TABLE_IDS = {
   tasks: 'tblK7L4tLSfhCW09B',
   sessions: 'tblUj37fhp2O1UAQ6',
@@ -630,6 +632,9 @@ let state = {
 let pollInterval = null;
 
 function init() {
+  const hasInjected = INJECTED_TOKEN !== '__DFU_AIRTABLE_TOKEN__';
+  const token = localStorage.getItem('dfu_token') || (hasInjected ? INJECTED_TOKEN : null);
+
   const theme = localStorage.getItem('dfu_theme');
   const scale = localStorage.getItem('dfu_scale') || '100';
 
@@ -646,6 +651,10 @@ function init() {
 
   fetchAll();
   pollInterval = setInterval(fetchAll, 15000);
+
+  if (hasInjected) {
+    document.querySelector('.settings-danger-btn')?.remove();
+  }
 
   document.querySelectorAll('.tab-item').forEach(t => {
     t.addEventListener('click', () => switchTab(t.dataset.tab));
