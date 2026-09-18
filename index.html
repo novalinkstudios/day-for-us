@@ -543,8 +543,17 @@ button { cursor: pointer; }
 </head>
 <body>
 
-<!-- APP -->
-<div class="app active" id="app">
+<div class="setup" id="setupScreen">
+  <div class="setup-brand">Day for Us</div>
+  <p class="setup-sub">Collaborative working session hub</p>
+  <div class="setup-card">
+    <label>Airtable Personal Access Token</label>
+    <input type="password" id="tokenInput" placeholder="pat..." autocomplete="off">
+    <button class="btn-primary" onclick="saveToken()">Connect</button>
+  </div>
+</div>
+
+<div class="app" id="app">
   <div class="header">
     <div class="brand">Day for Us</div>
     <div class="header-spacer"></div>
@@ -561,22 +570,16 @@ button { cursor: pointer; }
   </div>
 
   <div class="content">
-    <!-- Dashboard -->
     <div class="tab-content active" id="tab-dashboard"></div>
-    <!-- Tasks -->
     <div class="tab-content" id="tab-tasks"></div>
-    <!-- Calendar -->
     <div class="tab-content" id="tab-calendar"></div>
-    <!-- Notes -->
     <div class="tab-content" id="tab-notes"></div>
-    <!-- Roadmap -->
     <div class="tab-content" id="tab-roadmap"></div>
   </div>
 
   <button class="fab" id="fab" onclick="openAddModal()">+</button>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modalContent">
     <div class="modal-handle"></div>
@@ -584,10 +587,8 @@ button { cursor: pointer; }
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- SETTINGS -->
 <div class="settings-backdrop" id="settingsBackdrop" onclick="toggleSettings()"></div>
 <div class="settings-panel" id="settingsPanel">
   <div class="settings-title">Settings</div>
@@ -609,22 +610,40 @@ button { cursor: pointer; }
   </div>
   <div class="settings-group">
     <div class="settings-group-label">Data</div>
-    <button class="settings-danger-btn" onclick="logout()">Reset Preferences</button>
+    <button class="settings-danger-btn" onclick="logout()">Disconnect &amp; Clear</button>
   </div>
 </div>
 
 <script>
 const INJECTED_TOKEN = '__DFU_AIRTABLE_TOKEN__';
 
-const TABLE_IDS = {
-  tasks: 'tblK7L4tLSfhCW09B',
-  sessions: 'tblUj37fhp2O1UAQ6',
-  notes: 'tblvmOOFMvW35yMk2',
-  roadmap: 'tblSe6DM956iA6OVK'
+const CFG = {
+  baseId: 'appRlcL5eYnjxfXV0',
+  tables: {
+    tasks: { id: 'tblK7L4tLSfhCW09B', fields: {
+      name: 'fldcH8NvHiS9xQw20', status: 'fldUEqIaK2bQVfrpZ',
+      assigned: 'fldIVuz1yJa70PWDl', otherAssignee: 'fldkqAQQUz3zc1io8',
+      type: 'fldWTi9f9tSwxofRg', sessionDate: 'fld1XSvF2EhaDubat',
+      notes: 'fldgjh4qtdpBIGDvz', created: 'fldw3LTGj5mKuFYXM'
+    }},
+    sessions: { id: 'tblUj37fhp2O1UAQ6', fields: {
+      name: 'fld7WmcEXjAIzKcl4', date: 'fldyvmr4xTVb4rmG8',
+      description: 'fldeyu19xWk9CUGYs', created: 'fldFOwoVhrcwLM85t'
+    }},
+    notes: { id: 'tblvmOOFMvW35yMk2', fields: {
+      message: 'fldLjMeDRbY4OU9fB', author: 'fldDJDdJIjz2N1ESd',
+      created: 'fldCz46I4Q9QxvDaz'
+    }},
+    roadmap: { id: 'tblSe6DM956iA6OVK', fields: {
+      name: 'fldQ2BeRrDfqAAMjM', phase: 'fldi8tRCnr316FF5v',
+      description: 'fldAuBHobur6EU5LX', assigned: 'fldeXwZMujDLPrE8p',
+      otherAssignee: 'fldxQvNRXBPYkOBH3', created: 'fldoZJlPHLI9SKhpT'
+    }}
+  }
 };
 
 let state = {
-  tab: 'dashboard',
+  token: null, tab: 'dashboard',
   tasks: [], sessions: [], notes: [], roadmap: [],
   filter: 'All', noteAuthor: 'Anjanette',
   undoTimers: {}
@@ -634,7 +653,6 @@ let pollInterval = null;
 function init() {
   const hasInjected = INJECTED_TOKEN !== '__DFU_AIRTABLE_TOKEN__';
   const token = localStorage.getItem('dfu_token') || (hasInjected ? INJECTED_TOKEN : null);
-
   const theme = localStorage.getItem('dfu_theme');
   const scale = localStorage.getItem('dfu_scale') || '100';
 
@@ -649,8 +667,12 @@ function init() {
     b.classList.toggle('active', theme ? t === theme : t === 'system');
   });
 
-  fetchAll();
-  pollInterval = setInterval(fetchAll, 15000);
+  if (token) {
+    state.token = token;
+    showApp();
+    fetchAll();
+    pollInterval = setInterval(fetchAll, 15000);
+  }
 
   if (hasInjected) {
     document.querySelector('.settings-danger-btn')?.remove();
@@ -661,7 +683,23 @@ function init() {
   });
 }
 
+function saveToken() {
+  const v = document.getElementById('tokenInput').value.trim();
+  if (!v) return;
+  state.token = v;
+  localStorage.setItem('dfu_token', v);
+  showApp();
+  fetchAll();
+  pollInterval = setInterval(fetchAll, 15000);
+}
+
+function showApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+}
+
 function logout() {
+  localStorage.removeItem('dfu_token');
   localStorage.removeItem('dfu_theme');
   localStorage.removeItem('dfu_scale');
   if (pollInterval) clearInterval(pollInterval);
@@ -669,40 +707,41 @@ function logout() {
 }
 
 async function airtableFetch(tableKey, params = '') {
-  const tableId = TABLE_IDS[tableKey];
-  const res = await fetch(`/api/airtable?table=${tableId}&${params}`);
-  if (!res.ok) throw new Error(`Airtable ${res.status}`);
+  const t = CFG.tables[tableKey];
+  const url = 'https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '?' + params;
+  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + state.token } });
+  if (!res.ok) throw new Error('Airtable ' + res.status);
   return res.json();
 }
 
 async function airtableCreate(tableKey, fields) {
-  const tableId = TABLE_IDS[tableKey];
-  const res = await fetch(`/api/airtable?table=${tableId}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields })
+  const t = CFG.tables[tableKey];
+  const res = await fetch('https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id, {
+    method: 'POST', headers: {
+      Authorization: 'Bearer ' + state.token, 'Content-Type': 'application/json'
+    }, body: JSON.stringify({ fields })
   });
-  if (!res.ok) throw new Error(`Create failed ${res.status}`);
+  if (!res.ok) throw new Error('Create failed ' + res.status);
   return res.json();
 }
 
 async function airtableUpdate(tableKey, id, fields) {
-  const tableId = TABLE_IDS[tableKey];
-  const res = await fetch(`/api/airtable?table=${tableId}&recordId=${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields })
+  const t = CFG.tables[tableKey];
+  const res = await fetch('https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '/' + id, {
+    method: 'PATCH', headers: {
+      Authorization: 'Bearer ' + state.token, 'Content-Type': 'application/json'
+    }, body: JSON.stringify({ fields })
   });
-  if (!res.ok) throw new Error(`Update failed ${res.status}`);
+  if (!res.ok) throw new Error('Update failed ' + res.status);
   return res.json();
 }
 
 async function airtableDelete(tableKey, id) {
-  const tableId = TABLE_IDS[tableKey];
-  const res = await fetch(`/api/airtable?table=${tableId}&recordId=${id}`, {
-    method: 'DELETE'
+  const t = CFG.tables[tableKey];
+  const res = await fetch('https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '/' + id, {
+    method: 'DELETE', headers: { Authorization: 'Bearer ' + state.token }
   });
-  if (!res.ok) throw new Error(`Delete failed ${res.status}`);
+  if (!res.ok) throw new Error('Delete failed ' + res.status);
   return res.json();
 }
 
@@ -825,83 +864,54 @@ function renderDashboard() {
 
   let html = '<div class="bento">';
 
-  html += `<div class="glass tile bento-full">
-    <div class="tile-label">Overview</div>
-    <div class="stats-row">
-      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--primary)">${onDeck}</div><div class="stat-label">On Deck</div></div>
-      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--pink)">${tackling}</div><div class="stat-label">Tackling</div></div>
-      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-label">Done</div></div>
-      <div class="stat-item" onclick="switchTab('tasks')"><div class="stat-num" style="color:var(--ink-muted)">${backlog}</div><div class="stat-label">Backlog</div></div>
-    </div>
-  </div>`;
+  html += '<div class="glass tile bento-full"><div class="tile-label">Overview</div><div class="stats-row">'
+    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--primary)">' + onDeck + '</div><div class="stat-label">On Deck</div></div>'
+    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--pink)">' + tackling + '</div><div class="stat-label">Tackling</div></div>'
+    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--green)">' + done + '</div><div class="stat-label">Done</div></div>'
+    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--ink-muted)">' + backlog + '</div><div class="stat-label">Backlog</div></div>'
+    + '</div></div>';
 
   if (nextSession) {
     const date = new Date(f(nextSession,'Date') + 'T00:00:00');
     const days = daysUntil(f(nextSession,'Date'));
-    html += `<div class="glass tile bento-full">
-      <div class="tile-label">Next Session</div>
-      <div class="session-card">
-        <div class="session-date-box">
-          <div class="session-date-month">${date.toLocaleDateString('en-US',{month:'short'})}</div>
-          <div class="session-date-day">${date.getDate()}</div>
-        </div>
-        <div>
-          <div class="session-info-title">${esc(f(nextSession,'Name'))}</div>
-          <div class="session-info-sub">${onDeck + tackling} tasks active</div>
-        </div>
-        <div class="session-countdown">${days === 0 ? 'Today!' : days + 'd'}</div>
-      </div>
-    </div>`;
+    html += '<div class="glass tile bento-full"><div class="tile-label">Next Session</div>'
+      + '<div class="session-card"><div class="session-date-box">'
+      + '<div class="session-date-month">' + date.toLocaleDateString('en-US',{month:'short'}) + '</div>'
+      + '<div class="session-date-day">' + date.getDate() + '</div></div><div>'
+      + '<div class="session-info-title">' + esc(f(nextSession,'Name')) + '</div>'
+      + '<div class="session-info-sub">' + (onDeck + tackling) + ' tasks active</div></div>'
+      + '<div class="session-countdown">' + (days === 0 ? 'Today!' : days + 'd') + '</div></div></div>';
   } else {
-    html += `<div class="glass tile bento-full">
-      <div class="tile-label">Next Session</div>
-      <div class="empty-state" style="padding:12px"><span style="opacity:0.5">No upcoming sessions</span></div>
-    </div>`;
+    html += '<div class="glass tile bento-full"><div class="tile-label">Next Session</div>'
+      + '<div class="empty-state" style="padding:12px"><span style="opacity:0.5">No upcoming sessions</span></div></div>';
   }
 
-  html += `<div class="glass tile">
-    <div class="person-header">
-      <div class="avatar" style="background:var(--pink)">A</div>
-      <div class="person-name">Anjanette</div>
-    </div>
-    ${aTasks.length ? aTasks.map(t => `<div class="mini-task"><div class="mini-check"></div>${esc(f(t,'Name'))}</div>`).join('') :
-    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>'}
-  </div>`;
+  html += '<div class="glass tile"><div class="person-header">'
+    + '<div class="avatar" style="background:var(--pink)">A</div>'
+    + '<div class="person-name">Anjanette</div></div>'
+    + (aTasks.length ? aTasks.map(t => '<div class="mini-task"><div class="mini-check"></div>' + esc(f(t,'Name')) + '</div>').join('') :
+    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>')
+    + '</div>';
 
-  html += `<div class="glass tile">
-    <div class="person-header">
-      <div class="avatar" style="background:var(--lavender)">C</div>
-      <div class="person-name">Chanelle</div>
-    </div>
-    ${cTasks.length ? cTasks.map(t => `<div class="mini-task"><div class="mini-check"></div>${esc(f(t,'Name'))}</div>`).join('') :
-    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>'}
-  </div>`;
+  html += '<div class="glass tile"><div class="person-header">'
+    + '<div class="avatar" style="background:var(--lavender)">C</div>'
+    + '<div class="person-name">Chanelle</div></div>'
+    + (cTasks.length ? cTasks.map(t => '<div class="mini-task"><div class="mini-check"></div>' + esc(f(t,'Name')) + '</div>').join('') :
+    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>')
+    + '</div>';
 
-  html += `<div class="glass tile bento-full">
-    <div class="tile-label">Roadmap</div>
-    <div class="roadmap-row">
-      <div class="roadmap-pill" onclick="switchTab('roadmap')">
-        <div class="phase-dot" style="background:var(--primary)"></div><span>Now</span>
-        <span class="phase-count">${phases.Now}</span>
-      </div>
-      <div class="roadmap-pill" onclick="switchTab('roadmap')">
-        <div class="phase-dot" style="background:var(--lavender)"></div><span>Next</span>
-        <span class="phase-count">${phases.Next}</span>
-      </div>
-      <div class="roadmap-pill" onclick="switchTab('roadmap')">
-        <div class="phase-dot" style="background:var(--ink-muted)"></div><span>Future</span>
-        <span class="phase-count">${phases.Future}</span>
-      </div>
-    </div>
-  </div>`;
+  html += '<div class="glass tile bento-full"><div class="tile-label">Roadmap</div><div class="roadmap-row">'
+    + '<div class="roadmap-pill" onclick="switchTab(\'roadmap\')"><div class="phase-dot" style="background:var(--primary)"></div><span>Now</span><span class="phase-count">' + phases.Now + '</span></div>'
+    + '<div class="roadmap-pill" onclick="switchTab(\'roadmap\')"><div class="phase-dot" style="background:var(--lavender)"></div><span>Next</span><span class="phase-count">' + phases.Next + '</span></div>'
+    + '<div class="roadmap-pill" onclick="switchTab(\'roadmap\')"><div class="phase-dot" style="background:var(--ink-muted)"></div><span>Future</span><span class="phase-count">' + phases.Future + '</span></div>'
+    + '</div></div>';
 
-  html += `<div class="glass tile bento-full">
-    <div class="tile-label">Recent Notes</div>
-    ${recentNotes.length ? `<div class="notes-row">${recentNotes.map(n =>
-      `<div class="note-preview">${esc(f(n,'Message'))}<div class="note-meta">${esc(f(n,'Author'))} &middot; ${timeAgo(f(n,'Created'))}</div></div>`
-    ).join('')}</div>` :
-    '<div style="font-size:12px;color:var(--ink-muted)">No notes yet</div>'}
-  </div>`;
+  html += '<div class="glass tile bento-full"><div class="tile-label">Recent Notes</div>'
+    + (recentNotes.length ? '<div class="notes-row">' + recentNotes.map(n =>
+      '<div class="note-preview">' + esc(f(n,'Message')) + '<div class="note-meta">' + esc(f(n,'Author')) + ' &middot; ' + timeAgo(f(n,'Created')) + '</div></div>'
+    ).join('') + '</div>' :
+    '<div style="font-size:12px;color:var(--ink-muted)">No notes yet</div>')
+    + '</div>';
 
   html += '</div>';
   el.innerHTML = html;
@@ -915,37 +925,33 @@ function renderTasks() {
   }
 
   const groups = ['Tackling', 'On Deck', 'Backlog', 'Done'];
-  let html = `<div class="filters">
-    ${['All','Anjanette','Chanelle','Both'].map(v =>
-      `<button class="chip ${state.filter===v?'active':''}" onclick="state.filter='${v}';render()">${v}</button>`
-    ).join('')}
-  </div>`;
+  let html = '<div class="filters">'
+    + ['All','Anjanette','Chanelle','Both'].map(v =>
+      '<button class="chip ' + (state.filter===v?'active':'') + '" onclick="state.filter=\'' + v + '\';render()">' + v + '</button>'
+    ).join('')
+    + '</div>';
 
   groups.forEach(status => {
     const items = tasks.filter(t => f(t,'Status') === status);
     if (!items.length) return;
-    html += `<div class="task-group-label">${status} <span class="task-group-count">${items.length}</span></div>`;
+    html += '<div class="task-group-label">' + status + ' <span class="task-group-count">' + items.length + '</span></div>';
     items.forEach(t => {
       const assigned = f(t,'Assigned');
       const displayAssigned = assigned === 'Other' ? (f(t,'Other Assignee') || 'Other') : assigned;
       const date = f(t,'Session Date');
-      html += `<div class="task-card" data-status="${esc(status)}">
-        <div class="task-card-header">
-          <div class="task-card-name">${esc(f(t,'Name'))}</div>
-          ${f(t,'Type') === 'Project' ? '<span class="task-card-badge" style="background:var(--primary-glow);color:var(--primary)">Project</span>' : ''}
-        </div>
-        <div class="task-card-meta">
-          <div class="avatar" style="background:${personColor(assigned)};width:18px;height:18px;font-size:8px">${personInitial(displayAssigned)}</div>
-          <span>${esc(displayAssigned)}</span>
-          ${date ? `<span>&middot; ${formatDate(date)}</span>` : ''}
-          <div class="task-card-actions">
-            ${status !== 'Done' ? `<button class="task-action-btn" onclick="event.stopPropagation();advanceTask('${t.id}')" title="Advance">&#9654;</button>` : ''}
-            ${status !== 'Backlog' && status !== 'Done' ? `<button class="task-action-btn" onclick="event.stopPropagation();bumpTask('${t.id}')" title="Bump to Backlog">&#8630;</button>` : ''}
-            <button class="task-action-btn" onclick="event.stopPropagation();openEditTask('${t.id}')" title="Edit">&#9998;</button>
-            <button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo('tasks','${t.id}','${esc(f(t,'Name'))}')" title="Delete" style="color:var(--red)">&#10005;</button>
-          </div>
-        </div>
-      </div>`;
+      html += '<div class="task-card" data-status="' + esc(status) + '">'
+        + '<div class="task-card-header"><div class="task-card-name">' + esc(f(t,'Name')) + '</div>'
+        + (f(t,'Type') === 'Project' ? '<span class="task-card-badge" style="background:var(--primary-glow);color:var(--primary)">Project</span>' : '')
+        + '</div><div class="task-card-meta">'
+        + '<div class="avatar" style="background:' + personColor(assigned) + ';width:18px;height:18px;font-size:8px">' + personInitial(displayAssigned) + '</div>'
+        + '<span>' + esc(displayAssigned) + '</span>'
+        + (date ? '<span>&middot; ' + formatDate(date) + '</span>' : '')
+        + '<div class="task-card-actions">'
+        + (status !== 'Done' ? '<button class="task-action-btn" onclick="event.stopPropagation();advanceTask(\'' + t.id + '\')" title="Advance">&#9654;</button>' : '')
+        + (status !== 'Backlog' && status !== 'Done' ? '<button class="task-action-btn" onclick="event.stopPropagation();bumpTask(\'' + t.id + '\')" title="Bump to Backlog">&#8630;</button>' : '')
+        + '<button class="task-action-btn" onclick="event.stopPropagation();openEditTask(\'' + t.id + '\')" title="Edit">&#9998;</button>'
+        + '<button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo(\'tasks\',\'' + t.id + '\',\'' + esc(f(t,'Name')) + '\')" title="Delete" style="color:var(--red)">&#10005;</button>'
+        + '</div></div></div>';
     });
   });
 
@@ -971,20 +977,19 @@ function renderCalendar() {
       html += '<div class="task-group-label">Upcoming</div>';
       upcoming.forEach(s => {
         const days = daysUntil(f(s,'Date'));
-        html += `<div class="timeline-event" onclick="openEditSession('${s.id}')">
-          <div class="timeline-date">${formatDate(f(s,'Date'))} ${days === 0 ? '&mdash; Today!' : `&mdash; ${days}d away`}</div>
-          <div class="timeline-name">${esc(f(s,'Name'))}</div>
-          ${f(s,'Description') ? `<div class="timeline-desc">${esc(f(s,'Description'))}</div>` : ''}
-        </div>`;
+        html += '<div class="timeline-event" onclick="openEditSession(\'' + s.id + '\')">' 
+          + '<div class="timeline-date">' + formatDate(f(s,'Date')) + ' ' + (days === 0 ? '&mdash; Today!' : '&mdash; ' + days + 'd away') + '</div>'
+          + '<div class="timeline-name">' + esc(f(s,'Name')) + '</div>'
+          + (f(s,'Description') ? '<div class="timeline-desc">' + esc(f(s,'Description')) + '</div>' : '')
+          + '</div>';
       });
     }
     if (past.length) {
       html += '<div class="task-group-label" style="margin-top:24px">Past Sessions</div>';
       past.forEach(s => {
-        html += `<div class="timeline-event" style="opacity:0.6" onclick="openEditSession('${s.id}')">
-          <div class="timeline-date">${formatDate(f(s,'Date'))}</div>
-          <div class="timeline-name">${esc(f(s,'Name'))}</div>
-        </div>`;
+        html += '<div class="timeline-event" style="opacity:0.6" onclick="openEditSession(\'' + s.id + '\')">' 
+          + '<div class="timeline-date">' + formatDate(f(s,'Date')) + '</div>'
+          + '<div class="timeline-name">' + esc(f(s,'Name')) + '</div></div>';
       });
     }
   }
@@ -994,30 +999,26 @@ function renderCalendar() {
 
 function renderNotes() {
   const el = document.getElementById('tab-notes');
-  let html = `<div class="note-author-toggle">
-    <button class="note-author-btn ${state.noteAuthor==='Anjanette'?'active':''}"
-      style="${state.noteAuthor==='Anjanette'?'background:var(--pink);color:#fff;border-color:var(--pink)':''}"
-      onclick="state.noteAuthor='Anjanette';render()">Anjanette</button>
-    <button class="note-author-btn ${state.noteAuthor==='Chanelle'?'active':''}"
-      style="${state.noteAuthor==='Chanelle'?'background:var(--lavender);color:#fff;border-color:var(--lavender)':''}"
-      onclick="state.noteAuthor='Chanelle';render()">Chanelle</button>
-  </div>`;
+  let html = '<div class="note-author-toggle">'
+    + '<button class="note-author-btn ' + (state.noteAuthor==='Anjanette'?'active':'') + '"'
+    + ' style="' + (state.noteAuthor==='Anjanette'?'background:var(--pink);color:#fff;border-color:var(--pink)':'') + '"'
+    + ' onclick="state.noteAuthor=\'Anjanette\';render()">Anjanette</button>'
+    + '<button class="note-author-btn ' + (state.noteAuthor==='Chanelle'?'active':'') + '"'
+    + ' style="' + (state.noteAuthor==='Chanelle'?'background:var(--lavender);color:#fff;border-color:var(--lavender)':'') + '"'
+    + ' onclick="state.noteAuthor=\'Chanelle\';render()">Chanelle</button>'
+    + '</div>';
 
-  html += `<div class="note-input-bar">
-    <input type="text" id="noteInput" placeholder="Type a quick message..." onkeydown="if(event.key==='Enter')sendNote()">
-    <button class="note-send-btn" onclick="sendNote()">&#10148;</button>
-  </div>`;
+  html += '<div class="note-input-bar">'
+    + '<input type="text" id="noteInput" placeholder="Type a quick message..." onkeydown="if(event.key===\'Enter\')sendNote()">'
+    + '<button class="note-send-btn" onclick="sendNote()">&#10148;</button></div>';
 
   state.notes.forEach(n => {
     const author = f(n,'Author');
-    html += `<div class="note-card">
-      <div class="note-card-header">
-        <div class="avatar" style="background:${personColor(author)};width:20px;height:20px;font-size:9px">${personInitial(author)}</div>
-        <span class="note-card-author">${esc(author)}</span>
-        <span class="note-card-time">${timeAgo(f(n,'Created'))}</span>
-      </div>
-      <div class="note-card-msg">${esc(f(n,'Message'))}</div>
-    </div>`;
+    html += '<div class="note-card"><div class="note-card-header">'
+      + '<div class="avatar" style="background:' + personColor(author) + ';width:20px;height:20px;font-size:9px">' + personInitial(author) + '</div>'
+      + '<span class="note-card-author">' + esc(author) + '</span>'
+      + '<span class="note-card-time">' + timeAgo(f(n,'Created')) + '</span></div>'
+      + '<div class="note-card-msg">' + esc(f(n,'Message')) + '</div></div>';
   });
 
   if (!state.notes.length) {
@@ -1037,24 +1038,21 @@ function renderRoadmap() {
   let html = '';
   phases.forEach(phase => {
     const items = state.roadmap.filter(r => f(r,'Phase') === phase.key);
-    html += `<div class="roadmap-section">
-      <div class="roadmap-section-header">
-        <div class="roadmap-section-dot" style="background:${phase.color}"></div>
-        <div class="roadmap-section-title">${phase.key}</div>
-        <div class="roadmap-section-count">${items.length}</div>
-      </div>`;
+    html += '<div class="roadmap-section"><div class="roadmap-section-header">'
+      + '<div class="roadmap-section-dot" style="background:' + phase.color + '"></div>'
+      + '<div class="roadmap-section-title">' + phase.key + '</div>'
+      + '<div class="roadmap-section-count">' + items.length + '</div></div>';
     if (items.length) {
       items.forEach(r => {
         const assigned = f(r,'Assigned');
         const displayAssigned = assigned === 'Other' ? (f(r,'Other Assignee') || 'Other') : assigned;
-        html += `<div class="roadmap-item" onclick="openEditRoadmap('${r.id}')">
-          <div class="roadmap-item-name">${esc(f(r,'Name'))}</div>
-          ${f(r,'Description') ? `<div class="roadmap-item-desc">${esc(f(r,'Description'))}</div>` : ''}
-          <div class="roadmap-item-meta">
-            ${assigned ? `<div class="avatar" style="background:${personColor(assigned)};width:18px;height:18px;font-size:8px">${personInitial(displayAssigned)}</div><span style="font-size:11px;color:var(--ink-muted)">${esc(displayAssigned)}</span>` : ''}
-            <button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo('roadmap','${r.id}','${esc(f(r,'Name'))}')" title="Delete" style="color:var(--red);margin-left:auto">&#10005;</button>
-          </div>
-        </div>`;
+        html += '<div class="roadmap-item" onclick="openEditRoadmap(\'' + r.id + '\')">' 
+          + '<div class="roadmap-item-name">' + esc(f(r,'Name')) + '</div>'
+          + (f(r,'Description') ? '<div class="roadmap-item-desc">' + esc(f(r,'Description')) + '</div>' : '')
+          + '<div class="roadmap-item-meta">'
+          + (assigned ? '<div class="avatar" style="background:' + personColor(assigned) + ';width:18px;height:18px;font-size:8px">' + personInitial(displayAssigned) + '</div><span style="font-size:11px;color:var(--ink-muted)">' + esc(displayAssigned) + '</span>' : '')
+          + '<button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo(\'roadmap\',\'' + r.id + '\',\'' + esc(f(r,'Name')) + '\')" title="Delete" style="color:var(--red);margin-left:auto">&#10005;</button>'
+          + '</div></div>';
       });
     } else {
       html += '<div style="font-size:12px;color:var(--ink-muted);padding:8px 0">No items</div>';
@@ -1072,7 +1070,7 @@ async function advanceTask(id) {
   if (!next) return;
   try {
     await airtableUpdate('tasks', id, { Status: next });
-    toast(`Moved to ${next}`);
+    toast('Moved to ' + next);
     fetchAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
@@ -1091,7 +1089,7 @@ async function sendNote() {
   if (!msg) return;
   input.value = '';
   try {
-    await airtableCreate('notes', { Message: msg, Author: state.noteAuthor });
+    await airtableCreate('notes', { Message: msg, Author: { name: state.noteAuthor } });
     fetchAll();
   } catch(e) { toast('Error: ' + e.message); }
 }
@@ -1140,46 +1138,27 @@ function openAddModal() {
 }
 
 function openAddTask() {
-  openModal(`
-    <div class="modal-title">New Task</div>
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input class="form-input" id="m_name" placeholder="What needs to be done?">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select class="form-select" id="m_status">
-        <option>Backlog</option><option selected>On Deck</option><option>Tackling</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Assigned</label>
-      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
-        <option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option>
-      </select>
-    </div>
-    <div class="form-group" id="m_other_row" style="display:none">
-      <label class="form-label">Other Name</label>
-      <input class="form-input" id="m_other" placeholder="Name">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Type</label>
-      <select class="form-select" id="m_type"><option>Task</option><option>Project</option></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Session Date</label>
-      <input class="form-input" id="m_date" type="date">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-textarea" id="m_notes" placeholder="Optional details..."></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="submitTask()">Add Task</button>
-    </div>
-  `);
-  setTimeout(() => document.getElementById('m_name')?.focus(), 100);
+  openModal(
+    '<div class="modal-title">New Task</div>'
+    + '<div class="form-group"><label class="form-label">Name</label>'
+    + '<input class="form-input" id="m_name" placeholder="What needs to be done?"></div>'
+    + '<div class="form-group"><label class="form-label">Status</label>'
+    + '<select class="form-select" id="m_status"><option>Backlog</option><option selected>On Deck</option><option>Tackling</option></select></div>'
+    + '<div class="form-group"><label class="form-label">Assigned</label>'
+    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
+    + '<option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option></select></div>'
+    + '<div class="form-group" id="m_other_row" style="display:none"><label class="form-label">Other Name</label>'
+    + '<input class="form-input" id="m_other" placeholder="Name"></div>'
+    + '<div class="form-group"><label class="form-label">Type</label>'
+    + '<select class="form-select" id="m_type"><option>Task</option><option>Project</option></select></div>'
+    + '<div class="form-group"><label class="form-label">Session Date</label>'
+    + '<input class="form-input" id="m_date" type="date"></div>'
+    + '<div class="form-group"><label class="form-label">Notes</label>'
+    + '<textarea class="form-textarea" id="m_notes" placeholder="Optional details..."></textarea></div>'
+    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-primary" onclick="submitTask()">Add Task</button></div>'
+  );
+  setTimeout(function() { document.getElementById('m_name')?.focus(); }, 100);
 }
 
 async function submitTask() {
@@ -1187,9 +1166,9 @@ async function submitTask() {
   if (!name) return;
   const fields = {
     Name: name,
-    Status: document.getElementById('m_status').value,
-    Assigned: document.getElementById('m_assigned').value,
-    Type: document.getElementById('m_type').value
+    Status: { name: document.getElementById('m_status').value },
+    Assigned: { name: document.getElementById('m_assigned').value },
+    Type: { name: document.getElementById('m_type').value }
   };
   const other = document.getElementById('m_other')?.value.trim();
   if (other) fields['Other Assignee'] = other;
@@ -1210,55 +1189,39 @@ function openEditTask(id) {
   const task = state.tasks.find(t => t.id === id);
   if (!task) return;
   const assigned = f(task,'Assigned');
-  openModal(`
-    <div class="modal-title">Edit Task</div>
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input class="form-input" id="m_name" value="${esc(f(task,'Name'))}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select class="form-select" id="m_status">
-        ${['Backlog','On Deck','Tackling','Done'].map(s => `<option ${f(task,'Status')===s?'selected':''}>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Assigned</label>
-      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
-        ${['Anjanette','Chanelle','Both','Other'].map(a => `<option ${assigned===a?'selected':''}>${a}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group" id="m_other_row" style="display:${assigned==='Other'?'block':'none'}">
-      <label class="form-label">Other Name</label>
-      <input class="form-input" id="m_other" value="${esc(f(task,'Other Assignee'))}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Type</label>
-      <select class="form-select" id="m_type">
-        ${['Task','Project'].map(t => `<option ${f(task,'Type')===t?'selected':''}>${t}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Session Date</label>
-      <input class="form-input" id="m_date" type="date" value="${f(task,'Session Date')}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-textarea" id="m_notes">${esc(f(task,'Notes'))}</textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="submitEditTask('${id}')">Save</button>
-    </div>
-  `);
+  openModal(
+    '<div class="modal-title">Edit Task</div>'
+    + '<div class="form-group"><label class="form-label">Name</label>'
+    + '<input class="form-input" id="m_name" value="' + esc(f(task,'Name')) + '"></div>'
+    + '<div class="form-group"><label class="form-label">Status</label>'
+    + '<select class="form-select" id="m_status">'
+    + ['Backlog','On Deck','Tackling','Done'].map(s => '<option ' + (f(task,'Status')===s?'selected':'') + '>' + s + '</option>').join('')
+    + '</select></div>'
+    + '<div class="form-group"><label class="form-label">Assigned</label>'
+    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
+    + ['Anjanette','Chanelle','Both','Other'].map(a => '<option ' + (assigned===a?'selected':'') + '>' + a + '</option>').join('')
+    + '</select></div>'
+    + '<div class="form-group" id="m_other_row" style="display:' + (assigned==='Other'?'block':'none') + '"><label class="form-label">Other Name</label>'
+    + '<input class="form-input" id="m_other" value="' + esc(f(task,'Other Assignee')) + '"></div>'
+    + '<div class="form-group"><label class="form-label">Type</label>'
+    + '<select class="form-select" id="m_type">'
+    + ['Task','Project'].map(t => '<option ' + (f(task,'Type')===t?'selected':'') + '>' + t + '</option>').join('')
+    + '</select></div>'
+    + '<div class="form-group"><label class="form-label">Session Date</label>'
+    + '<input class="form-input" id="m_date" type="date" value="' + f(task,'Session Date') + '"></div>'
+    + '<div class="form-group"><label class="form-label">Notes</label>'
+    + '<textarea class="form-textarea" id="m_notes">' + esc(f(task,'Notes')) + '</textarea></div>'
+    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-primary" onclick="submitEditTask(\'' + id + '\')">Save</button></div>'
+  );
 }
 
 async function submitEditTask(id) {
   const fields = {
     Name: document.getElementById('m_name').value.trim(),
-    Status: document.getElementById('m_status').value,
-    Assigned: document.getElementById('m_assigned').value,
-    Type: document.getElementById('m_type').value,
+    Status: { name: document.getElementById('m_status').value },
+    Assigned: { name: document.getElementById('m_assigned').value },
+    Type: { name: document.getElementById('m_type').value },
     'Other Assignee': document.getElementById('m_other')?.value.trim() || '',
     'Session Date': document.getElementById('m_date').value || null,
     Notes: document.getElementById('m_notes').value.trim()
@@ -1273,26 +1236,18 @@ async function submitEditTask(id) {
 }
 
 function openAddSession() {
-  openModal(`
-    <div class="modal-title">New Session</div>
-    <div class="form-group">
-      <label class="form-label">Session Name</label>
-      <input class="form-input" id="m_name" placeholder="e.g. Fall Planning Sprint">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Date</label>
-      <input class="form-input" id="m_date" type="date">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="m_desc" placeholder="What's the focus?"></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="submitSession()">Create Session</button>
-    </div>
-  `);
-  setTimeout(() => document.getElementById('m_name')?.focus(), 100);
+  openModal(
+    '<div class="modal-title">New Session</div>'
+    + '<div class="form-group"><label class="form-label">Session Name</label>'
+    + '<input class="form-input" id="m_name" placeholder="e.g. Fall Planning Sprint"></div>'
+    + '<div class="form-group"><label class="form-label">Date</label>'
+    + '<input class="form-input" id="m_date" type="date"></div>'
+    + '<div class="form-group"><label class="form-label">Description</label>'
+    + '<textarea class="form-textarea" id="m_desc" placeholder="What\'s the focus?"></textarea></div>'
+    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-primary" onclick="submitSession()">Create Session</button></div>'
+  );
+  setTimeout(function() { document.getElementById('m_name')?.focus(); }, 100);
 }
 
 async function submitSession() {
@@ -1314,26 +1269,18 @@ async function submitSession() {
 function openEditSession(id) {
   const s = state.sessions.find(s => s.id === id);
   if (!s) return;
-  openModal(`
-    <div class="modal-title">Edit Session</div>
-    <div class="form-group">
-      <label class="form-label">Session Name</label>
-      <input class="form-input" id="m_name" value="${esc(f(s,'Name'))}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Date</label>
-      <input class="form-input" id="m_date" type="date" value="${f(s,'Date')}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="m_desc">${esc(f(s,'Description'))}</textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="submitEditSession('${id}')">Save</button>
-      <button class="btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="deleteSession('${id}')">Delete</button>
-    </div>
-  `);
+  openModal(
+    '<div class="modal-title">Edit Session</div>'
+    + '<div class="form-group"><label class="form-label">Session Name</label>'
+    + '<input class="form-input" id="m_name" value="' + esc(f(s,'Name')) + '"></div>'
+    + '<div class="form-group"><label class="form-label">Date</label>'
+    + '<input class="form-input" id="m_date" type="date" value="' + f(s,'Date') + '"></div>'
+    + '<div class="form-group"><label class="form-label">Description</label>'
+    + '<textarea class="form-textarea" id="m_desc">' + esc(f(s,'Description')) + '</textarea></div>'
+    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-primary" onclick="submitEditSession(\'' + id + '\')">Save</button>'
+    + '<button class="btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="deleteSession(\'' + id + '\')">Delete</button></div>'
+  );
 }
 
 async function submitEditSession(id) {
@@ -1361,39 +1308,23 @@ async function deleteSession(id) {
 }
 
 function openAddRoadmap() {
-  openModal(`
-    <div class="modal-title">New Roadmap Item</div>
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input class="form-input" id="m_name" placeholder="What's the idea?">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Phase</label>
-      <select class="form-select" id="m_phase">
-        <option>Now</option><option>Next</option><option selected>Future</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="m_desc" placeholder="Details..."></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Assigned</label>
-      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
-        <option value="">Unassigned</option>
-        <option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option>
-      </select>
-    </div>
-    <div class="form-group" id="m_other_row" style="display:none">
-      <label class="form-label">Other Name</label>
-      <input class="form-input" id="m_other" placeholder="Name">
-    </div>
-    <div class="form-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="submitRoadmap()">Add Item</button>
-    </div>
-  `);
-  setTimeout(() => document.getElementById('m_name')?.focus(), 100);
+  openModal(
+    '<div class="modal-title">New Roadmap Item</div>'
+    + '<div class="form-group"><label class="form-label">Name</label>'
+    + '<input class="form-input" id="m_name" placeholder="What\'s the idea?"></div>'
+    + '<div class="form-group"><label class="form-label">Phase</label>'
+    + '<select class="form-select" id="m_phase"><option>Now</option><option>Next</option><option selected>Future</option></select></div>'
+    + '<div class="form-group"><label class="form-label">Description</label>'
+    + '<textarea class="form-textarea" id="m_desc" placeholder="Details..."></textarea></div>'
+    + '<div class="form-group"><label class="form-label">Assigned</label>'
+    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
+    + '<option value="">Unassigned</option><option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option></select></div>'
+    + '<div class="form-group" id="m_other_row" style="display:none"><label class="form-label">Other Name</label>'
+    + '<input class="form-input" id="m_other" placeholder="Name"></div>'
+    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-primary" onclick="submitRoadmap()">Add Item</button></div>'
+  );
+  setTimeout(function() { document.getElementById('m_name')?.focus(); }, 100);
 }
 
 async function submitRoadmap() {
@@ -1401,12 +1332,12 @@ async function submitRoadmap() {
   if (!name) return;
   const fields = {
     Name: name,
-    Phase: document.getElementById('m_phase').value
+    Phase: { name: document.getElementById('m_phase').value }
   };
   const desc = document.getElementById('m_desc').value.trim();
   if (desc) fields.Description = desc;
   const assigned = document.getElementById('m_assigned').value;
-  if (assigned) fields.Assigned = assigned;
+  if (assigned) fields.Assigned = { name: assigned };
   const other = document.getElementById('m_other')?.value.trim();
   if (other) fields['Other Assignee'] = other;
   try {
@@ -1421,48 +1352,36 @@ function openEditRoadmap(id) {
   const r = state.roadmap.find(r => r.id === id);
   if (!r) return;
   const assigned = f(r,'Assigned');
-  openModal(`
-    <div class="modal-title">Edit Roadmap Item</div>
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input class="form-input" id="m_name" value="${esc(f(r,'Name'))}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Phase</label>
-      <select class="form-select" id="m_phase">
-        ${['Now','Next','Future'].map(p => `<option ${f(r,'Phase')===p?'selected':''}>${p}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="m_desc">${esc(f(r,'Description'))}</textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Assigned</label>
-      <select class="form-select" id="m_assigned" onchange="document.getElementById('m_other_row').style.display=this.value==='Other'?'block':'none'">
-        <option value="">Unassigned</option>
-        ${['Anjanette','Chanelle','Both','Other'].map(a => `<option ${assigned===a?'selected':''}>${a}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group" id="m_other_row" style="display:${assigned==='Other'?'block':'none'}">
-      <label class="form-label">Other Name</label>
-      <input class="form-input" id="m_other" value="${esc(f(r,'Other Assignee'))}">
-    </div>
-    <div class="form-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="submitEditRoadmap('${id}')">Save</button>
-    </div>
-  `);
+  openModal(
+    '<div class="modal-title">Edit Roadmap Item</div>'
+    + '<div class="form-group"><label class="form-label">Name</label>'
+    + '<input class="form-input" id="m_name" value="' + esc(f(r,'Name')) + '"></div>'
+    + '<div class="form-group"><label class="form-label">Phase</label>'
+    + '<select class="form-select" id="m_phase">'
+    + ['Now','Next','Future'].map(p => '<option ' + (f(r,'Phase')===p?'selected':'') + '>' + p + '</option>').join('')
+    + '</select></div>'
+    + '<div class="form-group"><label class="form-label">Description</label>'
+    + '<textarea class="form-textarea" id="m_desc">' + esc(f(r,'Description')) + '</textarea></div>'
+    + '<div class="form-group"><label class="form-label">Assigned</label>'
+    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
+    + '<option value="">Unassigned</option>'
+    + ['Anjanette','Chanelle','Both','Other'].map(a => '<option ' + (assigned===a?'selected':'') + '>' + a + '</option>').join('')
+    + '</select></div>'
+    + '<div class="form-group" id="m_other_row" style="display:' + (assigned==='Other'?'block':'none') + '"><label class="form-label">Other Name</label>'
+    + '<input class="form-input" id="m_other" value="' + esc(f(r,'Other Assignee')) + '"></div>'
+    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn-primary" onclick="submitEditRoadmap(\'' + id + '\')">Save</button></div>'
+  );
 }
 
 async function submitEditRoadmap(id) {
   const fields = {
     Name: document.getElementById('m_name').value.trim(),
-    Phase: document.getElementById('m_phase').value,
+    Phase: { name: document.getElementById('m_phase').value },
     Description: document.getElementById('m_desc').value.trim()
   };
   const assigned = document.getElementById('m_assigned').value;
-  if (assigned) fields.Assigned = assigned;
+  if (assigned) fields.Assigned = { name: assigned };
   else fields.Assigned = null;
   const other = document.getElementById('m_other')?.value.trim();
   fields['Other Assignee'] = other || '';
@@ -1481,21 +1400,21 @@ function toast(msg) {
   t.className = 'toast';
   t.textContent = msg;
   c.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 3000);
 }
 
 function showUndoToast(name, onUndo) {
   const c = document.getElementById('toastContainer');
   const t = document.createElement('div');
   t.className = 'toast';
-  t.innerHTML = `Deleted "${esc(name)}" <span class="toast-undo" onclick="this.parentElement.remove()">Undo</span>`;
-  t.querySelector('.toast-undo').addEventListener('click', (e) => {
+  t.innerHTML = 'Deleted "' + esc(name) + '" <span class="toast-undo" onclick="this.parentElement.remove()">Undo</span>';
+  t.querySelector('.toast-undo').addEventListener('click', function(e) {
     e.stopPropagation();
     onUndo();
     t.remove();
   });
   c.appendChild(t);
-  setTimeout(() => { if (t.parentElement) { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); } }, 5000);
+  setTimeout(function() { if (t.parentElement) { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); } }, 5000);
 }
 
 function toggleSettings() {
