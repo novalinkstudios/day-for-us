@@ -543,19 +543,8 @@ button { cursor: pointer; }
 </head>
 <body>
 
-<!-- SETUP SCREEN -->
-<div class="setup" id="setupScreen">
-  <div class="setup-brand">Day for Us</div>
-  <p class="setup-sub">Collaborative working session hub</p>
-  <div class="setup-card">
-    <label>Airtable Personal Access Token</label>
-    <input type="password" id="tokenInput" placeholder="pat..." autocomplete="off">
-    <button class="btn-primary" onclick="saveToken()">Connect</button>
-  </div>
-</div>
-
 <!-- APP -->
-<div class="app" id="app">
+<div class="app active" id="app">
   <div class="header">
     <div class="brand">Day for Us</div>
     <div class="header-spacer"></div>
@@ -620,38 +609,20 @@ button { cursor: pointer; }
   </div>
   <div class="settings-group">
     <div class="settings-group-label">Data</div>
-    <button class="settings-danger-btn" onclick="logout()">Disconnect &amp; Clear</button>
+    <button class="settings-danger-btn" onclick="logout()">Reset Preferences</button>
   </div>
 </div>
 
 <script>
-const CFG = {
-  baseId: 'appRlcL5eYnjxfXV0',
-  tables: {
-    tasks: { id: 'tblK7L4tLSfhCW09B', fields: {
-      name: 'fldcH8NvHiS9xQw20', status: 'fldUEqIaK2bQVfrpZ',
-      assigned: 'fldIVuz1yJa70PWDl', otherAssignee: 'fldkqAQQUz3zc1io8',
-      type: 'fldWTi9f9tSwxofRg', sessionDate: 'fld1XSvF2EhaDubat',
-      notes: 'fldgjh4qtdpBIGDvz', created: 'fldw3LTGj5mKuFYXM'
-    }},
-    sessions: { id: 'tblUj37fhp2O1UAQ6', fields: {
-      name: 'fld7WmcEXjAIzKcl4', date: 'fldyvmr4xTVb4rmG8',
-      description: 'fldeyu19xWk9CUGYs', created: 'fldFOwoVhrcwLM85t'
-    }},
-    notes: { id: 'tblvmOOFMvW35yMk2', fields: {
-      message: 'fldLjMeDRbY4OU9fB', author: 'fldDJDdJIjz2N1ESd',
-      created: 'fldCz46I4Q9QxvDaz'
-    }},
-    roadmap: { id: 'tblSe6DM956iA6OVK', fields: {
-      name: 'fldQ2BeRrDfqAAMjM', phase: 'fldi8tRCnr316FF5v',
-      description: 'fldAuBHobur6EU5LX', assigned: 'fldeXwZMujDLPrE8p',
-      otherAssignee: 'fldxQvNRXBPYkOBH3', created: 'fldoZJlPHLI9SKhpT'
-    }}
-  }
+const TABLE_IDS = {
+  tasks: 'tblK7L4tLSfhCW09B',
+  sessions: 'tblUj37fhp2O1UAQ6',
+  notes: 'tblvmOOFMvW35yMk2',
+  roadmap: 'tblSe6DM956iA6OVK'
 };
 
 let state = {
-  token: null, tab: 'dashboard',
+  tab: 'dashboard',
   tasks: [], sessions: [], notes: [], roadmap: [],
   filter: 'All', noteAuthor: 'Anjanette',
   undoTimers: {}
@@ -659,7 +630,6 @@ let state = {
 let pollInterval = null;
 
 function init() {
-  const token = localStorage.getItem('dfu_token');
   const theme = localStorage.getItem('dfu_theme');
   const scale = localStorage.getItem('dfu_scale') || '100';
 
@@ -674,35 +644,15 @@ function init() {
     b.classList.toggle('active', theme ? t === theme : t === 'system');
   });
 
-  if (token) {
-    state.token = token;
-    showApp();
-    fetchAll();
-    pollInterval = setInterval(fetchAll, 15000);
-  }
+  fetchAll();
+  pollInterval = setInterval(fetchAll, 15000);
 
   document.querySelectorAll('.tab-item').forEach(t => {
     t.addEventListener('click', () => switchTab(t.dataset.tab));
   });
 }
 
-function saveToken() {
-  const v = document.getElementById('tokenInput').value.trim();
-  if (!v) return;
-  state.token = v;
-  localStorage.setItem('dfu_token', v);
-  showApp();
-  fetchAll();
-  pollInterval = setInterval(fetchAll, 15000);
-}
-
-function showApp() {
-  document.getElementById('setupScreen').style.display = 'none';
-  document.getElementById('app').classList.add('active');
-}
-
 function logout() {
-  localStorage.removeItem('dfu_token');
   localStorage.removeItem('dfu_theme');
   localStorage.removeItem('dfu_scale');
   if (pollInterval) clearInterval(pollInterval);
@@ -710,39 +660,38 @@ function logout() {
 }
 
 async function airtableFetch(tableKey, params = '') {
-  const t = CFG.tables[tableKey];
-  const url = `https://api.airtable.com/v0/${CFG.baseId}/${t.id}?${params}`;
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${state.token}` } });
+  const tableId = TABLE_IDS[tableKey];
+  const res = await fetch(`/api/airtable?table=${tableId}&${params}`);
   if (!res.ok) throw new Error(`Airtable ${res.status}`);
   return res.json();
 }
 
 async function airtableCreate(tableKey, fields) {
-  const t = CFG.tables[tableKey];
-  const res = await fetch(`https://api.airtable.com/v0/${CFG.baseId}/${t.id}`, {
-    method: 'POST', headers: {
-      Authorization: `Bearer ${state.token}`, 'Content-Type': 'application/json'
-    }, body: JSON.stringify({ fields })
+  const tableId = TABLE_IDS[tableKey];
+  const res = await fetch(`/api/airtable?table=${tableId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields })
   });
   if (!res.ok) throw new Error(`Create failed ${res.status}`);
   return res.json();
 }
 
 async function airtableUpdate(tableKey, id, fields) {
-  const t = CFG.tables[tableKey];
-  const res = await fetch(`https://api.airtable.com/v0/${CFG.baseId}/${t.id}/${id}`, {
-    method: 'PATCH', headers: {
-      Authorization: `Bearer ${state.token}`, 'Content-Type': 'application/json'
-    }, body: JSON.stringify({ fields })
+  const tableId = TABLE_IDS[tableKey];
+  const res = await fetch(`/api/airtable?table=${tableId}&recordId=${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields })
   });
   if (!res.ok) throw new Error(`Update failed ${res.status}`);
   return res.json();
 }
 
 async function airtableDelete(tableKey, id) {
-  const t = CFG.tables[tableKey];
-  const res = await fetch(`https://api.airtable.com/v0/${CFG.baseId}/${t.id}/${id}`, {
-    method: 'DELETE', headers: { Authorization: `Bearer ${state.token}` }
+  const tableId = TABLE_IDS[tableKey];
+  const res = await fetch(`/api/airtable?table=${tableId}&recordId=${id}`, {
+    method: 'DELETE'
   });
   if (!res.ok) throw new Error(`Delete failed ${res.status}`);
   return res.json();
