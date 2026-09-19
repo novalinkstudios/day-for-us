@@ -229,8 +229,9 @@
       transition: var(--transition);
     }
     .stat:hover { background: var(--hover); }
-    .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; color: var(--stat-color, var(--ink)); }
-    .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+    .stat { overflow: hidden; }
+    .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; color: var(--stat-color, var(--ink)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .streak-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
     .streak-pill {
       display: flex; align-items: center; gap: 6px; padding: 6px 12px;
@@ -284,7 +285,9 @@
       cursor: pointer;
       align-items: center;
       transition: var(--transition);
+      min-width: 0;
     }
+    .task-mini > div { min-width: 0; }
     .task-mini:hover { border-color: var(--border-strong); }
     .task-mini-check {
       width: 20px; height: 20px; border-radius: 6px;
@@ -344,10 +347,11 @@
     .project-card-badge.status-future { background: var(--surface-strong); color: var(--ink-muted); }
     .project-card-edit { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: none; background: transparent; color: var(--ink-muted); cursor: pointer; font-size: 14px; flex-shrink: 0; transition: var(--transition); }
     .project-card-edit:hover { background: var(--hover); color: var(--ink); }
-    .project-card-desc { font-size: 13px; color: var(--ink-muted); padding: 0 16px 10px; line-height: 1.5; }
+    .project-card-desc { font-size: 13px; color: var(--ink-muted); padding: 0 16px 10px; line-height: 1.5; overflow-wrap: anywhere; word-break: break-word; }
     .project-card-tasks { border-top: 1px solid var(--border); padding: 10px 16px 14px; }
     .project-card-tasks-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-    .project-task-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 13px; cursor: pointer; transition: var(--transition); }
+    .project-task-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 0; }
+    .project-task-row > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
     .project-task-row:hover { color: var(--primary); }
     .project-task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .project-task-dot.tackling { background: var(--primary); }
@@ -1502,7 +1506,7 @@
 
       openModal(id ? 'Edit task' : 'New task', `
         <div class="field"><label class="field-label" for="t-title">Title</label><input class="field-input" id="t-title" value="${escapeAttr(title)}" placeholder="e.g. Plan the trip" /></div>
-        <div class="field"><label class="field-label" for="t-project">Project</label><select class="field-select" id="t-project"><option value="">— None —</option>${projectOptions}</select></div>
+        ${F.tasks.Project ? `<div class="field"><label class="field-label" for="t-project">Project</label><select class="field-select" id="t-project"><option value="">— None —</option>${projectOptions}</select></div>` : ''}
         <div class="field-row">
           <div class="field"><label class="field-label" for="t-type">Type</label><select class="field-select" id="t-type"><option ${type === 'Task' ? 'selected' : ''}>Task</option><option ${type === 'Project' ? 'selected' : ''}>Project</option></select></div>
           <div class="field"><label class="field-label" for="t-status">Status</label><select class="field-select" id="t-status">
@@ -1541,7 +1545,8 @@
         const title = document.getElementById('t-title').value.trim();
         if (!title) { toast('Give it a title'); return; }
         const assignedVal = document.getElementById('t-assigned').value || null;
-        const projectVal = document.getElementById('t-project').value;
+        const projectEl = document.getElementById('t-project');
+        const projectVal = projectEl ? projectEl.value : '';
         const fields = {
           [F.tasks.Name]: title,
           [F.tasks.Type]: document.getElementById('t-type').value,
@@ -2129,7 +2134,7 @@
         return `
           <div class="grocery-item" style="align-items:flex-start">
             <div style="flex:1;min-width:0">
-              <div style="font-size:14px;color:var(--ink)">${escapeHtml(text)}</div>
+              <div style="font-size:14px;color:var(--ink);overflow-wrap:anywhere;word-break:break-word">${escapeHtml(text)}</div>
               ${meta ? `<div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-muted);margin-top:3px">${escapeHtml(meta)}</div>` : ''}
             </div>
             <button class="grocery-item-delete" data-action="note-delete" data-item-id="${m.id}" aria-label="Delete">
