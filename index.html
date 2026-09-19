@@ -315,7 +315,42 @@
       margin-left: auto; flex-shrink: 0;
     }
     .bucket.collapsed .roadmap-section-toggle { transform: rotate(-90deg); }
-    .bucket.collapsed .bucket-body { display: none; }
+    .bucket-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 300ms ease; }
+    .bucket.collapsed .bucket-body { grid-template-rows: 0fr; }
+    .bucket-body-inner { overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
+
+    #roadmap-list .buckets-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 768px) { #roadmap-list .buckets-grid { grid-template-columns: 1fr; } }
+
+    .projects-view-toggle { display: flex; gap: 4px; }
+    .projects-view-toggle button { padding: 5px 14px; border-radius: 8px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--ink-muted); background: transparent; border: 1px solid var(--border); transition: var(--transition); }
+    .projects-view-toggle button.active { color: white; background: var(--primary); border-color: var(--primary); }
+
+    .project-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+    .project-card-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; border-radius: 12px; transition: var(--transition); }
+    .project-card-head:hover { background: var(--hover); }
+    .project-card-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .project-card-phase { font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
+    .project-card-phase.now { background: rgba(59,130,246,0.15); color: var(--primary); }
+    .project-card-phase.next { background: rgba(5,150,105,0.15); color: var(--green); }
+    .project-card-phase.future { background: var(--surface-strong); color: var(--ink-muted); }
+    .project-card-desc { font-size: 13px; color: var(--ink-muted); padding: 0 16px 10px; line-height: 1.5; }
+    .project-card-tasks { border-top: 1px solid var(--border); padding: 10px 16px 14px; }
+    .project-card-tasks-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .project-task-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 13px; cursor: pointer; transition: var(--transition); }
+    .project-task-row:hover { color: var(--primary); }
+    .project-task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .project-task-dot.tackling { background: var(--primary); }
+    .project-task-dot.on-deck { background: var(--green); }
+    .project-task-dot.backlog { background: var(--ink-subtle); }
+    .project-task-dot.done { background: var(--green); opacity: 0.5; }
+    .project-add-task { font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--primary); padding: 6px 0; display: inline-flex; align-items: center; gap: 4px; }
+    .project-add-task:hover { text-decoration: underline; }
+    .project-card-toggle { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink-muted); transition: transform 200ms ease; flex-shrink: 0; }
+    .project-card.collapsed .project-card-toggle { transform: rotate(-90deg); }
+    .project-card-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 300ms ease; }
+    .project-card.collapsed .project-card-body { grid-template-rows: 0fr; }
+    .project-card-body-inner { overflow: hidden; }
 
     /* Task table */
     .task-table { display: flex; flex-direction: column; gap: 4px; }
@@ -645,6 +680,7 @@
       <button data-page="tasks" role="tab">Tasks</button>
       <button data-page="calendar" role="tab">Calendar</button>
       <button data-page="roadmap" role="tab">Roadmap</button>
+      <button data-page="projects" role="tab">Projects</button>
     </div>
 
     <div class="page active" id="page-dashboard">
@@ -759,13 +795,25 @@
       <section class="card">
         <div class="card-head">
           <h2 class="card-title">Roadmap</h2>
+          <button class="btn btn-primary" id="roadmap-add-btn-top">+ New project</button>
         </div>
         <div class="filter-row" id="roadmap-filters"></div>
         <div style="display:flex;gap:8px;margin-bottom:14px">
-          <input class="field-input" id="roadmap-new-item" placeholder="Add roadmap item…" style="flex:1" />
+          <input class="field-input" id="roadmap-new-item" placeholder="Quick add project…" style="flex:1" />
           <button class="btn btn-primary" id="roadmap-add-btn">Add</button>
         </div>
         <div id="roadmap-list"></div>
+      </section>
+    </div>
+
+    <div class="page" id="page-projects">
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Projects<span class="card-title-count" id="projects-count">0</span></h2>
+          <button class="btn btn-primary" id="projects-add-btn">+ New project</button>
+        </div>
+        <div class="filter-row" id="projects-filters"></div>
+        <div id="projects-list"></div>
       </section>
     </div>
   </div>
@@ -799,8 +847,8 @@
     const POLL_MS = 15_000;
 
     const F = {
-      tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM' },
-      sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t' },
+      tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM', Project: null },
+      sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t', Project: null },
       notes: { Message: 'fldLjMeDRbY4OU9fB', Author: 'fldDJDdJIjz2N1ESd', Created: 'fldCz46I4Q9QxvDaz' },
       roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', Created: 'fldoZJlPHLI9SKhpT' },
     };
@@ -813,6 +861,7 @@
       taskFilter: 'all',
       roadmapFilter: 'all',
       taskSearch: '',
+      projectsFilter: 'all',
     };
 
     (function initTheme() {
@@ -1133,7 +1182,7 @@
 
       const tacklingCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Tackling').length;
       const ondeckCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'On Deck').length;
-      const projectsCount = state.tasks.filter(t => f(t, F.tasks.Type) === 'Project' && f(t, F.tasks.Status) !== 'Done').length;
+      const projectsCount = state.roadmap.length;
       const backlogCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Backlog').length;
       document.getElementById('stat-tackling').textContent = tacklingCount;
       document.getElementById('stat-ondeck').textContent = ondeckCount;
@@ -1419,7 +1468,7 @@
     function closeModal() { document.getElementById('modal-scrim').classList.remove('open'); }
     document.getElementById('modal-scrim').addEventListener('click', e => { if (e.target.id === 'modal-scrim') closeModal(); });
 
-    function openTaskModal(id = null) {
+    function openTaskModal(id = null, defaultProjectId = null) {
       const task = id ? state.tasks.find(t => t.id === id) : null;
       const t = task || {};
       const title = f(t, F.tasks.Name) || '';
@@ -1429,9 +1478,18 @@
       const otherAssignee = f(t, F.tasks.OtherAssignee) || '';
       const sessionDate = f(t, F.tasks.SessionDate) || '';
       const notes = f(t, F.tasks.Notes) || '';
+      const taskProjectIds = F.tasks.Project ? (f(t, F.tasks.Project) || []) : [];
+      const taskProjectId = id ? (Array.isArray(taskProjectIds) ? taskProjectIds[0] || '' : '') : (defaultProjectId || '');
+
+      const projectOptions = state.roadmap.map(r => {
+        const rName = f(r, F.roadmap.Name) || 'Untitled';
+        const sel = r.id === taskProjectId ? 'selected' : '';
+        return `<option value="${r.id}" ${sel}>${escapeHtml(rName)}</option>`;
+      }).join('');
 
       openModal(id ? 'Edit task' : 'New task', `
         <div class="field"><label class="field-label" for="t-title">Title</label><input class="field-input" id="t-title" value="${escapeAttr(title)}" placeholder="e.g. Plan the trip" /></div>
+        <div class="field"><label class="field-label" for="t-project">Project</label><select class="field-select" id="t-project"><option value="">— None —</option>${projectOptions}</select></div>
         <div class="field-row">
           <div class="field"><label class="field-label" for="t-type">Type</label><select class="field-select" id="t-type"><option ${type === 'Task' ? 'selected' : ''}>Task</option><option ${type === 'Project' ? 'selected' : ''}>Project</option></select></div>
           <div class="field"><label class="field-label" for="t-status">Status</label><select class="field-select" id="t-status">
@@ -1470,6 +1528,7 @@
         const title = document.getElementById('t-title').value.trim();
         if (!title) { toast('Give it a title'); return; }
         const assignedVal = document.getElementById('t-assigned').value || null;
+        const projectVal = document.getElementById('t-project').value;
         const fields = {
           [F.tasks.Name]: title,
           [F.tasks.Type]: document.getElementById('t-type').value,
@@ -1479,6 +1538,7 @@
           [F.tasks.SessionDate]: document.getElementById('t-session-date').value || null,
           [F.tasks.Notes]: document.getElementById('t-notes').value.trim() || null,
         };
+        if (F.tasks.Project) fields[F.tasks.Project] = projectVal ? [projectVal] : null;
         try {
           if (id) {
             const updated = await api('PATCH', 'Tasks', { id, body: { fields } });
@@ -1490,6 +1550,7 @@
           }
           closeModal();
           renderTasks();
+          renderProjectsList();
           toast(id ? 'Saved' : 'Added');
         } catch (err) {
           console.error(err);
@@ -1504,7 +1565,7 @@
             getArray: () => state.tasks,
             setArray: (arr) => { state.tasks = arr; },
             id,
-            render: renderTasks,
+            render: () => { renderTasks(); renderProjectsList(); },
             deleteApi: () => api('DELETE', 'Tasks', { id }),
             label: 'Task',
           });
@@ -1518,10 +1579,19 @@
       const title = f(s, F.sessions.Name) || '';
       const date = f(s, F.sessions.Date) || defaultDate || toISODate(today());
       const description = f(s, F.sessions.Description) || '';
+      const sessProjectIds = F.sessions.Project ? (f(s, F.sessions.Project) || []) : [];
+      const sessProjectId = Array.isArray(sessProjectIds) ? sessProjectIds[0] || '' : '';
+
+      const sessProjectOptions = state.roadmap.map(r => {
+        const rName = f(r, F.roadmap.Name) || 'Untitled';
+        const sel = r.id === sessProjectId ? 'selected' : '';
+        return `<option value="${r.id}" ${sel}>${escapeHtml(rName)}</option>`;
+      }).join('');
 
       openModal(id ? 'Edit session' : 'New session', `
         <div class="field"><label class="field-label" for="e-title">Name</label><input class="field-input" id="e-title" value="${escapeAttr(title)}" placeholder="e.g. Planning session" /></div>
         <div class="field"><label class="field-label" for="e-date">Date</label><input class="field-input" id="e-date" type="date" value="${date}" /></div>
+        <div class="field"><label class="field-label" for="e-project">Project</label><select class="field-select" id="e-project"><option value="">— None —</option>${sessProjectOptions}</select></div>
         <div class="field"><label class="field-label" for="e-notes">Description</label><textarea class="field-textarea" id="e-notes" placeholder="Optional">${escapeHtml(description)}</textarea></div>
         <div class="modal-actions">
           ${id ? '<button class="btn btn-danger" id="e-delete">Delete</button>' : '<span></span>'}
@@ -1532,11 +1602,13 @@
       document.getElementById('e-save').addEventListener('click', async () => {
         const title = document.getElementById('e-title').value.trim();
         if (!title) { toast('Give it a name'); return; }
+        const sessProjectVal = document.getElementById('e-project').value;
         const fields = {
           [F.sessions.Name]: title,
           [F.sessions.Date]: document.getElementById('e-date').value,
           [F.sessions.Description]: document.getElementById('e-notes').value.trim() || null,
         };
+        if (F.sessions.Project) fields[F.sessions.Project] = sessProjectVal ? [sessProjectVal] : null;
         try {
           if (id) {
             const updated = await api('PATCH', 'Sessions', { id, body: { fields } });
@@ -1568,15 +1640,32 @@
       }
     }
 
-    function setPage(page) {
-      state.currentPage = page;
+    const PAGE_ALIASES = {};
+    const PAGE_HASH_NAMES = {};
+    const VALID_PAGES = ['dashboard', 'tasks', 'calendar', 'roadmap', 'projects'];
+
+    function setPage(page, pushHash = true) {
+      const resolved = PAGE_ALIASES[page] || page;
+      if (!VALID_PAGES.includes(resolved)) return;
+      state.currentPage = resolved;
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(`page-${page}`).classList.add('active');
-      document.querySelectorAll('.page-toggle button').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+      document.getElementById(`page-${resolved}`).classList.add('active');
+      document.querySelectorAll('.page-toggle button').forEach(b => b.classList.toggle('active', b.dataset.page === resolved));
+      if (pushHash) {
+        const hashName = PAGE_HASH_NAMES[resolved] || resolved;
+        history.replaceState(null, '', `#${hashName}`);
+      }
     }
     document.querySelectorAll('.page-toggle button[data-page]').forEach(b => {
       b.addEventListener('click', () => setPage(b.dataset.page));
     });
+
+    function handleHash() {
+      const raw = location.hash.replace('#', '').toLowerCase();
+      if (raw) setPage(raw, false);
+    }
+    window.addEventListener('hashchange', handleHash);
+    if (location.hash) handleHash();
 
     document.getElementById('cal-prev').addEventListener('click', () => {
       if (state.calView === 'week') {
@@ -1605,7 +1694,7 @@
     document.getElementById('fab').addEventListener('click', () => {
       if (state.currentPage === 'tasks' || state.currentPage === 'dashboard') openTaskModal();
       else if (state.currentPage === 'calendar') openSessionModal();
-      else if (state.currentPage === 'roadmap') document.getElementById('roadmap-new-item')?.focus();
+      else if (state.currentPage === 'roadmap' || state.currentPage === 'projects') openRoadmapModal();
     });
     document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
 
@@ -1709,7 +1798,7 @@
               <span class="bucket-count">${list.length}</span>
               <span class="roadmap-section-toggle">&#9660;</span>
             </div>
-            <div class="bucket-body">${body}</div>
+            <div class="bucket-body"><div class="bucket-body-inner">${body}</div></div>
           </div>
         `;
       }).join('')}</div>`;
@@ -1726,16 +1815,149 @@
       if (section) section.classList.toggle('collapsed');
     }
 
+    function getTasksForProject(projectId) {
+      if (!F.tasks.Project) return [];
+      return state.tasks.filter(t => {
+        const linked = f(t, F.tasks.Project);
+        return Array.isArray(linked) && linked.includes(projectId);
+      });
+    }
+
+    function renderProjectsFilters() {
+      const chips = [
+        { key: 'all', label: 'Everyone' },
+        { key: 'Anjanette', label: 'Anjanette' },
+        { key: 'Chanelle', label: 'Chanelle' },
+        { key: 'Other', label: 'Other' },
+      ];
+      const wrap = document.getElementById('projects-filters');
+      if (!wrap) return;
+      wrap.innerHTML = chips.map(c => {
+        const active = state.projectsFilter === c.key ? 'active' : '';
+        const color = c.key !== 'all' ? personColor(c.key) : null;
+        return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
+      }).join('');
+      wrap.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.projectsFilter = btn.dataset.filter;
+          renderProjectsFilters();
+          renderProjectsList();
+        });
+      });
+    }
+
+    function matchesProjectsFilter(item) {
+      if (state.projectsFilter === 'all') return true;
+      return (f(item, F.roadmap.Assigned) || '') === state.projectsFilter;
+    }
+
+    function renderProjectsList() {
+      const items = state.roadmap.filter(matchesProjectsFilter);
+      const phaseOrder = { Now: 0, Next: 1, Future: 2 };
+      const sorted = [...items].sort((a, b) => {
+        const pa = phaseOrder[f(a, F.roadmap.Phase)] ?? 2;
+        const pb = phaseOrder[f(b, F.roadmap.Phase)] ?? 2;
+        if (pa !== pb) return pa - pb;
+        return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      });
+
+      const wrap = document.getElementById('projects-list');
+      document.getElementById('projects-count').textContent = state.roadmap.length;
+      if (sorted.length === 0) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📋</div><div class="empty-title">No projects yet</div>Use the + button or the Roadmap tab to add one.</div>`;
+        return;
+      }
+
+      wrap.innerHTML = sorted.map(item => {
+        const name = f(item, F.roadmap.Name) || 'Untitled';
+        const phase = f(item, F.roadmap.Phase) || 'Future';
+        const desc = f(item, F.roadmap.Description) || '';
+        const meta = assigneeMeta(item, F.roadmap.Assigned, F.roadmap.OtherAssignee);
+        const tasks = getTasksForProject(item.id);
+        const collapsed = state.projectListCollapsed?.[item.id] ? ' collapsed' : '';
+
+        const statusOrder = { 'Tackling': 0, 'On Deck': 1, 'Backlog': 2, 'Done': 3 };
+        const sortedTasks = [...tasks].sort((a, b) => {
+          const as = statusOrder[f(a, F.tasks.Status)] ?? 4;
+          const bs = statusOrder[f(b, F.tasks.Status)] ?? 4;
+          return as - bs;
+        });
+
+        const taskRows = sortedTasks.length > 0
+          ? sortedTasks.map(t => {
+              const tName = f(t, F.tasks.Name) || 'Untitled';
+              const tStatus = (f(t, F.tasks.Status) || 'Backlog').toLowerCase().replace(/\s+/g, '-');
+              return `<div class="project-task-row" data-task-id="${t.id}"><span class="project-task-dot ${tStatus}"></span><span>${escapeHtml(tName)}</span></div>`;
+            }).join('')
+          : `<div style="font-size:12px;color:var(--ink-subtle);padding:4px 0;font-style:italic">${F.tasks.Project ? 'No tasks linked yet' : 'Link tasks after adding the Project field in Airtable'}</div>`;
+
+        return `
+          <div class="project-card${collapsed}" data-project-card="${item.id}">
+            <div class="project-card-head" data-project-toggle="${item.id}">
+              ${meta.label ? `<div class="task-mini-avatar" style="${personCssVars(meta.colorName)}" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
+              <div class="project-card-name">${escapeHtml(name)}</div>
+              <span class="project-card-phase ${phase.toLowerCase()}">${phase}</span>
+              <span class="project-card-toggle">&#9660;</span>
+            </div>
+            <div class="project-card-body"><div class="project-card-body-inner">
+              ${desc ? `<div class="project-card-desc">${escapeHtml(desc)}</div>` : ''}
+              <div class="project-card-tasks">
+                <div class="project-card-tasks-label"><span>Tasks ${sortedTasks.length > 0 ? `(${sortedTasks.length})` : ''}</span></div>
+                ${taskRows}
+                <button class="project-add-task" data-add-task-project="${item.id}">+ Add task</button>
+              </div>
+            </div></div>
+          </div>
+        `;
+      }).join('');
+
+      wrap.querySelectorAll('[data-project-toggle]').forEach(el => {
+        el.addEventListener('click', e => {
+          if (e.target.closest('[data-task-id]') || e.target.closest('[data-add-task-project]')) return;
+          const pid = el.dataset.projectToggle;
+          if (!state.projectListCollapsed) state.projectListCollapsed = {};
+          state.projectListCollapsed[pid] = !state.projectListCollapsed[pid];
+          const card = document.querySelector(`[data-project-card="${pid}"]`);
+          if (card) card.classList.toggle('collapsed');
+        });
+      });
+
+      wrap.querySelectorAll('[data-task-id]').forEach(el => {
+        el.addEventListener('click', () => openTaskModal(el.dataset.taskId));
+      });
+
+      wrap.querySelectorAll('[data-add-task-project]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          openTaskModal(null, el.dataset.addTaskProject);
+        });
+      });
+
+      wrap.querySelectorAll('.project-card-name').forEach(el => {
+        const card = el.closest('.project-card');
+        if (!card) return;
+        const pid = card.dataset.projectCard;
+        el.addEventListener('dblclick', e => {
+          e.stopPropagation();
+          openRoadmapModal(pid);
+        });
+      });
+    }
+
+    document.getElementById('roadmap-add-btn-top').addEventListener('click', () => openRoadmapModal());
+    document.getElementById('projects-add-btn').addEventListener('click', () => openRoadmapModal());
+
     async function addRoadmapItem() {
       const input = document.getElementById('roadmap-new-item');
       const text = input.value.trim();
       if (!text) return;
       input.value = '';
-      const fields = { [F.roadmap.Name]: text, [F.roadmap.Phase]: 'Future' };
+      const fields = { [F.roadmap.Name]: text, [F.roadmap.Phase]: 'Now' };
       try {
         const created = await api('POST', 'Roadmap', { body: { fields } });
         state.roadmap.push(created);
         renderRoadmap();
+        renderProjectsList();
       } catch (err) {
         console.error(err);
         toast('Add failed');
@@ -1753,7 +1975,7 @@
       const assigned = f(r, F.roadmap.Assigned) || '';
       const otherAssignee = f(r, F.roadmap.OtherAssignee) || '';
 
-      openModal(id ? 'Edit roadmap item' : 'New roadmap item', `
+      openModal(id ? 'Edit project' : 'New project', `
         <div class="field"><label class="field-label" for="r-name">Name</label><input class="field-input" id="r-name" value="${escapeAttr(name)}" placeholder="e.g. Plan Italy trip" /></div>
         <div class="field-row">
           <div class="field"><label class="field-label" for="r-phase">Phase</label><select class="field-select" id="r-phase">
@@ -1806,6 +2028,7 @@
           }
           closeModal();
           renderRoadmap();
+          renderProjectsList();
           toast(id ? 'Saved' : 'Added');
         } catch (err) {
           console.error(err);
@@ -1820,9 +2043,9 @@
             getArray: () => state.roadmap,
             setArray: (arr) => { state.roadmap = arr; },
             id,
-            render: renderRoadmap,
+            render: () => { renderRoadmap(); renderProjectsList(); },
             deleteApi: () => api('DELETE', 'Roadmap', { id }),
-            label: 'Roadmap item',
+            label: 'Project',
           });
         });
       }
@@ -1941,6 +2164,8 @@
       renderTasks();
       renderCalendar();
       renderRoadmap();
+      renderProjectsFilters();
+      renderProjectsList();
       renderDashboardSessions();
       renderNotes();
     }
