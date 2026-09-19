@@ -26,7 +26,7 @@
 
       --person-Anjanette: var(--pink);
       --person-Chanelle: var(--sky);
-      --person-Both: var(--primary);
+      --person-Both: var(--green);
       --person-Other: var(--pop);
 
       --radius-sm: 8px;
@@ -218,15 +218,17 @@
     }
 
     /* Stats */
-    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
     .stat {
       padding: 12px 14px;
       background: var(--surface-2);
       border: 1px solid var(--border);
       border-left: 3px solid var(--stat-color, var(--ink));
       border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
     }
+    .stat:hover { background: var(--hover); }
     .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; color: var(--stat-color, var(--ink)); }
     .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
     .streak-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
@@ -259,8 +261,7 @@
     .chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--ink-muted)); }
 
     /* Buckets */
-    .buckets-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    @media (max-width: 560px) { .buckets-grid { grid-template-columns: 1fr; } }
+    .buckets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     .bucket { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
     .bucket-overdue { border-left: 3px solid var(--red); }
     .bucket-today { border-left: 3px solid var(--primary); }
@@ -319,13 +320,17 @@
     .bucket.collapsed .bucket-body { grid-template-rows: 0fr; }
     .bucket-body-inner { overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
 
-    #roadmap-list .buckets-grid { grid-template-columns: repeat(3, 1fr); }
-    @media (max-width: 768px) { #roadmap-list .buckets-grid { grid-template-columns: 1fr; } }
+    #roadmap-list .buckets-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 
     .projects-view-toggle { display: flex; gap: 4px; }
     .projects-view-toggle button { padding: 5px 14px; border-radius: 8px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--ink-muted); background: transparent; border: 1px solid var(--border); transition: var(--transition); }
     .projects-view-toggle button.active { color: white; background: var(--primary); border-color: var(--primary); }
 
+    .projects-section { margin-bottom: 24px; }
+    .projects-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 0 2px; }
+    .projects-section-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
+    .projects-section-count { font-family: var(--font-mono); font-size: 11px; color: var(--ink-subtle); }
+    .projects-section-line { flex: 1; height: 1px; background: var(--border); }
     .project-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
     .project-card-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; border-radius: 12px; transition: var(--transition); }
     .project-card-head:hover { background: var(--hover); }
@@ -692,26 +697,26 @@
       <section class="card">
         <div class="card-eyebrow">Status</div>
         <div class="stats-grid">
-          <div class="stat" style="--stat-color:var(--primary)">
+          <div class="stat" style="--stat-color:var(--primary)" data-goto="tasks">
             <div class="stat-num" id="stat-tackling">–</div>
             <div class="stat-label">Tackling</div>
           </div>
-          <div class="stat" style="--stat-color:var(--green)">
+          <div class="stat" style="--stat-color:var(--green)" data-goto="tasks">
             <div class="stat-num" id="stat-ondeck">–</div>
             <div class="stat-label">On deck</div>
           </div>
-          <div class="stat" style="--stat-color:var(--pink)">
+          <div class="stat" style="--stat-color:var(--pink)" data-goto="projects">
             <div class="stat-num" id="stat-projects">–</div>
             <div class="stat-label">Projects</div>
           </div>
-          <div class="stat" style="--stat-color:var(--ink-muted)">
+          <div class="stat" style="--stat-color:var(--ink-muted)" data-goto="tasks">
             <div class="stat-num" id="stat-backlog">–</div>
             <div class="stat-label">Backlog</div>
           </div>
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" data-goto="calendar" style="cursor:pointer">
         <div class="card-head">
           <h2 class="card-title">Upcoming sessions</h2>
         </div>
@@ -1092,7 +1097,10 @@
 
     function matchesTaskFilter(task) {
       if (state.taskFilter === 'all') return true;
-      return (f(task, F.tasks.Assigned) || '') === state.taskFilter;
+      const assigned = f(task, F.tasks.Assigned) || '';
+      if (assigned === state.taskFilter) return true;
+      if (assigned === 'Both' && (state.taskFilter === 'Anjanette' || state.taskFilter === 'Chanelle')) return true;
+      return false;
     }
 
     function renderTasks() {
@@ -1665,6 +1673,10 @@
       b.addEventListener('click', () => setPage(b.dataset.page));
     });
 
+    document.querySelectorAll('[data-goto]').forEach(el => {
+      el.addEventListener('click', () => setPage(el.dataset.goto));
+    });
+
     function handleHash() {
       const raw = location.hash.replace('#', '').toLowerCase();
       if (raw) setPage(raw, false);
@@ -1750,7 +1762,10 @@
 
     function matchesRoadmapFilter(item) {
       if (state.roadmapFilter === 'all') return true;
-      return (f(item, F.roadmap.Assigned) || '') === state.roadmapFilter;
+      const assigned = f(item, F.roadmap.Assigned) || '';
+      if (assigned === state.roadmapFilter) return true;
+      if (assigned === 'Both' && (state.roadmapFilter === 'Anjanette' || state.roadmapFilter === 'Chanelle')) return true;
+      return false;
     }
 
     function roadmapMini(item) {
@@ -1853,27 +1868,32 @@
 
     function matchesProjectsFilter(item) {
       if (state.projectsFilter === 'all') return true;
-      return (f(item, F.roadmap.Assigned) || '') === state.projectsFilter;
+      const assigned = f(item, F.roadmap.Assigned) || '';
+      if (assigned === state.projectsFilter) return true;
+      if (assigned === 'Both' && (state.projectsFilter === 'Anjanette' || state.projectsFilter === 'Chanelle')) return true;
+      return false;
     }
 
     function renderProjectsList() {
       const items = state.roadmap.filter(matchesProjectsFilter);
-      const phaseOrder = { Now: 0, Next: 1, Future: 2 };
-      const sorted = [...items].sort((a, b) => {
-        const pa = phaseOrder[f(a, F.roadmap.Phase)] ?? 2;
-        const pb = phaseOrder[f(b, F.roadmap.Phase)] ?? 2;
-        if (pa !== pb) return pa - pb;
-        return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      const phases = ['Now', 'Next', 'Future'];
+      const grouped = {};
+      phases.forEach(p => grouped[p] = []);
+      items.forEach(item => {
+        const phase = f(item, F.roadmap.Phase) || 'Future';
+        if (!grouped[phase]) grouped[phase] = [];
+        grouped[phase].push(item);
       });
+      phases.forEach(p => grouped[p].sort((a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '')));
 
       const wrap = document.getElementById('projects-list');
       document.getElementById('projects-count').textContent = state.roadmap.length;
-      if (sorted.length === 0) {
+      if (items.length === 0) {
         wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📋</div><div class="empty-title">No projects yet</div>Use the + button or the Roadmap tab to add one.</div>`;
         return;
       }
 
-      wrap.innerHTML = sorted.map(item => {
+      const renderCard = (item) => {
         const name = f(item, F.roadmap.Name) || 'Untitled';
         const phase = f(item, F.roadmap.Phase) || 'Future';
         const status = F.roadmap.Status ? (f(item, F.roadmap.Status) || '') : '';
@@ -1919,7 +1939,20 @@
             </div></div>
           </div>
         `;
-      }).join('');
+      };
+
+      wrap.innerHTML = phases
+        .filter(p => grouped[p].length > 0)
+        .map(p => `
+          <div class="projects-section">
+            <div class="projects-section-head">
+              <span class="projects-section-title">${p}</span>
+              <span class="projects-section-count">${grouped[p].length}</span>
+              <span class="projects-section-line"></span>
+            </div>
+            ${grouped[p].map(renderCard).join('')}
+          </div>
+        `).join('');
 
       wrap.querySelectorAll('[data-project-toggle]').forEach(el => {
         el.addEventListener('click', e => {
@@ -2117,7 +2150,7 @@
       if (!text) return;
       if (!AIRTABLE_TABLE_IDS.Notes) { toast('Notes table not set up yet'); return; }
       input.value = '';
-      const fields = { [F.notes.Message]: text, [F.notes.Created]: toISODate(today()) };
+      const fields = { [F.notes.Message]: text };
       if (authorSel.value) fields[F.notes.Author] = authorSel.value;
       try {
         const created = await api('POST', 'Notes', { body: { fields } });
