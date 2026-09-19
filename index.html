@@ -679,7 +679,8 @@
       <button data-page="dashboard" class="active" role="tab">Dashboard</button>
       <button data-page="tasks" role="tab">Tasks</button>
       <button data-page="calendar" role="tab">Calendar</button>
-      <button data-page="roadmap" role="tab">Projects</button>
+      <button data-page="roadmap" role="tab">Roadmap</button>
+      <button data-page="projects" role="tab">Projects</button>
     </div>
 
     <div class="page active" id="page-dashboard">
@@ -793,21 +794,26 @@
     <div class="page" id="page-roadmap">
       <section class="card">
         <div class="card-head">
-          <h2 class="card-title">Projects</h2>
-          <div class="projects-view-toggle" id="projects-view-toggle">
-            <button data-pview="board" class="active">Board</button>
-            <button data-pview="list">List</button>
-          </div>
+          <h2 class="card-title">Roadmap</h2>
+          <button class="btn btn-primary" id="roadmap-add-btn-top">+ New project</button>
         </div>
         <div class="filter-row" id="roadmap-filters"></div>
         <div style="display:flex;gap:8px;margin-bottom:14px">
-          <input class="field-input" id="roadmap-new-item" placeholder="Add project…" style="flex:1" />
+          <input class="field-input" id="roadmap-new-item" placeholder="Quick add project…" style="flex:1" />
           <button class="btn btn-primary" id="roadmap-add-btn">Add</button>
         </div>
-        <div id="roadmap-board-view">
-          <div id="roadmap-list"></div>
+        <div id="roadmap-list"></div>
+      </section>
+    </div>
+
+    <div class="page" id="page-projects">
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Projects<span class="card-title-count" id="projects-count">0</span></h2>
+          <button class="btn btn-primary" id="projects-add-btn">+ New project</button>
         </div>
-        <div id="roadmap-list-view" style="display:none"></div>
+        <div class="filter-row" id="projects-filters"></div>
+        <div id="projects-list"></div>
       </section>
     </div>
   </div>
@@ -855,7 +861,7 @@
       taskFilter: 'all',
       roadmapFilter: 'all',
       taskSearch: '',
-      projectsView: 'board',
+      projectsFilter: 'all',
     };
 
     (function initTheme() {
@@ -1544,7 +1550,7 @@
           }
           closeModal();
           renderTasks();
-          if (state.projectsView === 'list') renderProjectsList();
+          renderProjectsList();
           toast(id ? 'Saved' : 'Added');
         } catch (err) {
           console.error(err);
@@ -1559,7 +1565,7 @@
             getArray: () => state.tasks,
             setArray: (arr) => { state.tasks = arr; },
             id,
-            render: () => { renderTasks(); if (state.projectsView === 'list') renderProjectsList(); },
+            render: () => { renderTasks(); renderProjectsList(); },
             deleteApi: () => api('DELETE', 'Tasks', { id }),
             label: 'Task',
           });
@@ -1634,9 +1640,9 @@
       }
     }
 
-    const PAGE_ALIASES = { projects: 'roadmap' };
-    const PAGE_HASH_NAMES = { roadmap: 'projects' };
-    const VALID_PAGES = ['dashboard', 'tasks', 'calendar', 'roadmap'];
+    const PAGE_ALIASES = {};
+    const PAGE_HASH_NAMES = {};
+    const VALID_PAGES = ['dashboard', 'tasks', 'calendar', 'roadmap', 'projects'];
 
     function setPage(page, pushHash = true) {
       const resolved = PAGE_ALIASES[page] || page;
@@ -1688,7 +1694,7 @@
     document.getElementById('fab').addEventListener('click', () => {
       if (state.currentPage === 'tasks' || state.currentPage === 'dashboard') openTaskModal();
       else if (state.currentPage === 'calendar') openSessionModal();
-      else if (state.currentPage === 'roadmap') openRoadmapModal();
+      else if (state.currentPage === 'roadmap' || state.currentPage === 'projects') openRoadmapModal();
     });
     document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
 
@@ -1817,8 +1823,36 @@
       });
     }
 
+    function renderProjectsFilters() {
+      const chips = [
+        { key: 'all', label: 'Everyone' },
+        { key: 'Anjanette', label: 'Anjanette' },
+        { key: 'Chanelle', label: 'Chanelle' },
+        { key: 'Other', label: 'Other' },
+      ];
+      const wrap = document.getElementById('projects-filters');
+      if (!wrap) return;
+      wrap.innerHTML = chips.map(c => {
+        const active = state.projectsFilter === c.key ? 'active' : '';
+        const color = c.key !== 'all' ? personColor(c.key) : null;
+        return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
+      }).join('');
+      wrap.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.projectsFilter = btn.dataset.filter;
+          renderProjectsFilters();
+          renderProjectsList();
+        });
+      });
+    }
+
+    function matchesProjectsFilter(item) {
+      if (state.projectsFilter === 'all') return true;
+      return (f(item, F.roadmap.Assigned) || '') === state.projectsFilter;
+    }
+
     function renderProjectsList() {
-      const items = state.roadmap.filter(matchesRoadmapFilter);
+      const items = state.roadmap.filter(matchesProjectsFilter);
       const phaseOrder = { Now: 0, Next: 1, Future: 2 };
       const sorted = [...items].sort((a, b) => {
         const pa = phaseOrder[f(a, F.roadmap.Phase)] ?? 2;
@@ -1827,9 +1861,10 @@
         return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
       });
 
-      const wrap = document.getElementById('roadmap-list-view');
+      const wrap = document.getElementById('projects-list');
+      document.getElementById('projects-count').textContent = state.roadmap.length;
       if (sorted.length === 0) {
-        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📋</div><div class="empty-title">No projects yet</div>Add one above to get started.</div>`;
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📋</div><div class="empty-title">No projects yet</div>Use the + button or the Roadmap tab to add one.</div>`;
         return;
       }
 
@@ -1909,16 +1944,8 @@
       });
     }
 
-    function setProjectsView(view) {
-      state.projectsView = view;
-      document.getElementById('roadmap-board-view').style.display = view === 'board' ? 'block' : 'none';
-      document.getElementById('roadmap-list-view').style.display = view === 'list' ? 'block' : 'none';
-      document.querySelectorAll('#projects-view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.pview === view));
-      if (view === 'list') renderProjectsList();
-    }
-    document.querySelectorAll('#projects-view-toggle button').forEach(b => {
-      b.addEventListener('click', () => setProjectsView(b.dataset.pview));
-    });
+    document.getElementById('roadmap-add-btn-top').addEventListener('click', () => openRoadmapModal());
+    document.getElementById('projects-add-btn').addEventListener('click', () => openRoadmapModal());
 
     async function addRoadmapItem() {
       const input = document.getElementById('roadmap-new-item');
@@ -1930,7 +1957,7 @@
         const created = await api('POST', 'Roadmap', { body: { fields } });
         state.roadmap.push(created);
         renderRoadmap();
-        if (state.projectsView === 'list') renderProjectsList();
+        renderProjectsList();
       } catch (err) {
         console.error(err);
         toast('Add failed');
@@ -2001,7 +2028,7 @@
           }
           closeModal();
           renderRoadmap();
-          if (state.projectsView === 'list') renderProjectsList();
+          renderProjectsList();
           toast(id ? 'Saved' : 'Added');
         } catch (err) {
           console.error(err);
@@ -2016,7 +2043,7 @@
             getArray: () => state.roadmap,
             setArray: (arr) => { state.roadmap = arr; },
             id,
-            render: () => { renderRoadmap(); if (state.projectsView === 'list') renderProjectsList(); },
+            render: () => { renderRoadmap(); renderProjectsList(); },
             deleteApi: () => api('DELETE', 'Roadmap', { id }),
             label: 'Project',
           });
@@ -2137,7 +2164,8 @@
       renderTasks();
       renderCalendar();
       renderRoadmap();
-      if (state.projectsView === 'list') renderProjectsList();
+      renderProjectsFilters();
+      renderProjectsList();
       renderDashboardSessions();
       renderNotes();
     }
