@@ -864,7 +864,7 @@
       tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM', Project: 'fld0KivgIckrmKkoR' },
       sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t', Project: null },
       notes: { Message: 'fldLjMeDRbY4OU9fB', Author: 'fldDJDdJIjz2N1ESd', Created: 'fldCz46I4Q9QxvDaz' },
-      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Status: 'fldd2DFCOPsbjO2Mg', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', Created: 'fldoZJlPHLI9SKhpT' },
+      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Status: 'fldd2DFCOPsbjO2Mg', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', TargetStart: 'fldg1td99z1d9tr76', Created: 'fldoZJlPHLI9SKhpT' },
     };
 
     const state = {
@@ -1903,6 +1903,7 @@
         const phase = f(item, F.roadmap.Phase) || 'Future';
         const status = F.roadmap.Status ? (f(item, F.roadmap.Status) || '') : '';
         const desc = f(item, F.roadmap.Description) || '';
+        const targetStart = f(item, F.roadmap.TargetStart) || '';
         const meta = assigneeMeta(item, F.roadmap.Assigned, F.roadmap.OtherAssignee);
         const tasks = getTasksForProject(item.id);
         const collapsed = state.projectListCollapsed?.[item.id] ? ' collapsed' : '';
@@ -1936,6 +1937,7 @@
             </div>
             <div class="project-card-body"><div class="project-card-body-inner">
               ${desc ? `<div class="project-card-desc">${escapeHtml(desc)}</div>` : ''}
+              ${targetStart ? (() => { const d = parseISODate(targetStart); return `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);padding:0 16px 10px;display:flex;align-items:center;gap:6px"><span style="opacity:0.6">&#128197;</span> Target: ${MONTH_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</div>`; })() : ''}
               <div class="project-card-tasks">
                 <div class="project-card-tasks-label"><span>Tasks ${sortedTasks.length > 0 ? `(${sortedTasks.length})` : ''}</span></div>
                 ${taskRows}
@@ -2020,6 +2022,7 @@
       const description = f(r, F.roadmap.Description) || '';
       const assigned = f(r, F.roadmap.Assigned) || '';
       const otherAssignee = f(r, F.roadmap.OtherAssignee) || '';
+      const targetStart = f(r, F.roadmap.TargetStart) || '';
 
       const statusField = F.roadmap.Status ? `
           <div class="field"><label class="field-label" for="r-status">Status</label><select class="field-select" id="r-status">
@@ -2050,6 +2053,7 @@
           <label class="field-label" for="r-other-name">Other name</label>
           <input class="field-input" id="r-other-name" value="${escapeAttr(otherAssignee)}" placeholder="Who?" />
         </div>
+        <div class="field"><label class="field-label" for="r-target-start">Target start date</label><input class="field-input" id="r-target-start" type="date" value="${targetStart}" /></div>
         <div class="field"><label class="field-label" for="r-desc">Description</label><textarea class="field-textarea" id="r-desc" placeholder="Optional">${escapeHtml(description)}</textarea></div>
         <div class="modal-actions">
           ${id ? '<button class="btn btn-danger" id="r-delete">Delete</button>' : '<span></span>'}
@@ -2071,6 +2075,7 @@
           [F.roadmap.Description]: document.getElementById('r-desc').value.trim() || null,
           [F.roadmap.Assigned]: assignedVal,
           [F.roadmap.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('r-other-name').value.trim() || null) : null,
+          [F.roadmap.TargetStart]: document.getElementById('r-target-start').value || null,
         };
         if (F.roadmap.Status) {
           const statusEl = document.getElementById('r-status');
