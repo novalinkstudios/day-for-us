@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
-  <title>Buddemeier-Williams HQ</title>
+  <title>Day for Us</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -340,7 +340,7 @@
       flex-shrink: 0;
     }
     .tt-type-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-    .tt-type-tag.chore { background: var(--surface-strong); color: var(--ink-2); }
+    .tt-type-tag.chore, .tt-type-tag.task { background: var(--surface-strong); color: var(--ink-2); }
     .tt-type-tag.project { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
     .tt-due-overdue { color: var(--overdue); font-weight: 600; }
     .tt-check {
@@ -605,9 +605,9 @@
   <div class="app">
     <header class="header">
       <div class="brand">
-        <div class="brand-logo">HQ</div>
+        <div class="brand-logo">D4U</div>
         <div class="brand-text">
-          <span class="brand-name">Buddemeier-Williams HQ</span>
+          <span class="brand-name">Day for Us</span>
           <span class="brand-tag sync-status" id="sync-status" title="Live sync">
             <span class="sync-dot"></span>
             <span id="sync-label">Live</span>
@@ -625,79 +625,78 @@
 
     <div class="page-toggle" role="tablist">
       <button data-page="dashboard" class="active" role="tab">Dashboard</button>
-      <button data-page="chores" role="tab">Chores</button>
+      <button data-page="tasks" role="tab">Tasks</button>
       <button data-page="calendar" role="tab">Calendar</button>
-      <button data-page="groceries" role="tab">Groceries</button>
+      <button data-page="roadmap" role="tab">Roadmap</button>
     </div>
 
     <div class="page active" id="page-dashboard">
       <section class="card">
-        <div class="card-eyebrow">This week</div>
+        <div class="card-eyebrow">Status</div>
         <div class="stats-grid">
-          <div class="stat" style="--stat-color:var(--green)">
-            <div class="stat-num" id="stat-active">–</div>
-            <div class="stat-label">Active tasks</div>
+          <div class="stat" style="--stat-color:var(--gold)">
+            <div class="stat-num" id="stat-tackling">–</div>
+            <div class="stat-label">Tackling</div>
           </div>
-          <div class="stat" style="--stat-color:var(--overdue)">
-            <div class="stat-num" id="stat-overdue">–</div>
-            <div class="stat-label">Overdue</div>
+          <div class="stat" style="--stat-color:var(--green)">
+            <div class="stat-num" id="stat-ondeck">–</div>
+            <div class="stat-label">On deck</div>
           </div>
           <div class="stat" style="--stat-color:var(--pink)">
             <div class="stat-num" id="stat-projects">–</div>
             <div class="stat-label">Projects</div>
           </div>
-          <div class="stat" style="--stat-color:var(--gold)">
-            <div class="stat-num" id="stat-upcoming">–</div>
-            <div class="stat-label">Next 7 days</div>
+          <div class="stat" style="--stat-color:var(--ink-muted)">
+            <div class="stat-num" id="stat-backlog">–</div>
+            <div class="stat-label">Backlog</div>
           </div>
         </div>
-        <div class="streak-row" id="streak-row"></div>
       </section>
 
       <section class="card">
         <div class="card-head">
-          <h2 class="card-title">This week's events</h2>
+          <h2 class="card-title">Upcoming sessions</h2>
         </div>
-        <div class="upcoming" id="dashboard-events"></div>
+        <div class="upcoming" id="dashboard-sessions"></div>
       </section>
 
       <section class="card">
         <div class="card-head">
-          <h2 class="card-title">Family messages</h2>
+          <h2 class="card-title">Notes</h2>
         </div>
         <div style="display:flex;gap:8px;margin-bottom:14px">
-          <select class="field-select" id="message-author" style="max-width:110px;flex-shrink:0">
+          <select class="field-select" id="note-author" style="max-width:110px;flex-shrink:0">
             <option value="">Anyone</option>
             <option value="Anjanette">Anjanette</option>
-            <option value="Jeff">Jeff</option>
+            <option value="Chanelle">Chanelle</option>
           </select>
-          <input class="field-input" id="message-new-text" placeholder="Leave a note for the family…" style="flex:1" />
-          <button class="btn btn-primary" id="message-add-btn">Post</button>
+          <input class="field-input" id="note-new-text" placeholder="Leave a note…" style="flex:1" />
+          <button class="btn btn-primary" id="note-add-btn">Post</button>
         </div>
-        <div id="message-list"></div>
+        <div id="note-list"></div>
       </section>
     </div>
 
-    <div class="page" id="page-chores">
+    <div class="page" id="page-tasks">
       <section class="card">
         <div class="card-head">
           <h2 class="card-title">Priorities<span class="card-title-count" id="bucket-total">0</span></h2>
           <button class="btn btn-primary" id="add-task-btn">+ New task</button>
         </div>
-        <div class="filter-row" id="chore-filters"></div>
+        <div class="filter-row" id="task-filters"></div>
         <div class="buckets-grid" id="buckets-grid"></div>
       </section>
 
       <section class="card">
         <div class="card-head" id="open-tasks-toggle" style="cursor:pointer">
-          <h2 class="card-title">Open tasks<span class="card-title-count" id="all-count">0</span></h2>
+          <h2 class="card-title">All tasks<span class="card-title-count" id="all-count">0</span></h2>
           <button class="icon-btn" id="open-tasks-chevron" aria-label="Toggle open tasks" style="pointer-events:none">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
         </div>
         <div id="open-tasks-body" style="display:none">
           <input class="field-input" id="task-search" placeholder="Search tasks…" style="margin-bottom:10px" />
-          <div class="filter-row" id="chore-filters-2"></div>
+          <div class="filter-row" id="task-filters-2"></div>
           <div class="task-table" id="task-table"></div>
         </div>
       </section>
@@ -739,17 +738,17 @@
       </div>
     </div>
 
-    <div class="page" id="page-groceries">
+    <div class="page" id="page-roadmap">
       <section class="card">
         <div class="card-head">
-          <h2 class="card-title">Groceries</h2>
+          <h2 class="card-title">Roadmap</h2>
         </div>
-        <div class="filter-row" id="grocery-store-filters"></div>
+        <div class="filter-row" id="roadmap-filters"></div>
         <div style="display:flex;gap:8px;margin-bottom:14px">
-          <input class="field-input" id="grocery-new-item" placeholder="Add item…" style="flex:1" />
-          <button class="btn btn-primary" id="grocery-add-btn">Add</button>
+          <input class="field-input" id="roadmap-new-item" placeholder="Add roadmap item…" style="flex:1" />
+          <button class="btn btn-primary" id="roadmap-add-btn">Add</button>
         </div>
-        <div id="grocery-list"></div>
+        <div id="roadmap-list"></div>
       </section>
     </div>
   </div>
@@ -778,26 +777,24 @@
     // Calls Airtable directly — no server proxy. Token is visible in page source;
     // only use this link with people you trust.
     const AIRTABLE_TOKEN = '__DFU_AIRTABLE_TOKEN__';
-    const AIRTABLE_BASE_ID = 'appZVAWOFty3RFSRt';
-    const AIRTABLE_TABLE_IDS = { People: 'tbliy0eovpt8vntvD', Tasks: 'tblTZ6WCgNLhnFEO4', Events: 'tblX5t8qVngufznCI', Groceries: 'tblkVvgWNIoiRoJXp', Messages: 'tblln5lLEbQUw9rMz' };
+    const AIRTABLE_BASE_ID = 'appRlcL5eYnjxfXV0';
+    const AIRTABLE_TABLE_IDS = { Tasks: 'tblK7L4tLSfhCW09B', Sessions: 'tblUj37fhp2O1UAQ6', Notes: 'tblvmOOFMvW35yMk2', Roadmap: 'tblSe6DM956iA6OVK' };
     const POLL_MS = 15_000;
-    const GROCERY_FAST_POLL_MS = 4_000;
 
     const F = {
-      people: { Name: 'fldec0P0X4FN7IWza', Birthday: 'fldxXbUA7mW9boXqq', Role: 'fldbc5LHx2k2oHUgB', ChoreAssignee: 'fld0fZ0d5OJh4SGAI', Color: 'fldb44jZLg1Edo3NE' },
-      tasks: { Title: 'fldMtJDIfKfIleKES', Type: 'fldh1956G7z8QAol4', AssignedTo: 'fldxqr0515qC3x5df', CadenceDays: 'fldgHTNH9fHFxKe9F', NextDue: 'fldncFYrPjIxyoCZV', LastCompleted: 'flde4v0dzocaP17yR', Status: 'fldsglDycDr2Sirx9', Notes: 'fldvaagDHsHPCSNvQ' },
-      events: { Title: 'fld7ycGWXXA6LEA8f', Date: 'fldAgyEp18ANapuFr', Recurring: 'fldReCr1LVEjMsxuP', Type: 'fldyTVNsEz6mcCM7D', People: 'fldCar4uKyu82q6ju', Notes: 'fld1jZVee9tC5mjdP' },
-      groceries: { Item: 'fldLtIxVWklxWmCCI', Store: 'fldXymWMGqy8KEABV', Checked: 'fldzQyH1Gba7i1DZO' },
-      messages: { Text: 'fldHymbPqXGCv20JS', Author: 'fldoyEHfBQiob7ozK', Created: 'flddahqfwepZ59Xrz' },
+      tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM' },
+      sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t' },
+      notes: { Message: 'fldLjMeDRbY4OU9fB', Author: 'fldDJDdJIjz2N1ESd', Created: 'fldCz46I4Q9QxvDaz' },
+      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', Created: 'fldoZJlPHLI9SKhpT' },
     };
 
     const state = {
-      people: [], tasks: [], events: [], groceries: [], messages: [],
+      tasks: [], sessions: [], notes: [], roadmap: [],
       currentPage: 'dashboard',
       calDate: new Date(),
       calView: 'grid',
-      choreFilter: 'all',
-      groceryStore: 'Food Lion',
+      taskFilter: 'all',
+      roadmapFilter: 'all',
       taskSearch: '',
     };
 
@@ -888,28 +885,24 @@
     }
 
     const f = (rec, id) => rec?.fields?.[id];
-    const personByName = name => name ? state.people.find(p => (f(p, F.people.Name) || '').toLowerCase() === name.toLowerCase()) : null;
-    function personColor(name) { const p = personByName(name); if (!p) return null; const c = f(p, F.people.Color); return c ? `var(--person-${c})` : null; }
+
+    // People are handled via a singleSelect field (Assigned): Anjanette, Chanelle, Both, Other.
+    const PERSON_COLORS = { Anjanette: 'var(--person-Rose)', Chanelle: 'var(--person-Indigo)', Both: 'var(--person-Sky)', Other: 'var(--person-Slate)' };
+    function personColor(name) { return PERSON_COLORS[name] || null; }
     function initials(name) { if (!name) return '?'; const parts = name.trim().split(/\s+/); return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase(); }
     function personCssVars(name) { const color = personColor(name); return color ? `--person-color:${color}` : ''; }
 
-    // Assignment can be: empty (anyone), "Name" (one person), "Name, Name" (both),
-    // or "Name ⇄ Name" (alternates each time it's completed — first name is whose turn it is)
-    const ROTATE_SEP = ' ⇄ ';
-    function isRotating(raw) { return typeof raw === 'string' && raw.includes(ROTATE_SEP); }
-    function rotatingNames(raw) { return raw.split(ROTATE_SEP).map(s => s.trim()).filter(Boolean); }
-    function currentAssignee(raw) { if (!raw) return ''; return isRotating(raw) ? rotatingNames(raw)[0] : raw; }
-    function assigneeDisplayNames(raw) {
-      if (!raw) return [];
-      if (isRotating(raw)) { const n = currentAssignee(raw); return n ? [n] : []; }
-      return raw.split(',').map(s => s.trim()).filter(Boolean);
-    }
-    function assigneeMeta(raw) {
-      const rotating = isRotating(raw);
-      const names = assigneeDisplayNames(raw);
-      const label = names.join(' & ') + (rotating && names.length ? ' ⇄' : '');
-      const avatarInitials = names.length <= 1 ? initials(names[0] || '') : names.map(n => (n.trim()[0] || '').toUpperCase()).join('');
-      return { names, label, avatarInitials, primaryColorName: names[0] || '', rotating };
+    // Simple assignee display: shows the Assigned value directly. If "Other", also shows
+    // the OtherAssignee text field when present.
+    function assigneeMeta(record, assignedField, otherField) {
+      const assigned = f(record, assignedField) || '';
+      let label = assigned;
+      if (assigned === 'Other') {
+        const other = f(record, otherField);
+        label = other ? `Other: ${other}` : 'Other';
+      }
+      const avatarInitials = assigned === 'Other' ? 'OT' : (assigned ? initials(assigned) : '');
+      return { assigned, label, avatarInitials, colorName: assigned };
     }
 
     const DAY_MS = 24 * 60 * 60 * 1000;
@@ -918,31 +911,10 @@
     const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
     const daysBetween = (a, b) => Math.round((b - a) / DAY_MS);
 
-    function formatDueLabel(dueStr) {
-      if (!dueStr) return 'No due date';
-      const due = parseISODate(dueStr);
-      const diff = daysBetween(today(), due);
-      if (diff < 0) return `Overdue ${Math.abs(diff)}d`;
-      if (diff === 0) return 'Due today';
-      if (diff === 1) return 'Due tomorrow';
-      if (diff < 7) return `Due ${due.toLocaleDateString(undefined, { weekday: 'short' })}`;
-      return `Due ${due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
-    }
-
-    function formatCadence(days) {
-      if (!days) return 'One-off';
-      if (days === 1) return 'Daily';
-      if (days === 7) return 'Weekly';
-      if (days === 14) return 'Biweekly';
-      if (days === 30) return 'Monthly';
-      if (days === 365) return 'Yearly';
-      return `Every ${days}d`;
-    }
-
-    function isOverdue(task) {
-      const due = f(task, F.tasks.NextDue);
-      if (!due || f(task, F.tasks.Status) === 'Done') return false;
-      return parseISODate(due) < today();
+    function formatDateLabel(dateStr) {
+      if (!dateStr) return '';
+      const d = parseISODate(dateStr);
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     }
 
     function setSync(status, label) {
@@ -1001,14 +973,13 @@
     async function loadAll() {
       setSync('syncing', 'Syncing');
       try {
-        const [people, tasks, events, groceries] = await Promise.all([listAll('People'), listAll('Tasks'), listAll('Events'), listAll('Groceries')]);
-        state.people = people;
+        const [tasks, sessions, notes, roadmap] = await Promise.all([
+          listAll('Tasks'), listAll('Sessions'), listAll('Notes'), listAll('Roadmap')
+        ]);
         state.tasks = tasks;
-        state.events = events;
-        state.groceries = groceries;
-        if (AIRTABLE_TABLE_IDS.Messages) {
-          state.messages = await listAll('Messages');
-        }
+        state.sessions = sessions;
+        state.notes = notes;
+        state.roadmap = roadmap;
         setSync('ok');
         renderAll();
       } catch (err) {
@@ -1017,68 +988,57 @@
       }
     }
 
-    function renderChoreFilters() {
+    function renderTaskFilters() {
       const chips = [
         { key: 'all', label: 'Everyone' },
         { key: 'Anjanette', label: 'Anjanette' },
-        { key: 'Jeff', label: 'Jeff' },
-        { key: 'other', label: 'Other' },
+        { key: 'Chanelle', label: 'Chanelle' },
+        { key: 'Other', label: 'Other' },
       ];
       const html = chips.map(c => {
-        const active = state.choreFilter === c.key ? 'active' : '';
-        const color = (c.key !== 'all' && c.key !== 'other') ? personColor(c.key) : null;
+        const active = state.taskFilter === c.key ? 'active' : '';
+        const color = c.key !== 'all' ? personColor(c.key) : null;
         return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
       }).join('');
-      ['chore-filters', 'chore-filters-2'].forEach(id => {
+      ['task-filters', 'task-filters-2'].forEach(id => {
         const wrap = document.getElementById(id);
         if (!wrap) return;
         wrap.innerHTML = html;
         wrap.querySelectorAll('button').forEach(btn => {
           btn.addEventListener('click', () => {
-            state.choreFilter = btn.dataset.filter;
-            renderChoreFilters();
+            state.taskFilter = btn.dataset.filter;
+            renderTaskFilters();
             renderTasks();
           });
         });
       });
     }
 
+    function matchesTaskFilter(task) {
+      if (state.taskFilter === 'all') return true;
+      return (f(task, F.tasks.Assigned) || '') === state.taskFilter;
+    }
+
     function renderTasks() {
-      const filtered = state.tasks.filter(t => {
-        const raw = f(t, F.tasks.AssignedTo) || '';
-        const names = assigneeDisplayNames(raw).map(n => n.toLowerCase());
-        if (state.choreFilter === 'all') return true;
-        if (state.choreFilter === 'other') return !names.includes('anjanette') && !names.includes('jeff');
-        return names.includes(state.choreFilter.toLowerCase());
-      });
-
+      const filtered = state.tasks.filter(matchesTaskFilter);
       const openTasks = filtered.filter(t => f(t, F.tasks.Status) !== 'Done');
-      const now = today();
-      const weekEnd = new Date(now.getTime() + 7 * DAY_MS);
 
-      const buckets = { overdue: [], today: [], week: [], later: [], someday: [] };
+      const buckets = { tackling: [], ondeck: [], backlog: [] };
       openTasks.forEach(t => {
-        const due = f(t, F.tasks.NextDue);
-        if (!due) { buckets.someday.push(t); return; }
-        const d = parseISODate(due);
-        if (d < now) buckets.overdue.push(t);
-        else if (d.getTime() === now.getTime()) buckets.today.push(t);
-        else if (d <= weekEnd) buckets.week.push(t);
-        else buckets.later.push(t);
+        const status = f(t, F.tasks.Status);
+        if (status === 'Tackling') buckets.tackling.push(t);
+        else if (status === 'On Deck') buckets.ondeck.push(t);
+        else buckets.backlog.push(t);
       });
 
-      const sortByDue = (a, b) => (f(a, F.tasks.NextDue) || '9999').localeCompare(f(b, F.tasks.NextDue) || '9999');
-      buckets.overdue.sort(sortByDue);
-      buckets.today.sort(sortByDue);
-      buckets.week.sort(sortByDue);
-      buckets.later.sort(sortByDue);
-      buckets.someday.sort((a, b) => (f(a, F.tasks.Title) || '').localeCompare(f(b, F.tasks.Title) || ''));
+      const sortByName = (a, b) => (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
+      Object.values(buckets).forEach(list => list.sort(sortByName));
 
       const MAX_TOTAL = 15;
-      const order = ['overdue', 'today', 'week', 'later', 'someday'];
-      const perBucketShown = { overdue: 0, today: 0, week: 0, later: 0, someday: 0 };
+      const order = ['tackling', 'ondeck', 'backlog'];
+      const perBucketShown = { tackling: 0, ondeck: 0, backlog: 0 };
       let remaining = MAX_TOTAL;
-      const softCaps = { overdue: 15, today: 8, week: 6, later: 4, someday: 4 };
+      const softCaps = { tackling: 8, ondeck: 8, backlog: 6 };
       order.forEach(k => {
         const take = Math.min(buckets[k].length, softCaps[k], remaining);
         perBucketShown[k] = take;
@@ -1092,11 +1052,9 @@
       });
 
       const bucketMeta = [
-        { key: 'overdue', label: 'Overdue', cls: 'bucket-overdue' },
-        { key: 'today', label: 'Today', cls: 'bucket-today' },
-        { key: 'week', label: 'This Week', cls: 'bucket-week' },
-        { key: 'later', label: 'Later', cls: 'bucket-later' },
-        { key: 'someday', label: 'Someday', cls: 'bucket-later' },
+        { key: 'tackling', label: 'Tackling', cls: 'bucket-today' },
+        { key: 'ondeck', label: 'On Deck', cls: 'bucket-week' },
+        { key: 'backlog', label: 'Backlog', cls: 'bucket-later' },
       ];
 
       document.getElementById('bucket-total').textContent = openTasks.length;
@@ -1121,14 +1079,15 @@
 
       const searchTerm = (state.taskSearch || '').trim().toLowerCase();
       const tableTasks = searchTerm
-        ? openTasks.filter(t => (f(t, F.tasks.Title) || '').toLowerCase().includes(searchTerm))
-        : openTasks;
+        ? filtered.filter(t => (f(t, F.tasks.Name) || '').toLowerCase().includes(searchTerm))
+        : filtered;
 
+      const statusOrder = { 'Tackling': 0, 'On Deck': 1, 'Backlog': 2, 'Done': 3 };
       const sortedAll = [...tableTasks].sort((a, b) => {
-        const aDue = f(a, F.tasks.NextDue) || '9999';
-        const bDue = f(b, F.tasks.NextDue) || '9999';
-        if (aDue !== bDue) return aDue.localeCompare(bDue);
-        return (f(a, F.tasks.Title) || '').localeCompare(f(b, F.tasks.Title) || '');
+        const aStatus = statusOrder[f(a, F.tasks.Status)] ?? 4;
+        const bStatus = statusOrder[f(b, F.tasks.Status)] ?? 4;
+        if (aStatus !== bStatus) return aStatus - bStatus;
+        return (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
       });
       document.getElementById('all-count').textContent = sortedAll.length;
 
@@ -1136,13 +1095,13 @@
       if (sortedAll.length === 0) {
         table.innerHTML = searchTerm
           ? `<div class="empty"><div class="empty-emoji">🔍</div><div class="empty-title">No matches</div>Try a different search.</div>`
-          : `<div class="empty"><div class="empty-emoji">✨</div><div class="empty-title">All clear</div>No open tasks.</div>`;
+          : `<div class="empty"><div class="empty-emoji">✨</div><div class="empty-title">All clear</div>No tasks yet.</div>`;
       } else {
         table.innerHTML = `
           <div class="task-table-head">
             <div>Task</div>
             <div>Assigned</div>
-            <div>Due</div>
+            <div>Status</div>
             <div>Type</div>
             <div></div>
           </div>
@@ -1150,25 +1109,18 @@
         `;
       }
 
-      const activeCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Active').length;
-      const overdueCount = state.tasks.filter(isOverdue).length;
+      const tacklingCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Tackling').length;
+      const ondeckCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'On Deck').length;
       const projectsCount = state.tasks.filter(t => f(t, F.tasks.Type) === 'Project' && f(t, F.tasks.Status) !== 'Done').length;
-      const upcomingCount = state.tasks.filter(t => {
-        if (f(t, F.tasks.Status) === 'Done') return false;
-        const due = f(t, F.tasks.NextDue);
-        if (!due) return false;
-        const d = parseISODate(due);
-        return d >= now && d <= weekEnd;
-      }).length;
-      document.getElementById('stat-active').textContent = activeCount;
-      document.getElementById('stat-overdue').textContent = overdueCount;
+      const backlogCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Backlog').length;
+      document.getElementById('stat-tackling').textContent = tacklingCount;
+      document.getElementById('stat-ondeck').textContent = ondeckCount;
       document.getElementById('stat-projects').textContent = projectsCount;
-      document.getElementById('stat-upcoming').textContent = upcomingCount;
-      renderStreak();
+      document.getElementById('stat-backlog').textContent = backlogCount;
 
       document.querySelectorAll('[data-task-id]').forEach(el => {
         el.addEventListener('click', e => {
-          if (e.target.closest('[data-action="check"]') || e.target.closest('[data-action="snooze"]')) return;
+          if (e.target.closest('[data-action="check"]')) return;
           openTaskModal(el.dataset.taskId);
         });
       });
@@ -1178,104 +1130,41 @@
           completeTask(el.dataset.taskId);
         });
       });
-      document.querySelectorAll('[data-action="snooze"]').forEach(el => {
-        el.addEventListener('click', e => {
-          e.stopPropagation();
-          snoozeTask(el.dataset.taskId);
-        });
-      });
-    }
-
-    async function snoozeTask(id) {
-      const task = state.tasks.find(t => t.id === id);
-      if (!task) return;
-      const due = f(task, F.tasks.NextDue);
-      const base = due ? parseISODate(due) : today();
-      const newDue = toISODate(new Date(base.getTime() + DAY_MS));
-      const updates = { [F.tasks.NextDue]: newDue };
-      Object.assign(task.fields, updates);
-      renderTasks();
-      try {
-        await api('PATCH', 'Tasks', { id, body: { fields: updates } });
-        toast('Snoozed +1 day');
-      } catch (err) {
-        console.error(err);
-        toast('Sync failed');
-        loadAll();
-      }
-    }
-
-    function startOfWeekSun(d) {
-      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      x.setDate(x.getDate() - x.getDay());
-      return x;
-    }
-    function renderStreak() {
-      const weekStart = startOfWeekSun(today());
-      const counts = {};
-      state.people.filter(p => f(p, F.people.ChoreAssignee)).forEach(p => { counts[f(p, F.people.Name)] = 0; });
-      state.tasks.forEach(t => {
-        const lc = f(t, F.tasks.LastCompleted);
-        if (!lc) return;
-        const d = parseISODate(lc);
-        if (d < weekStart) return;
-        const raw = f(t, F.tasks.AssignedTo) || '';
-        assigneeDisplayNames(raw).forEach(n => { if (counts[n] !== undefined) counts[n]++; });
-      });
-      const wrap = document.getElementById('streak-row');
-      const entries = Object.entries(counts);
-      wrap.innerHTML = entries.map(([name, count]) =>
-        `<span class="streak-pill"><span class="streak-pill-num">${count}</span>${escapeHtml(name)} this week</span>`
-      ).join('');
     }
 
     function taskMini(task) {
-      const title = f(task, F.tasks.Title) || 'Untitled';
-      const raw = f(task, F.tasks.AssignedTo) || '';
-      const meta = assigneeMeta(raw);
-      const due = f(task, F.tasks.NextDue);
-      const overdue = isOverdue(task);
-      const styleVars = personCssVars(meta.primaryColorName);
-      const dueLabel = due ? formatDueLabel(due) : 'No due date';
+      const title = f(task, F.tasks.Name) || 'Untitled';
+      const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
+      const styleVars = personCssVars(meta.colorName);
       return `
-        <div class="task-mini ${overdue ? 'overdue' : ''}" data-task-id="${task.id}" style="${styleVars}">
-          <button class="task-mini-check" data-action="check" data-task-id="${task.id}" aria-label="Mark complete">
+        <div class="task-mini" data-task-id="${task.id}" style="${styleVars}">
+          <button class="task-mini-check" data-action="check" data-task-id="${task.id}" aria-label="Mark done">
             <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
           <div class="task-mini-body">
             <div class="task-mini-title">${escapeHtml(title)}</div>
-            <div class="task-mini-meta">
-              ${meta.label ? `<span>${escapeHtml(meta.label)}</span><span class="task-meta-sep"></span>` : ''}
-              <span class="task-mini-meta-due">${escapeHtml(dueLabel)}</span>
-              ${overdue ? `<button class="snooze-btn" data-action="snooze" data-task-id="${task.id}">+1d</button>` : ''}
-            </div>
+            ${meta.label ? `<div class="task-mini-meta"><span>${escapeHtml(meta.label)}</span></div>` : ''}
           </div>
-          ${meta.names.length ? `<div class="task-mini-avatar" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
+          ${meta.label ? `<div class="task-mini-avatar" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
         </div>
       `;
     }
 
     function taskRow(task) {
-      const title = f(task, F.tasks.Title) || 'Untitled';
-      const type = f(task, F.tasks.Type) || 'Chore';
-      const raw = f(task, F.tasks.AssignedTo) || '';
-      const meta = assigneeMeta(raw);
-      const due = f(task, F.tasks.NextDue);
-      const overdue = isOverdue(task);
-      const styleVars = personCssVars(meta.primaryColorName);
-      const dueLabel = due ? formatDueLabel(due).replace(/^Due /, '') : '—';
+      const title = f(task, F.tasks.Name) || 'Untitled';
+      const type = f(task, F.tasks.Type) || 'Task';
+      const status = f(task, F.tasks.Status) || 'Backlog';
+      const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
+      const styleVars = personCssVars(meta.colorName);
       return `
-        <div class="task-table-row ${overdue ? 'overdue-row' : ''}" data-task-id="${task.id}" style="${styleVars}">
+        <div class="task-table-row" data-task-id="${task.id}" style="${styleVars}">
           <div class="tt-title">${escapeHtml(title)}</div>
           <div class="tt-cell tt-assigned">
-            ${meta.names.length ? `<span class="tt-avatar">${escapeHtml(meta.avatarInitials)}</span><span>${escapeHtml(meta.label)}</span>` : '<span>—</span>'}
+            ${meta.label ? `<span class="tt-avatar">${escapeHtml(meta.avatarInitials)}</span><span>${escapeHtml(meta.label)}</span>` : '<span>—</span>'}
           </div>
-          <div class="tt-cell tt-due ${overdue ? 'tt-due-overdue' : ''}" style="display:flex;align-items:center;gap:6px">
-            <span>${escapeHtml(dueLabel)}</span>
-            ${overdue ? `<button class="snooze-btn" data-action="snooze" data-task-id="${task.id}">+1d</button>` : ''}
-          </div>
+          <div class="tt-cell tt-status">${escapeHtml(status)}</div>
           <div class="tt-cell tt-type"><span class="tt-type-tag ${type.toLowerCase()}">${escapeHtml(type)}</span></div>
-          <button class="tt-check" data-action="check" data-task-id="${task.id}" aria-label="Mark complete">
+          <button class="tt-check" data-action="check" data-task-id="${task.id}" aria-label="Mark done">
             <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
         </div>
@@ -1285,35 +1174,15 @@
     async function completeTask(id) {
       const task = state.tasks.find(t => t.id === id);
       if (!task) return;
-      const cadence = f(task, F.tasks.CadenceDays) || 0;
       const currentStatus = f(task, F.tasks.Status);
-      const isCurrentlyDone = currentStatus === 'Done';
-      const now = today();
-      const nowIso = toISODate(now);
-      let updates = {};
-      if (isCurrentlyDone) {
-        updates[F.tasks.Status] = 'Active';
-        updates[F.tasks.LastCompleted] = null;
-      } else if (cadence === 0) {
-        updates[F.tasks.Status] = 'Done';
-        updates[F.tasks.LastCompleted] = nowIso;
-      } else {
-        updates[F.tasks.LastCompleted] = nowIso;
-        updates[F.tasks.NextDue] = toISODate(new Date(now.getTime() + cadence * DAY_MS));
-      }
-      // Rotating tasks swap whose turn it is when moving forward (not on undo)
-      if (!isCurrentlyDone) {
-        const rawAssigned = f(task, F.tasks.AssignedTo) || '';
-        if (isRotating(rawAssigned)) {
-          const [turn, next] = rotatingNames(rawAssigned);
-          updates[F.tasks.AssignedTo] = `${next} ⇄ ${turn}`;
-        }
-      }
+      const isDone = currentStatus === 'Done';
+      const newStatus = isDone ? 'Tackling' : 'Done';
+      const updates = { [F.tasks.Status]: newStatus };
       Object.assign(task.fields, updates);
       renderTasks();
       try {
         await api('PATCH', 'Tasks', { id, body: { fields: updates } });
-        toast(isCurrentlyDone ? 'Marked active' : (cadence === 0 ? 'Done ✓' : 'Next up scheduled'));
+        toast(isDone ? 'Back to tackling' : 'Done ✓');
       } catch (err) {
         console.error(err);
         toast('Sync failed');
@@ -1324,52 +1193,18 @@
     const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    function normalizeMonthDay(s) {
-      const parts = s.split('-');
-      if (parts.length < 2) return null;
-      return `${String(parseInt(parts[0],10)).padStart(2,'0')}-${String(parseInt(parts[1],10)).padStart(2,'0')}`;
-    }
-
     function eventsForDate(d) {
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
       const iso = toISODate(d);
       const results = [];
-      state.people.forEach(p => {
-        const bday = f(p, F.people.Birthday);
-        if (!bday) return;
-        if (normalizeMonthDay(bday) === `${mm}-${dd}`) {
-          const name = f(p, F.people.Name);
-          results.push({ kind: 'birthday', title: `${name}'s birthday`, date: d, people: [name], color: personColor(name) });
-        }
-      });
-      state.events.forEach(ev => {
-        const dateStr = f(ev, F.events.Date);
-        if (!dateStr) return;
-        const recurring = f(ev, F.events.Recurring);
-        const evDate = parseISODate(dateStr);
-        let matches = false;
-        if (recurring === 'Yearly') {
-          matches = (evDate.getMonth() === d.getMonth() && evDate.getDate() === d.getDate());
-        } else if (recurring === 'Weekly') {
-          matches = (d.getDay() === evDate.getDay() && d >= evDate);
-        } else {
-          matches = dateStr === iso;
-        }
-        if (matches) {
-          const type = f(ev, F.events.Type);
-          const people = (f(ev, F.events.People) || '').split(',').map(s => s.trim()).filter(Boolean);
-          results.push({
-            kind: (type || 'other').toLowerCase(),
-            title: f(ev, F.events.Title),
-            date: d,
-            recurring: recurring === 'Yearly',
-            year: evDate.getFullYear(),
-            people,
-            color: people[0] ? personColor(people[0]) : null,
-            id: ev.id,
-          });
-        }
+      state.sessions.forEach(s => {
+        const dateStr = f(s, F.sessions.Date);
+        if (dateStr !== iso) return;
+        results.push({
+          title: f(s, F.sessions.Name) || 'Untitled',
+          date: d,
+          description: f(s, F.sessions.Description) || '',
+          id: s.id,
+        });
       });
       return results;
     }
@@ -1423,22 +1258,15 @@
         const isToday = d.getTime() === t.getTime();
         const events = eventsForDate(d);
         const evHtml = events.length
-          ? events.map(e => {
-              const iconMap = { birthday: '🎂', anniversary: '💕', appointment: '📅', holiday: '🎉', other: '·' };
-              const icon = iconMap[e.kind] || '·';
-              const sub = [e.kind.charAt(0).toUpperCase() + e.kind.slice(1)];
-              if (e.people && e.people.length) sub.push(e.people.join(', '));
-              return `
-                <div class="cal-week-event" style="--dot-color:${e.color || 'var(--ink-muted)'}" ${e.id ? `data-event-id="${e.id}"` : ''}>
-                  <span class="cal-week-event-bullet"></span>
-                  <span class="cal-week-event-icon">${icon}</span>
-                  <div class="cal-week-event-body">
-                    <div class="cal-week-event-title">${escapeHtml(e.title)}</div>
-                    <div class="cal-week-event-sub">${escapeHtml(sub.join(' · '))}</div>
-                  </div>
+          ? events.map(e => `
+              <div class="cal-week-event" data-event-id="${e.id}">
+                <span class="cal-week-event-bullet"></span>
+                <div class="cal-week-event-body">
+                  <div class="cal-week-event-title">${escapeHtml(e.title)}</div>
+                  ${e.description ? `<div class="cal-week-event-sub">${escapeHtml(e.description)}</div>` : ''}
                 </div>
-              `;
-            }).join('')
+              </div>
+            `).join('')
           : `<div class="cal-week-day-empty">Nothing scheduled</div>`;
         cells.push(`
           <div class="cal-week-day ${isToday ? 'today' : ''}">
@@ -1452,7 +1280,7 @@
       }
       document.getElementById('cal-week').innerHTML = cells.join('');
       document.querySelectorAll('[data-event-id]').forEach(el => {
-        el.addEventListener('click', () => openEventModal(el.dataset.eventId));
+        el.addEventListener('click', () => openSessionModal(el.dataset.eventId));
       });
     }
 
@@ -1516,26 +1344,15 @@
     function upcomingItem(e) {
       const day = e.date.getDate();
       const month = MONTH_SHORT[e.date.getMonth()];
-      const iconMap = { birthday: '🎂', anniversary: '💕', appointment: '📅', holiday: '🎉', other: '·' };
-      const icon = iconMap[e.kind] || '·';
-      const sub = [e.kind.charAt(0).toUpperCase() + e.kind.slice(1)];
-      if (e.recurring && e.year && e.kind === 'anniversary') {
-        const years = e.date.getFullYear() - e.year;
-        if (years > 0) sub.push(`${years} year${years === 1 ? '' : 's'}`);
-      }
-      if (e.people && e.people.length) sub.push(e.people.join(', '));
       return `
-        <div class="upcoming-item" style="--dot-color:${e.color || 'var(--ink-muted)'}">
+        <div class="upcoming-item">
           <div class="upcoming-date">
             <div class="upcoming-date-day">${day}</div>
             <div class="upcoming-date-month">${month}</div>
           </div>
           <div class="upcoming-body">
             <div class="upcoming-title">${escapeHtml(e.title)}</div>
-            <div class="upcoming-sub">
-              <span>${icon}</span>
-              ${sub.map(s => `<span>${escapeHtml(s)}</span>`).join('<span class="task-meta-sep"></span>')}
-            </div>
+            ${e.description ? `<div class="upcoming-sub">${escapeHtml(e.description)}</div>` : ''}
           </div>
         </div>
       `;
@@ -1547,13 +1364,12 @@
       const dateLabel = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
       const body = events.length
         ? events.map(e => `
-            <div class="${e.id ? 'event-row-editable' : ''}" data-event-id="${e.id || ''}" style="padding:12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;${e.id ? 'cursor:pointer;border-radius:8px;' : ''}">
-              <span style="width:10px;height:10px;border-radius:50%;background:${e.color || 'var(--ink-muted)'};flex-shrink:0"></span>
+            <div class="event-row-editable" data-event-id="${e.id}" style="padding:12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:8px;">
               <div style="flex:1;min-width:0">
                 <div style="font-weight:600;font-family:var(--font-display)">${escapeHtml(e.title)}</div>
-                <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);margin-top:3px;text-transform:capitalize">${e.kind}${e.people && e.people.length ? ' · ' + escapeHtml(e.people.join(', ')) : ''}</div>
+                ${e.description ? `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);margin-top:3px">${escapeHtml(e.description)}</div>` : ''}
               </div>
-              ${e.id ? '<span style="color:var(--ink-muted);font-size:12px">Edit ›</span>' : ''}
+              <span style="color:var(--ink-muted);font-size:12px">Edit ›</span>
             </div>
           `).join('')
         : `<div class="empty"><div class="empty-emoji">🌤️</div><div class="empty-title">Nothing scheduled</div></div>`;
@@ -1561,14 +1377,14 @@
         ${body}
         <div class="modal-actions" style="justify-content:flex-end">
           <button class="btn btn-ghost" data-close>Close</button>
-          <button class="btn btn-primary" id="add-event-for-day" data-date="${dateStr}">Add event</button>
+          <button class="btn btn-primary" id="add-event-for-day" data-date="${dateStr}">Add session</button>
         </div>
       `);
-      document.getElementById('add-event-for-day').addEventListener('click', () => openEventModal(null, dateStr));
+      document.getElementById('add-event-for-day').addEventListener('click', () => openSessionModal(null, dateStr));
       document.querySelectorAll('#modal-body [data-event-id]').forEach(el => {
         const eid = el.dataset.eventId;
         if (!eid) return;
-        el.addEventListener('click', () => openEventModal(eid));
+        el.addEventListener('click', () => openSessionModal(eid));
       });
     }
 
@@ -1583,66 +1399,40 @@
 
     function openTaskModal(id = null) {
       const task = id ? state.tasks.find(t => t.id === id) : null;
-      const assignees = state.people.filter(p => f(p, F.people.ChoreAssignee)).map(p => f(p, F.people.Name)).filter(Boolean);
       const t = task || {};
-      const title = f(t, F.tasks.Title) || '';
-      const type = f(t, F.tasks.Type) || 'Chore';
-      const assigned = f(t, F.tasks.AssignedTo) || '';
-      const rotating = isRotating(assigned);
-      const preChecked = rotating ? rotatingNames(assigned) : assigned.split(',').map(s => s.trim()).filter(Boolean);
-      const cadence = f(t, F.tasks.CadenceDays) ?? 0;
-      const nextDue = f(t, F.tasks.NextDue) || toISODate(today());
+      const title = f(t, F.tasks.Name) || '';
+      const type = f(t, F.tasks.Type) || 'Task';
+      const status = f(t, F.tasks.Status) || 'Backlog';
+      const assigned = f(t, F.tasks.Assigned) || '';
+      const otherAssignee = f(t, F.tasks.OtherAssignee) || '';
+      const sessionDate = f(t, F.tasks.SessionDate) || '';
       const notes = f(t, F.tasks.Notes) || '';
-      const standardCadences = [0, 1, 7, 14, 30, 90];
 
       openModal(id ? 'Edit task' : 'New task', `
-        <div class="field"><label class="field-label" for="t-title">Title</label><input class="field-input" id="t-title" value="${escapeAttr(title)}" placeholder="e.g. Take out trash" /></div>
+        <div class="field"><label class="field-label" for="t-title">Title</label><input class="field-input" id="t-title" value="${escapeAttr(title)}" placeholder="e.g. Plan the trip" /></div>
         <div class="field-row">
-          <div class="field"><label class="field-label" for="t-type">Type</label><select class="field-select" id="t-type"><option ${type === 'Chore' ? 'selected' : ''}>Chore</option><option ${type === 'Project' ? 'selected' : ''}>Project</option></select></div>
-          <div class="field">
-            <label class="field-label">Assigned to</label>
-            <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding-top:6px">
-              <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer">
-                <input type="checkbox" id="t-assign-anyone" ${preChecked.length === 0 ? 'checked' : ''} style="width:16px;height:16px;accent-color:var(--gold)" />
-                Anyone
-              </label>
-              ${assignees.map(a => `
-                <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer">
-                  <input type="checkbox" class="t-assignee-cb" value="${escapeAttr(a)}" ${preChecked.includes(a) ? 'checked' : ''} style="width:16px;height:16px;accent-color:var(--gold)" />
-                  ${escapeHtml(a)}
-                </label>
-              `).join('')}
-            </div>
+          <div class="field"><label class="field-label" for="t-type">Type</label><select class="field-select" id="t-type"><option ${type === 'Task' ? 'selected' : ''}>Task</option><option ${type === 'Project' ? 'selected' : ''}>Project</option></select></div>
+          <div class="field"><label class="field-label" for="t-status">Status</label><select class="field-select" id="t-status">
+            <option ${status === 'Backlog' ? 'selected' : ''}>Backlog</option>
+            <option ${status === 'On Deck' ? 'selected' : ''}>On Deck</option>
+            <option ${status === 'Tackling' ? 'selected' : ''}>Tackling</option>
+            <option ${status === 'Done' ? 'selected' : ''}>Done</option>
+          </select></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="t-assigned">Assigned</label><select class="field-select" id="t-assigned">
+            <option value="" ${!assigned ? 'selected' : ''}>—</option>
+            <option ${assigned === 'Anjanette' ? 'selected' : ''}>Anjanette</option>
+            <option ${assigned === 'Chanelle' ? 'selected' : ''}>Chanelle</option>
+            <option ${assigned === 'Both' ? 'selected' : ''}>Both</option>
+            <option ${assigned === 'Other' ? 'selected' : ''}>Other</option>
+          </select></div>
+          <div class="field" id="t-other-field" style="display:${assigned === 'Other' ? 'block' : 'none'}">
+            <label class="field-label" for="t-other-name">Other name</label>
+            <input class="field-input" id="t-other-name" value="${escapeAttr(otherAssignee)}" placeholder="Who?" />
           </div>
         </div>
-        ${assignees.length >= 2 ? `
-          <div class="field">
-            <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-muted);cursor:pointer">
-              <input type="checkbox" id="t-assign-rotate" ${rotating ? 'checked' : ''} style="width:14px;height:14px;accent-color:var(--gold)" />
-              Alternate between them each time (check both above)
-            </label>
-          </div>
-          <div class="field" id="t-rotate-order-field" style="display:none">
-            <label class="field-label">Starts with</label>
-            <div id="t-rotate-order-options" style="display:flex;gap:14px;flex-wrap:wrap;padding-top:4px"></div>
-          </div>
-        ` : ''}
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label" for="t-cadence">Repeat</label>
-            <select class="field-select" id="t-cadence">
-              <option value="0" ${cadence == 0 ? 'selected' : ''}>Once</option>
-              <option value="1" ${cadence == 1 ? 'selected' : ''}>Daily</option>
-              <option value="7" ${cadence == 7 ? 'selected' : ''}>Weekly</option>
-              <option value="14" ${cadence == 14 ? 'selected' : ''}>Biweekly</option>
-              <option value="30" ${cadence == 30 ? 'selected' : ''}>Monthly</option>
-              <option value="90" ${cadence == 90 ? 'selected' : ''}>Quarterly</option>
-              <option value="__custom" ${!standardCadences.includes(cadence) ? 'selected' : ''}>Custom…</option>
-            </select>
-            <input class="field-input" id="t-cadence-custom" type="number" min="0" style="display:${!standardCadences.includes(cadence) ? 'block' : 'none'};margin-top:8px" value="${cadence}" placeholder="Days between" />
-          </div>
-          <div class="field"><label class="field-label" for="t-due">Next due</label><div style="display:flex;gap:6px"><input class="field-input" id="t-due" type="date" value="${nextDue}" style="flex:1" /><button type="button" class="btn btn-ghost" id="t-due-clear" style="padding:10px 12px">Clear</button></div></div>
-        </div>
+        <div class="field"><label class="field-label" for="t-session-date">Session date</label><input class="field-input" id="t-session-date" type="date" value="${sessionDate}" /></div>
         <div class="field"><label class="field-label" for="t-notes">Notes</label><textarea class="field-textarea" id="t-notes" placeholder="Optional">${escapeHtml(notes)}</textarea></div>
         <div class="modal-actions">
           ${id ? '<button class="btn btn-danger" id="t-delete">Delete</button>' : '<span></span>'}
@@ -1650,81 +1440,23 @@
         </div>
       `);
 
-      document.getElementById('t-cadence').addEventListener('change', e => {
-        document.getElementById('t-cadence-custom').style.display = e.target.value === '__custom' ? 'block' : 'none';
+      document.getElementById('t-assigned').addEventListener('change', e => {
+        document.getElementById('t-other-field').style.display = e.target.value === 'Other' ? 'block' : 'none';
       });
-      document.getElementById('t-due-clear').addEventListener('click', () => {
-        document.getElementById('t-due').value = '';
-      });
-      const anyoneCb = document.getElementById('t-assign-anyone');
-      const assigneeCbs = Array.from(document.querySelectorAll('.t-assignee-cb'));
-      const rotateCb = document.getElementById('t-assign-rotate');
-      const existingRotatingNames = rotating ? rotatingNames(assigned) : [];
-
-      function updateRotateOrderUI() {
-        const orderField = document.getElementById('t-rotate-order-field');
-        if (!orderField) return;
-        const checked = assigneeCbs.filter(cb => cb.checked).map(cb => cb.value);
-        if (rotateCb && rotateCb.checked && checked.length === 2) {
-          orderField.style.display = 'block';
-          const defaultFirst = (existingRotatingNames.length === 2 && checked.every(n => existingRotatingNames.includes(n)))
-            ? existingRotatingNames[0]
-            : checked[0];
-          document.getElementById('t-rotate-order-options').innerHTML = checked.map(n => `
-            <label style="display:flex;align-items:center;gap:6px;font-size:13.5px;cursor:pointer">
-              <input type="radio" name="t-rotate-first" value="${escapeAttr(n)}" ${n === defaultFirst ? 'checked' : ''} style="width:15px;height:15px;accent-color:var(--gold)" />
-              ${escapeHtml(n)}
-            </label>
-          `).join('');
-        } else {
-          orderField.style.display = 'none';
-        }
-      }
-
-      anyoneCb.addEventListener('change', () => {
-        if (anyoneCb.checked) assigneeCbs.forEach(cb => { cb.checked = false; });
-        updateRotateOrderUI();
-      });
-      assigneeCbs.forEach(cb => {
-        cb.addEventListener('change', () => {
-          if (cb.checked) anyoneCb.checked = false;
-          updateRotateOrderUI();
-        });
-      });
-      if (rotateCb) rotateCb.addEventListener('change', updateRotateOrderUI);
-      updateRotateOrderUI();
 
       document.getElementById('t-save').addEventListener('click', async () => {
         const title = document.getElementById('t-title').value.trim();
         if (!title) { toast('Give it a title'); return; }
-        let cadenceVal = document.getElementById('t-cadence').value;
-        cadenceVal = cadenceVal === '__custom' ? (parseInt(document.getElementById('t-cadence-custom').value, 10) || 0) : parseInt(cadenceVal, 10);
-
-        const anyoneChecked = document.getElementById('t-assign-anyone').checked;
-        const checkedBoxes = anyoneChecked ? [] : Array.from(document.querySelectorAll('.t-assignee-cb:checked')).map(cb => cb.value);
-        const rotateEl = document.getElementById('t-assign-rotate');
-        const wantsRotate = rotateEl && rotateEl.checked && checkedBoxes.length === 2;
-        let assignedValue;
-        if (wantsRotate) {
-          const firstRadio = document.querySelector('input[name="t-rotate-first"]:checked');
-          const first = firstRadio ? firstRadio.value : checkedBoxes[0];
-          const second = checkedBoxes[0] === first ? checkedBoxes[1] : checkedBoxes[0];
-          assignedValue = `${first} ⇄ ${second}`;
-        } else if (checkedBoxes.length > 0) {
-          assignedValue = checkedBoxes.join(', ');
-        } else {
-          assignedValue = null;
-        }
-
+        const assignedVal = document.getElementById('t-assigned').value || null;
         const fields = {
-          [F.tasks.Title]: title,
+          [F.tasks.Name]: title,
           [F.tasks.Type]: document.getElementById('t-type').value,
-          [F.tasks.AssignedTo]: assignedValue,
-          [F.tasks.CadenceDays]: cadenceVal,
-          [F.tasks.NextDue]: document.getElementById('t-due').value || null,
+          [F.tasks.Status]: document.getElementById('t-status').value,
+          [F.tasks.Assigned]: assignedVal,
+          [F.tasks.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('t-other-name').value.trim() || null) : null,
+          [F.tasks.SessionDate]: document.getElementById('t-session-date').value || null,
           [F.tasks.Notes]: document.getElementById('t-notes').value.trim() || null,
         };
-        if (!id) fields[F.tasks.Status] = 'Active';
         try {
           if (id) {
             const updated = await api('PATCH', 'Tasks', { id, body: { fields } });
@@ -1758,27 +1490,17 @@
       }
     }
 
-    function openEventModal(id = null, defaultDate = null) {
-      const event = id ? state.events.find(e => e.id === id) : null;
-      const e = event || {};
-      const title = f(e, F.events.Title) || '';
-      const date = f(e, F.events.Date) || defaultDate || toISODate(today());
-      const recurring = f(e, F.events.Recurring) || 'None';
-      const type = f(e, F.events.Type) || 'Appointment';
-      const people = f(e, F.events.People) || '';
-      const notes = f(e, F.events.Notes) || '';
+    function openSessionModal(id = null, defaultDate = null) {
+      const session = id ? state.sessions.find(s => s.id === id) : null;
+      const s = session || {};
+      const title = f(s, F.sessions.Name) || '';
+      const date = f(s, F.sessions.Date) || defaultDate || toISODate(today());
+      const description = f(s, F.sessions.Description) || '';
 
-      openModal(id ? 'Edit event' : 'New event', `
-        <div class="field"><label class="field-label" for="e-title">Title</label><input class="field-input" id="e-title" value="${escapeAttr(title)}" placeholder="e.g. Dentist appointment" /></div>
-        <div class="field-row">
-          <div class="field"><label class="field-label" for="e-date">Date</label><input class="field-input" id="e-date" type="date" value="${date}" /></div>
-          <div class="field"><label class="field-label" for="e-type">Type</label><select class="field-select" id="e-type"><option ${type === 'Appointment' ? 'selected' : ''}>Appointment</option><option ${type === 'Anniversary' ? 'selected' : ''}>Anniversary</option><option ${type === 'Holiday' ? 'selected' : ''}>Holiday</option><option ${type === 'Other' ? 'selected' : ''}>Other</option></select></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label class="field-label" for="e-recurring">Repeats</label><select class="field-select" id="e-recurring"><option ${recurring === 'None' ? 'selected' : ''}>None</option><option ${recurring === 'Weekly' ? 'selected' : ''}>Weekly</option><option ${recurring === 'Yearly' ? 'selected' : ''}>Yearly</option></select></div>
-          <div class="field"><label class="field-label" for="e-people">People</label><input class="field-input" id="e-people" value="${escapeAttr(people)}" placeholder="Comma-separated" /></div>
-        </div>
-        <div class="field"><label class="field-label" for="e-notes">Notes</label><textarea class="field-textarea" id="e-notes" placeholder="Optional">${escapeHtml(notes)}</textarea></div>
+      openModal(id ? 'Edit session' : 'New session', `
+        <div class="field"><label class="field-label" for="e-title">Name</label><input class="field-input" id="e-title" value="${escapeAttr(title)}" placeholder="e.g. Planning session" /></div>
+        <div class="field"><label class="field-label" for="e-date">Date</label><input class="field-input" id="e-date" type="date" value="${date}" /></div>
+        <div class="field"><label class="field-label" for="e-notes">Description</label><textarea class="field-textarea" id="e-notes" placeholder="Optional">${escapeHtml(description)}</textarea></div>
         <div class="modal-actions">
           ${id ? '<button class="btn btn-danger" id="e-delete">Delete</button>' : '<span></span>'}
           <div style="display:flex;gap:8px"><button class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" id="e-save">Save</button></div>
@@ -1787,26 +1509,24 @@
 
       document.getElementById('e-save').addEventListener('click', async () => {
         const title = document.getElementById('e-title').value.trim();
-        if (!title) { toast('Give it a title'); return; }
+        if (!title) { toast('Give it a name'); return; }
         const fields = {
-          [F.events.Title]: title,
-          [F.events.Date]: document.getElementById('e-date').value,
-          [F.events.Recurring]: document.getElementById('e-recurring').value,
-          [F.events.Type]: document.getElementById('e-type').value,
-          [F.events.People]: document.getElementById('e-people').value.trim() || null,
-          [F.events.Notes]: document.getElementById('e-notes').value.trim() || null,
+          [F.sessions.Name]: title,
+          [F.sessions.Date]: document.getElementById('e-date').value,
+          [F.sessions.Description]: document.getElementById('e-notes').value.trim() || null,
         };
         try {
           if (id) {
-            const updated = await api('PATCH', 'Events', { id, body: { fields } });
-            const idx = state.events.findIndex(ev => ev.id === id);
-            if (idx >= 0) state.events[idx] = updated;
+            const updated = await api('PATCH', 'Sessions', { id, body: { fields } });
+            const idx = state.sessions.findIndex(ev => ev.id === id);
+            if (idx >= 0) state.sessions[idx] = updated;
           } else {
-            const created = await api('POST', 'Events', { body: { fields } });
-            state.events.push(created);
+            const created = await api('POST', 'Sessions', { body: { fields } });
+            state.sessions.push(created);
           }
           closeModal();
           renderCalendar();
+          renderDashboardSessions();
           toast(id ? 'Saved' : 'Added');
         } catch (err) { toast('Save failed'); }
       });
@@ -1815,12 +1535,12 @@
         document.getElementById('e-delete').addEventListener('click', () => {
           closeModal();
           scheduleUndoableDelete({
-            getArray: () => state.events,
-            setArray: (arr) => { state.events = arr; },
+            getArray: () => state.sessions,
+            setArray: (arr) => { state.sessions = arr; },
             id,
-            render: renderCalendar,
-            deleteApi: () => api('DELETE', 'Events', { id }),
-            label: 'Event',
+            render: () => { renderCalendar(); renderDashboardSessions(); },
+            deleteApi: () => api('DELETE', 'Sessions', { id }),
+            label: 'Session',
           });
         });
       }
@@ -1831,7 +1551,6 @@
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(`page-${page}`).classList.add('active');
       document.querySelectorAll('.page-toggle button').forEach(b => b.classList.toggle('active', b.dataset.page === page));
-      if (page === 'groceries') refreshGroceriesOnly();
     }
     document.querySelectorAll('.page-toggle button[data-page]').forEach(b => {
       b.addEventListener('click', () => setPage(b.dataset.page));
@@ -1862,9 +1581,9 @@
     });
 
     document.getElementById('fab').addEventListener('click', () => {
-      if (state.currentPage === 'chores' || state.currentPage === 'dashboard') openTaskModal();
-      else if (state.currentPage === 'calendar') openEventModal();
-      else if (state.currentPage === 'groceries') document.getElementById('grocery-new-item')?.focus();
+      if (state.currentPage === 'tasks' || state.currentPage === 'dashboard') openTaskModal();
+      else if (state.currentPage === 'calendar') openSessionModal();
+      else if (state.currentPage === 'roadmap') document.getElementById('roadmap-new-item')?.focus();
     });
     document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
 
@@ -1890,247 +1609,213 @@
       });
     })();
 
-    // Groceries — synced via Airtable (Groceries table), shared across the family
-    const GROCERY_STORES = ['Anywhere', 'Food Lion', 'Harris Teeter', 'Walmart'];
-
-    function groceryStoreOf(item) {
-      const s = f(item, F.groceries.Store);
-      return Array.isArray(s) ? s : (s ? [s] : []);
-    }
-
-    function renderGroceryFilters() {
-      const wrap = document.getElementById('grocery-store-filters');
-      wrap.innerHTML = GROCERY_STORES.map(s =>
-        `<button class="chip ${state.groceryStore === s ? 'active' : ''}" data-store="${escapeAttr(s)}">${escapeHtml(s)}</button>`
-      ).join('');
+    // Roadmap — synced via Airtable (Roadmap table), grouped by Phase.
+    function renderRoadmapFilters() {
+      const chips = [
+        { key: 'all', label: 'Everyone' },
+        { key: 'Anjanette', label: 'Anjanette' },
+        { key: 'Chanelle', label: 'Chanelle' },
+        { key: 'Other', label: 'Other' },
+      ];
+      const wrap = document.getElementById('roadmap-filters');
+      wrap.innerHTML = chips.map(c => {
+        const active = state.roadmapFilter === c.key ? 'active' : '';
+        const color = c.key !== 'all' ? personColor(c.key) : null;
+        return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
+      }).join('');
       wrap.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', () => {
-          state.groceryStore = btn.dataset.store;
-          renderGroceryFilters();
-          renderGroceryList();
+          state.roadmapFilter = btn.dataset.filter;
+          renderRoadmapFilters();
+          renderRoadmap();
         });
       });
     }
 
-    // Aisle categorization — auto-inferred from the item name, with a per-device manual override.
-    // (Override lives in localStorage only; it doesn't sync across family members yet.)
-    const AISLE_CATEGORIES = [
-      { name: 'Produce', keywords: ['apple','banana','orange','lettuce','spinach','kale','tomato','onion','potato','carrot','garlic','cucumber','avocado','lemon','lime','grape','berry','strawberr','blueberr','broccoli','celery','mushroom','fruit','vegetable','salad','pepper bell','corn','squash','herbs fresh','cilantro','parsley fresh'] },
-      { name: 'Baking', keywords: ['flour','baking powder','baking soda','yeast','cake mix','frosting','sprinkles','vanilla extract','chocolate chips','food coloring','cocoa powder'] },
-      { name: 'Beans, Grains & Rice', keywords: ['rice','beans dry','lentil','quinoa','barley','dry oats','black beans','pinto beans','chickpea'] },
-      { name: 'Beer', keywords: ['beer','ale','lager','ipa'] },
-      { name: 'Beverages', keywords: ['soda','sports drink','energy drink','lemonade','sweet tea','soft drink','pop cola'] },
-      { name: 'Bread & Bakery', keywords: ['bread','bagel','bun','roll','tortilla','pita','baguette'] },
-      { name: 'Breakfast & Cereal', keywords: ['cereal','granola','pancake mix','waffle mix','oatmeal','pop tart','breakfast bar'] },
-      { name: 'Canned Goods', keywords: ['canned','can of','tomato sauce canned','tuna canned','canned corn','canned beans'] },
-      { name: 'Cheese', keywords: ['cheese','mozzarella','cheddar','parmesan','cream cheese'] },
-      { name: 'Cleaning', keywords: ['cleaner','bleach','detergent','dish soap','sponge','trash bag','disinfect'] },
-      { name: 'Coffee', keywords: ['coffee','espresso','k-cup','k cup'] },
-      { name: 'Condiments & Sauces', keywords: ['ketchup','mustard','mayo','mayonnaise','bbq sauce','soy sauce','hot sauce','salad dressing','pasta sauce','sauce'] },
-      { name: 'Cookies & Snacks', keywords: ['cookie','chips','pretzel','cracker','popcorn','candy','snack'] },
-      { name: 'Dairy', keywords: ['milk','yogurt','butter','cream','egg','sour cream','cottage cheese','half and half','creamer'] },
-      { name: 'Dried Fruit', keywords: ['raisin','dried apricot','dried cranberr','craisin','dried fruit'] },
-      { name: 'Frozen Foods', keywords: ['frozen','ice cream','popsicle'] },
-      { name: 'Health & Beauty', keywords: ['shampoo','toothpaste','deodorant','lotion','razor','floss','soap personal'] },
-      { name: 'Health Supplements', keywords: ['vitamin','supplement','protein powder','fish oil','probiotic','collagen'] },
-      { name: 'International & Ethnic', keywords: ['salsa','curry','taco kit','soy sauce ethnic','tortilla chips'] },
-      { name: 'Jams & Preserves', keywords: ['jam','jelly','preserves','marmalade','honey','peanut butter'] },
-      { name: 'Juices', keywords: ['juice','orange juice','apple juice','cranberry juice'] },
-      { name: 'Kosher', keywords: ['kosher'] },
-      { name: 'Meat & Poultry', keywords: ['chicken','beef','turkey','pork','ham','sausage','bacon','ground beef','steak'] },
-      { name: 'Nuts', keywords: ['almond','peanut','cashew','walnut','pecan','pistachio','trail mix'] },
-      { name: 'Oil & Vinegar', keywords: ['olive oil','vegetable oil','vinegar','cooking spray'] },
-      { name: 'Paper Products', keywords: ['paper towel','toilet paper','napkin','tissue','paper plate'] },
-      { name: 'Pasta & Noodles', keywords: ['pasta','spaghetti','noodle','macaroni','lasagna'] },
-      { name: 'Pet Food', keywords: ['dog food','cat food','pet treat','pet food'] },
-      { name: 'Seafood', keywords: ['shrimp','salmon','fish','tilapia','crab','tuna fresh'] },
-      { name: 'Soups and Broth', keywords: ['soup','broth','stock chicken','stock beef'] },
-      { name: 'Special Equipment', keywords: ['foil','plastic wrap','ziploc','storage bags','parchment paper'] },
-      { name: 'Spices', keywords: ['salt','pepper black','cinnamon','paprika','cumin','oregano','seasoning','spice'] },
-      { name: 'Water', keywords: ['water','sparkling water','bottled water'] },
-      { name: 'Wine & Spirits', keywords: ['wine','vodka','whiskey','rum','tequila','liquor'] },
-    ];
-    function inferCategory(name) {
-      const lower = (name || '').toLowerCase();
-      for (const cat of AISLE_CATEGORIES) {
-        if (cat.keywords.some(k => lower.includes(k))) return cat.name;
-      }
-      return 'Unsorted';
+    function matchesRoadmapFilter(item) {
+      if (state.roadmapFilter === 'all') return true;
+      return (f(item, F.roadmap.Assigned) || '') === state.roadmapFilter;
     }
-    function loadCategoryOverrides() {
-      try { return JSON.parse(localStorage.getItem('familyhq.groceryCategoryOverrides') || '{}'); }
-      catch (e) { return {}; }
-    }
-    function setCategoryOverride(itemId, categoryName) {
-      const map = loadCategoryOverrides();
-      if (categoryName) map[itemId] = categoryName;
-      else delete map[itemId];
-      localStorage.setItem('familyhq.groceryCategoryOverrides', JSON.stringify(map));
-    }
-    function getCategoryFor(item) {
-      const overrides = loadCategoryOverrides();
-      if (overrides[item.id]) return overrides[item.id];
-      return inferCategory(f(item, F.groceries.Item) || '');
-    }
-    const ALL_CATEGORY_NAMES = [...AISLE_CATEGORIES.map(c => c.name), 'Unsorted'];
 
-    function groceryItemRow(item) {
-      const checked = !!f(item, F.groceries.Checked);
-      const text = f(item, F.groceries.Item) || '';
-      const category = getCategoryFor(item);
+    function roadmapMini(item) {
+      const name = f(item, F.roadmap.Name) || 'Untitled';
+      const desc = f(item, F.roadmap.Description) || '';
+      const descShort = desc.length > 60 ? desc.slice(0, 57) + '…' : desc;
+      const meta = assigneeMeta(item, F.roadmap.Assigned, F.roadmap.OtherAssignee);
+      const styleVars = personCssVars(meta.colorName);
       return `
-        <div class="grocery-item ${checked ? 'checked' : ''}">
-          <button class="grocery-item-check" data-action="grocery-check" data-item-id="${item.id}" aria-label="Toggle">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </button>
-          <input class="grocery-item-text" data-action="grocery-edit" data-item-id="${item.id}" value="${escapeAttr(text)}" />
-          <select class="grocery-item-cat" data-action="grocery-cat" data-item-id="${item.id}" aria-label="Aisle">
-            ${ALL_CATEGORY_NAMES.map(c => `<option value="${escapeAttr(c)}" ${c === category ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}
-          </select>
-          <button class="grocery-item-delete" data-action="grocery-delete" data-item-id="${item.id}" aria-label="Delete">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+        <div class="task-mini" data-roadmap-id="${item.id}" style="${styleVars}">
+          <div class="task-mini-body" style="grid-column: 1 / 3;">
+            <div class="task-mini-title">${escapeHtml(name)}</div>
+            <div class="task-mini-meta">
+              ${descShort ? `<span>${escapeHtml(descShort)}</span>${meta.label ? '<span class="task-meta-sep"></span>' : ''}` : ''}
+              ${meta.label ? `<span>${escapeHtml(meta.label)}</span>` : ''}
+            </div>
+          </div>
+          ${meta.label ? `<div class="task-mini-avatar" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
         </div>
       `;
     }
 
-    function wireGroceryRowListeners(wrap) {
-      wrap.querySelectorAll('[data-action="grocery-check"]').forEach(btn => {
-        btn.addEventListener('click', () => toggleGroceryItem(btn.dataset.itemId));
+    function renderRoadmap() {
+      const items = state.roadmap.filter(matchesRoadmapFilter);
+      const groups = { Now: [], Next: [], Future: [] };
+      items.forEach(item => {
+        const phase = f(item, F.roadmap.Phase) || 'Future';
+        (groups[phase] || groups.Future).push(item);
       });
-      wrap.querySelectorAll('[data-action="grocery-delete"]').forEach(btn => {
-        btn.addEventListener('click', () => deleteGroceryItem(btn.dataset.itemId));
-      });
-      wrap.querySelectorAll('[data-action="grocery-edit"]').forEach(inp => {
-        inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
-        inp.addEventListener('blur', () => editGroceryItem(inp.dataset.itemId, inp.value));
-      });
-      wrap.querySelectorAll('[data-action="grocery-cat"]').forEach(sel => {
-        sel.addEventListener('change', () => {
-          setCategoryOverride(sel.dataset.itemId, sel.value);
-          renderGroceryList();
-        });
-      });
-    }
+      const sortByName = (a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      Object.values(groups).forEach(list => list.sort(sortByName));
 
-    function renderGroceryList() {
-      const items = state.groceries.filter(g => {
-        const stores = groceryStoreOf(g);
-        if (stores.includes('Anywhere')) return true;
-        return stores.includes(state.groceryStore);
-      });
-      const wrap = document.getElementById('grocery-list');
-      if (items.length === 0) {
-        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">🛒</div><div class="empty-title">Nothing yet</div>Add items above.</div>`;
-        return;
-      }
+      const meta = [
+        { key: 'Now', cls: 'bucket-today' },
+        { key: 'Next', cls: 'bucket-week' },
+        { key: 'Future', cls: 'bucket-later' },
+      ];
 
-      const unchecked = items.filter(i => !f(i, F.groceries.Checked));
-      const checked = items.filter(i => f(i, F.groceries.Checked));
+      const wrap = document.getElementById('roadmap-list');
+      wrap.innerHTML = `<div class="buckets-grid">${meta.map(m => {
+        const list = groups[m.key];
+        const body = list.length === 0
+          ? `<div class="bucket-empty">Nothing here</div>`
+          : list.map(roadmapMini).join('');
+        return `
+          <div class="bucket ${m.cls}">
+            <div class="bucket-head">
+              <span class="bucket-title">${m.key}</span>
+              <span class="bucket-count">${list.length}</span>
+            </div>
+            ${body}
+          </div>
+        `;
+      }).join('')}</div>`;
 
-      const groups = {};
-      unchecked.forEach(item => {
-        const cat = getCategoryFor(item);
-        (groups[cat] = groups[cat] || []).push(item);
-      });
-      Object.values(groups).forEach(list => list.sort((a, b) => (f(a, F.groceries.Item) || '').localeCompare(f(b, F.groceries.Item) || '')));
-
-      let html = '';
-      ALL_CATEGORY_NAMES.forEach(catName => {
-        const groupItems = groups[catName];
-        if (!groupItems || groupItems.length === 0) return;
-        html += `<div class="grocery-category-label">${escapeHtml(catName)}</div>`;
-        html += groupItems.map(groceryItemRow).join('');
-      });
-      if (checked.length > 0) {
-        html += `<div class="grocery-category-label">Checked</div>`;
-        html += checked.map(groceryItemRow).join('');
-      }
-
-      wrap.innerHTML = html;
-      wireGroceryRowListeners(wrap);
-    }
-
-    async function editGroceryItem(id, newText) {
-      const item = state.groceries.find(i => i.id === id);
-      if (!item) return;
-      const trimmed = newText.trim();
-      const current = f(item, F.groceries.Item) || '';
-      if (!trimmed || trimmed === current) { renderGroceryList(); return; }
-      item.fields[F.groceries.Item] = trimmed;
-      try {
-        await api('PATCH', 'Groceries', { id, body: { fields: { [F.groceries.Item]: trimmed } } });
-      } catch (err) {
-        console.error(err);
-        toast('Save failed');
-        loadAll();
-      }
-    }
-
-    async function toggleGroceryItem(id) {
-      const item = state.groceries.find(i => i.id === id);
-      if (!item) return;
-      const newVal = !f(item, F.groceries.Checked);
-      item.fields[F.groceries.Checked] = newVal;
-      renderGroceryList();
-      try {
-        await api('PATCH', 'Groceries', { id, body: { fields: { [F.groceries.Checked]: newVal } } });
-      } catch (err) {
-        console.error(err);
-        toast('Sync failed');
-        loadAll();
-      }
-    }
-
-    function deleteGroceryItem(id) {
-      scheduleUndoableDelete({
-        getArray: () => state.groceries,
-        setArray: (arr) => { state.groceries = arr; },
-        id,
-        render: renderGroceryList,
-        deleteApi: () => api('DELETE', 'Groceries', { id }),
-        label: 'Item',
+      wrap.querySelectorAll('[data-roadmap-id]').forEach(el => {
+        el.addEventListener('click', () => openRoadmapModal(el.dataset.roadmapId));
       });
     }
 
-    async function addGroceryItem() {
-      const input = document.getElementById('grocery-new-item');
+    async function addRoadmapItem() {
+      const input = document.getElementById('roadmap-new-item');
       const text = input.value.trim();
       if (!text) return;
       input.value = '';
-      const fields = { [F.groceries.Item]: text, [F.groceries.Store]: [state.groceryStore] };
+      const fields = { [F.roadmap.Name]: text, [F.roadmap.Phase]: 'Future' };
       try {
-        const created = await api('POST', 'Groceries', { body: { fields } });
-        state.groceries.push(created);
-        renderGroceryList();
+        const created = await api('POST', 'Roadmap', { body: { fields } });
+        state.roadmap.push(created);
+        renderRoadmap();
       } catch (err) {
         console.error(err);
         toast('Add failed');
       }
     }
-    document.getElementById('grocery-add-btn').addEventListener('click', addGroceryItem);
-    document.getElementById('grocery-new-item').addEventListener('keydown', e => { if (e.key === 'Enter') addGroceryItem(); });
+    document.getElementById('roadmap-add-btn').addEventListener('click', addRoadmapItem);
+    document.getElementById('roadmap-new-item').addEventListener('keydown', e => { if (e.key === 'Enter') addRoadmapItem(); });
 
-    renderGroceryFilters();
-    renderGroceryList();
+    function openRoadmapModal(id = null) {
+      const item = id ? state.roadmap.find(r => r.id === id) : null;
+      const r = item || {};
+      const name = f(r, F.roadmap.Name) || '';
+      const phase = f(r, F.roadmap.Phase) || 'Future';
+      const description = f(r, F.roadmap.Description) || '';
+      const assigned = f(r, F.roadmap.Assigned) || '';
+      const otherAssignee = f(r, F.roadmap.OtherAssignee) || '';
 
-    // Family messages — needs a Messages table (Text, Author) in Airtable to sync.
-    // Until AIRTABLE_TABLE_IDS.Messages is set, this shows a setup notice instead of posting.
-    function renderMessages() {
-      const wrap = document.getElementById('message-list');
-      if (!AIRTABLE_TABLE_IDS.Messages) {
-        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">💬</div><div class="empty-title">Not set up yet</div>Add a Messages table in Airtable, then ask Claude to finish wiring it up.</div>`;
+      openModal(id ? 'Edit roadmap item' : 'New roadmap item', `
+        <div class="field"><label class="field-label" for="r-name">Name</label><input class="field-input" id="r-name" value="${escapeAttr(name)}" placeholder="e.g. Plan Italy trip" /></div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="r-phase">Phase</label><select class="field-select" id="r-phase">
+            <option ${phase === 'Now' ? 'selected' : ''}>Now</option>
+            <option ${phase === 'Next' ? 'selected' : ''}>Next</option>
+            <option ${phase === 'Future' ? 'selected' : ''}>Future</option>
+          </select></div>
+          <div class="field"><label class="field-label" for="r-assigned">Assigned</label><select class="field-select" id="r-assigned">
+            <option value="" ${!assigned ? 'selected' : ''}>—</option>
+            <option ${assigned === 'Anjanette' ? 'selected' : ''}>Anjanette</option>
+            <option ${assigned === 'Chanelle' ? 'selected' : ''}>Chanelle</option>
+            <option ${assigned === 'Both' ? 'selected' : ''}>Both</option>
+            <option ${assigned === 'Other' ? 'selected' : ''}>Other</option>
+          </select></div>
+        </div>
+        <div class="field" id="r-other-field" style="display:${assigned === 'Other' ? 'block' : 'none'}">
+          <label class="field-label" for="r-other-name">Other name</label>
+          <input class="field-input" id="r-other-name" value="${escapeAttr(otherAssignee)}" placeholder="Who?" />
+        </div>
+        <div class="field"><label class="field-label" for="r-desc">Description</label><textarea class="field-textarea" id="r-desc" placeholder="Optional">${escapeHtml(description)}</textarea></div>
+        <div class="modal-actions">
+          ${id ? '<button class="btn btn-danger" id="r-delete">Delete</button>' : '<span></span>'}
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" id="r-save">Save</button></div>
+        </div>
+      `);
+
+      document.getElementById('r-assigned').addEventListener('change', e => {
+        document.getElementById('r-other-field').style.display = e.target.value === 'Other' ? 'block' : 'none';
+      });
+
+      document.getElementById('r-save').addEventListener('click', async () => {
+        const name = document.getElementById('r-name').value.trim();
+        if (!name) { toast('Give it a name'); return; }
+        const assignedVal = document.getElementById('r-assigned').value || null;
+        const fields = {
+          [F.roadmap.Name]: name,
+          [F.roadmap.Phase]: document.getElementById('r-phase').value,
+          [F.roadmap.Description]: document.getElementById('r-desc').value.trim() || null,
+          [F.roadmap.Assigned]: assignedVal,
+          [F.roadmap.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('r-other-name').value.trim() || null) : null,
+        };
+        try {
+          if (id) {
+            const updated = await api('PATCH', 'Roadmap', { id, body: { fields } });
+            const idx = state.roadmap.findIndex(x => x.id === id);
+            if (idx >= 0) state.roadmap[idx] = updated;
+          } else {
+            const created = await api('POST', 'Roadmap', { body: { fields } });
+            state.roadmap.push(created);
+          }
+          closeModal();
+          renderRoadmap();
+          toast(id ? 'Saved' : 'Added');
+        } catch (err) {
+          console.error(err);
+          toast('Save failed');
+        }
+      });
+
+      if (id) {
+        document.getElementById('r-delete').addEventListener('click', () => {
+          closeModal();
+          scheduleUndoableDelete({
+            getArray: () => state.roadmap,
+            setArray: (arr) => { state.roadmap = arr; },
+            id,
+            render: renderRoadmap,
+            deleteApi: () => api('DELETE', 'Roadmap', { id }),
+            label: 'Roadmap item',
+          });
+        });
+      }
+    }
+
+    renderRoadmapFilters();
+    renderRoadmap();
+
+    // Notes — needs a Notes table (Message, Author, Created) in Airtable to sync.
+    function renderNotes() {
+      const wrap = document.getElementById('note-list');
+      if (!AIRTABLE_TABLE_IDS.Notes) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">💬</div><div class="empty-title">Not set up yet</div>Add a Notes table in Airtable, then ask Claude to finish wiring it up.</div>`;
         return;
       }
-      if (state.messages.length === 0) {
-        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">💬</div><div class="empty-title">No messages yet</div>Leave a note above.</div>`;
+      if (state.notes.length === 0) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">💬</div><div class="empty-title">No notes yet</div>Leave a note above.</div>`;
         return;
       }
-      const sorted = [...state.messages].reverse().sort((a, b) => (f(b, F.messages.Created) || '').localeCompare(f(a, F.messages.Created) || ''));
+      const sorted = [...state.notes].sort((a, b) => (f(b, F.notes.Created) || '').localeCompare(f(a, F.notes.Created) || ''));
       wrap.innerHTML = sorted.map(m => {
-        const text = f(m, F.messages.Text) || '';
-        const author = f(m, F.messages.Author) || '';
-        const created = f(m, F.messages.Created);
+        const text = f(m, F.notes.Message) || '';
+        const author = f(m, F.notes.Author) || '';
+        const created = f(m, F.notes.Created);
         const dateLabel = created ? (() => { const d = parseISODate(created); return `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`; })() : '';
         const meta = [author, dateLabel].filter(Boolean).join(' · ');
         return `
@@ -2139,59 +1824,59 @@
               <div style="font-size:14px;color:var(--ink)">${escapeHtml(text)}</div>
               ${meta ? `<div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-muted);margin-top:3px">${escapeHtml(meta)}</div>` : ''}
             </div>
-            <button class="grocery-item-delete" data-action="message-delete" data-item-id="${m.id}" aria-label="Delete">
+            <button class="grocery-item-delete" data-action="note-delete" data-item-id="${m.id}" aria-label="Delete">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
         `;
       }).join('');
-      wrap.querySelectorAll('[data-action="message-delete"]').forEach(btn => {
-        btn.addEventListener('click', () => deleteMessage(btn.dataset.itemId));
+      wrap.querySelectorAll('[data-action="note-delete"]').forEach(btn => {
+        btn.addEventListener('click', () => deleteNote(btn.dataset.itemId));
       });
     }
 
-    async function postMessage() {
-      const input = document.getElementById('message-new-text');
-      const authorSel = document.getElementById('message-author');
+    async function postNote() {
+      const input = document.getElementById('note-new-text');
+      const authorSel = document.getElementById('note-author');
       const text = input.value.trim();
       if (!text) return;
-      if (!AIRTABLE_TABLE_IDS.Messages) { toast('Messages table not set up yet'); return; }
+      if (!AIRTABLE_TABLE_IDS.Notes) { toast('Notes table not set up yet'); return; }
       input.value = '';
-      const fields = { [F.messages.Text]: text, [F.messages.Created]: toISODate(today()) };
-      if (authorSel.value) fields[F.messages.Author] = authorSel.value;
+      const fields = { [F.notes.Message]: text, [F.notes.Created]: toISODate(today()) };
+      if (authorSel.value) fields[F.notes.Author] = authorSel.value;
       try {
-        const created = await api('POST', 'Messages', { body: { fields } });
-        state.messages.push(created);
-        renderMessages();
+        const created = await api('POST', 'Notes', { body: { fields } });
+        state.notes.push(created);
+        renderNotes();
       } catch (err) {
         console.error(err);
         toast('Post failed');
       }
     }
 
-    function deleteMessage(id) {
+    function deleteNote(id) {
       scheduleUndoableDelete({
-        getArray: () => state.messages,
-        setArray: (arr) => { state.messages = arr; },
+        getArray: () => state.notes,
+        setArray: (arr) => { state.notes = arr; },
         id,
-        render: renderMessages,
-        deleteApi: () => api('DELETE', 'Messages', { id }),
-        label: 'Message',
+        render: renderNotes,
+        deleteApi: () => api('DELETE', 'Notes', { id }),
+        label: 'Note',
       });
     }
 
-    document.getElementById('message-add-btn').addEventListener('click', postMessage);
-    document.getElementById('message-new-text').addEventListener('keydown', e => { if (e.key === 'Enter') postMessage(); });
-    renderMessages();
+    document.getElementById('note-add-btn').addEventListener('click', postNote);
+    document.getElementById('note-new-text').addEventListener('keydown', e => { if (e.key === 'Enter') postNote(); });
+    renderNotes();
 
-    function renderDashboardEvents() {
+    function renderDashboardSessions() {
       const start = today();
       const items = [];
       for (let i = 0; i < 7; i++) {
         const d = new Date(start.getTime() + i * DAY_MS);
         eventsForDate(d).forEach(e => items.push(e));
       }
-      const wrap = document.getElementById('dashboard-events');
+      const wrap = document.getElementById('dashboard-sessions');
       if (items.length === 0) {
         wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">Nothing this week</div></div>`;
         return;
@@ -2200,13 +1885,12 @@
     }
 
     function renderAll() {
-      renderChoreFilters();
+      renderTaskFilters();
       renderTasks();
       renderCalendar();
-      renderGroceryFilters();
-      renderGroceryList();
-      renderDashboardEvents();
-      renderMessages();
+      renderRoadmap();
+      renderDashboardSessions();
+      renderNotes();
     }
 
     let pollTimer;
@@ -2219,35 +1903,13 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         loadAll();
-        if (state.currentPage === 'groceries') refreshGroceriesOnly();
       }
     });
-
-    // Lightweight refresh (Groceries table only) so two people shopping at the same
-    // time see each other's checked-off items in ~seconds instead of waiting on the
-    // full 15s sync of every table.
-    async function refreshGroceriesOnly() {
-      try {
-        state.groceries = await listAll('Groceries');
-        renderGroceryList();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    let groceryFastPollTimer;
-    function startGroceryFastPolling() {
-      if (groceryFastPollTimer) clearInterval(groceryFastPollTimer);
-      groceryFastPollTimer = setInterval(() => {
-        if (document.visibilityState === 'visible' && state.currentPage === 'groceries') {
-          refreshGroceriesOnly();
-        }
-      }, GROCERY_FAST_POLL_MS);
-    }
 
     function escapeHtml(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
     function escapeAttr(s) { return escapeHtml(s); }
 
-    loadAll().then(() => { startPolling(); startGroceryFastPolling(); });
+    loadAll().then(() => { startPolling(); });
   </script>
 </body>
 </html>
