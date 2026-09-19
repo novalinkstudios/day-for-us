@@ -26,7 +26,7 @@
 
       --person-Anjanette: var(--pink);
       --person-Chanelle: var(--sky);
-      --person-Both: var(--primary);
+      --person-Both: var(--green);
       --person-Other: var(--pop);
 
       --radius-sm: 8px;
@@ -326,6 +326,11 @@
     .projects-view-toggle button { padding: 5px 14px; border-radius: 8px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--ink-muted); background: transparent; border: 1px solid var(--border); transition: var(--transition); }
     .projects-view-toggle button.active { color: white; background: var(--primary); border-color: var(--primary); }
 
+    .projects-section { margin-bottom: 24px; }
+    .projects-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 0 2px; }
+    .projects-section-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
+    .projects-section-count { font-family: var(--font-mono); font-size: 11px; color: var(--ink-subtle); }
+    .projects-section-line { flex: 1; height: 1px; background: var(--border); }
     .project-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
     .project-card-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; border-radius: 12px; transition: var(--transition); }
     .project-card-head:hover { background: var(--hover); }
@@ -1858,22 +1863,24 @@
 
     function renderProjectsList() {
       const items = state.roadmap.filter(matchesProjectsFilter);
-      const phaseOrder = { Now: 0, Next: 1, Future: 2 };
-      const sorted = [...items].sort((a, b) => {
-        const pa = phaseOrder[f(a, F.roadmap.Phase)] ?? 2;
-        const pb = phaseOrder[f(b, F.roadmap.Phase)] ?? 2;
-        if (pa !== pb) return pa - pb;
-        return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      const phases = ['Now', 'Next', 'Future'];
+      const grouped = {};
+      phases.forEach(p => grouped[p] = []);
+      items.forEach(item => {
+        const phase = f(item, F.roadmap.Phase) || 'Future';
+        if (!grouped[phase]) grouped[phase] = [];
+        grouped[phase].push(item);
       });
+      phases.forEach(p => grouped[p].sort((a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '')));
 
       const wrap = document.getElementById('projects-list');
       document.getElementById('projects-count').textContent = state.roadmap.length;
-      if (sorted.length === 0) {
+      if (items.length === 0) {
         wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📋</div><div class="empty-title">No projects yet</div>Use the + button or the Roadmap tab to add one.</div>`;
         return;
       }
 
-      wrap.innerHTML = sorted.map(item => {
+      const renderCard = (item) => {
         const name = f(item, F.roadmap.Name) || 'Untitled';
         const phase = f(item, F.roadmap.Phase) || 'Future';
         const status = F.roadmap.Status ? (f(item, F.roadmap.Status) || '') : '';
@@ -1919,7 +1926,20 @@
             </div></div>
           </div>
         `;
-      }).join('');
+      };
+
+      wrap.innerHTML = phases
+        .filter(p => grouped[p].length > 0)
+        .map(p => `
+          <div class="projects-section">
+            <div class="projects-section-head">
+              <span class="projects-section-title">${p}</span>
+              <span class="projects-section-count">${grouped[p].length}</span>
+              <span class="projects-section-line"></span>
+            </div>
+            ${grouped[p].map(renderCard).join('')}
+          </div>
+        `).join('');
 
       wrap.querySelectorAll('[data-project-toggle]').forEach(el => {
         el.addEventListener('click', e => {
