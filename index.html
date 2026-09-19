@@ -379,7 +379,7 @@
     .task-table { display: flex; flex-direction: column; gap: 4px; }
     .task-table-head, .task-table-row {
       display: grid;
-      grid-template-columns: 1fr 120px 90px 100px 32px;
+      grid-template-columns: 1fr 70px 120px 90px 100px 32px;
       gap: 10px;
       padding: 10px 12px;
       align-items: center;
@@ -417,6 +417,7 @@
     .tt-type-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
     .tt-type-tag.chore, .tt-type-tag.task { background: var(--surface-strong); color: var(--ink-2); }
     .tt-type-tag.project { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+    .tt-due { font-size: 11px; }
     .tt-due-overdue { color: var(--red); font-weight: 600; }
     .tt-check {
       width: 20px; height: 20px; border-radius: 6px;
@@ -702,8 +703,8 @@
       <button data-page="dashboard" class="active" role="tab">Dashboard</button>
       <button data-page="tasks" role="tab">Tasks</button>
       <button data-page="calendar" role="tab">Calendar</button>
-      <button data-page="roadmap" role="tab">Roadmap</button>
       <button data-page="projects" role="tab">Projects</button>
+      <button data-page="roadmap" role="tab">Roadmap</button>
     </div>
 
     <div class="page active" id="page-dashboard">
@@ -887,6 +888,8 @@
       projectsFilter: 'all',
       roadmapSort: 'date',
       projectsSort: 'date',
+      tasksSort: 'date',
+      projectsSectionCollapsed: { Now: true, Next: true, Future: true },
     };
 
     (function initTheme() {
@@ -1091,18 +1094,26 @@
         { key: 'Chanelle', label: 'Chanelle' },
         { key: 'Other', label: 'Other' },
       ];
-      const html = chips.map(c => {
+      const filterHtml = chips.map(c => {
         const active = state.taskFilter === c.key ? 'active' : '';
         const color = c.key !== 'all' ? personColor(c.key) : null;
         return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
       }).join('');
+      const sortHtml = `<span class="filter-spacer"></span><div class="sort-group"><span class="sort-label">Sort</span><button class="chip ${state.tasksSort === 'date' ? 'active' : ''}" data-sort="date">Date</button><button class="chip ${state.tasksSort === 'name' ? 'active' : ''}" data-sort="name">Name</button></div>`;
       ['task-filters', 'task-filters-2'].forEach(id => {
         const wrap = document.getElementById(id);
         if (!wrap) return;
-        wrap.innerHTML = html;
-        wrap.querySelectorAll('button').forEach(btn => {
+        wrap.innerHTML = filterHtml + sortHtml;
+        wrap.querySelectorAll('[data-filter]').forEach(btn => {
           btn.addEventListener('click', () => {
             state.taskFilter = btn.dataset.filter;
+            renderTaskFilters();
+            renderTasks();
+          });
+        });
+        wrap.querySelectorAll('[data-sort]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.tasksSort = btn.dataset.sort;
             renderTaskFilters();
             renderTasks();
           });
@@ -1130,8 +1141,17 @@
         else buckets.backlog.push(t);
       });
 
-      const sortByName = (a, b) => (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
-      Object.values(buckets).forEach(list => list.sort(sortByName));
+      const taskSortFn = state.tasksSort === 'date'
+        ? (a, b) => {
+            const da = f(a, F.tasks.SessionDate) || '';
+            const db = f(b, F.tasks.SessionDate) || '';
+            if (da && !db) return -1;
+            if (!da && db) return 1;
+            if (da && db) return da.localeCompare(db);
+            return (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
+          }
+        : (a, b) => (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
+      Object.values(buckets).forEach(list => list.sort(taskSortFn));
 
       const MAX_TOTAL = 15;
       const order = ['tackling', 'ondeck', 'backlog'];
@@ -1186,6 +1206,13 @@
         const aStatus = statusOrder[f(a, F.tasks.Status)] ?? 4;
         const bStatus = statusOrder[f(b, F.tasks.Status)] ?? 4;
         if (aStatus !== bStatus) return aStatus - bStatus;
+        if (state.tasksSort === 'date') {
+          const da = f(a, F.tasks.SessionDate) || '';
+          const db = f(b, F.tasks.SessionDate) || '';
+          if (da && !db) return -1;
+          if (!da && db) return 1;
+          if (da && db) return da.localeCompare(db);
+        }
         return (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
       });
       document.getElementById('all-count').textContent = sortedAll.length;
@@ -1199,6 +1226,7 @@
         table.innerHTML = `
           <div class="task-table-head">
             <div>Task</div>
+            <div>Due</div>
             <div>Assigned</div>
             <div>Status</div>
             <div>Type</div>
@@ -1253,11 +1281,14 @@
       const title = f(task, F.tasks.Name) || 'Untitled';
       const type = f(task, F.tasks.Type) || 'Task';
       const status = f(task, F.tasks.Status) || 'Backlog';
+      const dueDate = f(task, F.tasks.SessionDate) || '';
       const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
       const styleVars = personCssVars(meta.colorName);
+      const dueFmt = dueDate ? (() => { const d = parseISODate(dueDate); return `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`; })() : '';
       return `
         <div class="task-table-row" data-task-id="${task.id}" style="${styleVars}">
           <div class="tt-title">${escapeHtml(title)}</div>
+          <div class="tt-cell tt-due">${dueFmt || '<span style="opacity:0.35">—</span>'}</div>
           <div class="tt-cell tt-assigned">
             ${meta.label ? `<span class="tt-avatar">${escapeHtml(meta.avatarInitials)}</span><span>${escapeHtml(meta.label)}</span>` : '<span>—</span>'}
           </div>
