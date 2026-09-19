@@ -1,1456 +1,1915 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Day for Us</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-<style>
-/* ── TOKENS ── */
-:root {
-  --font-display: 'Outfit', system-ui, sans-serif;
-  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --bg: #0e0e12;
-  --surface: #18181e;
-  --surface2: #1e1e26;
-  --border: #2a2a33;
-  --ink: #f0f0f4;
-  --ink-muted: #9595a4;
-  --primary: #8B5CF6;
-  --primary-hover: #7C3AED;
-  --primary-glow: rgba(139,92,246,0.15);
-  --deep: #6D28D9;
-  --lavender: #C084FC;
-  --pink: #F472B6;
-  --pop: #FDE68A;
-  --green: #34D399;
-  --red: #F87171;
-  --glass: rgba(139,92,246,0.06);
-  --glass-border: rgba(139,92,246,0.12);
-  --glass-bg: rgba(24,24,30,0.7);
-  --radius: 16px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.25);
-  --transition: 0.2s cubic-bezier(.4,0,.2,1);
-  --zoom: 1;
-}
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #f5f0ff; --surface: #ffffff; --surface2: #f0ecf8;
-    --border: #e0d8ee; --ink: #1a1424; --ink-muted: #6e6580;
-    --primary: #7C3AED; --primary-hover: #6D28D9;
-    --primary-glow: rgba(124,58,237,0.1);
-    --deep: #5B21B6; --lavender: #A78BFA; --pink: #EC4899; --pop: #F59E0B;
-    --green: #059669; --red: #DC2626;
-    --glass: rgba(124,58,237,0.04); --glass-border: rgba(124,58,237,0.1);
-    --glass-bg: rgba(255,255,255,0.7);
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e0e12; --surface: #18181e; --surface2: #1e1e26;
-  --border: #2a2a33; --ink: #f0f0f4; --ink-muted: #9595a4;
-  --primary: #8B5CF6; --primary-hover: #7C3AED;
-  --primary-glow: rgba(139,92,246,0.15);
-  --deep: #6D28D9; --lavender: #C084FC; --pink: #F472B6; --pop: #FDE68A;
-  --green: #34D399; --red: #F87171;
-  --glass: rgba(139,92,246,0.06); --glass-border: rgba(139,92,246,0.12);
-  --glass-bg: rgba(24,24,30,0.7);
-  --shadow: 0 4px 24px rgba(0,0,0,0.25);
-}
-:root[data-theme="light"] {
-  --bg: #f5f0ff; --surface: #ffffff; --surface2: #f0ecf8;
-  --border: #e0d8ee; --ink: #1a1424; --ink-muted: #6e6580;
-  --primary: #7C3AED; --primary-hover: #6D28D9;
-  --primary-glow: rgba(124,58,237,0.1);
-  --deep: #5B21B6; --lavender: #A78BFA; --pink: #EC4899; --pop: #F59E0B;
-  --green: #059669; --red: #DC2626;
-  --glass: rgba(124,58,237,0.04); --glass-border: rgba(124,58,237,0.1);
-  --glass-bg: rgba(255,255,255,0.7);
-  --shadow: 0 4px 24px rgba(0,0,0,0.08);
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
+  <title>Day for Us</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
-/* ── RESET ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  zoom: var(--zoom);
-}
-button, input, select, textarea {
-  font-family: inherit; font-size: inherit; color: inherit;
-  border: none; outline: none; background: none;
-}
-button { cursor: pointer; }
+      --gold: #eab308;
+      --pink: #ec4899;
+      --green: #10b981;
+      --overdue: #ef4444;
 
-/* ── SETUP SCREEN ── */
-.setup {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 100dvh; padding: 24px 16px; text-align: center;
-}
-.setup-brand {
-  font-family: var(--font-display); font-weight: 800; font-size: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; margin-bottom: 8px;
-}
-.setup-sub { color: var(--ink-muted); font-size: 14px; margin-bottom: 32px; }
-.setup-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 24px; width: 100%; max-width: 400px;
-}
-.setup-card label {
-  display: block; text-align: left; font-weight: 600; font-size: 13px;
-  margin-bottom: 8px; color: var(--ink-muted);
-}
-.setup-card input {
-  width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface2);
-  font-family: var(--font-mono); font-size: 13px;
-}
-.setup-card input:focus { border-color: var(--primary); }
-.setup-card .btn-primary { width: 100%; margin-top: 16px; }
+      --person-Rose: #ec4899;
+      --person-Coral: #f97316;
+      --person-Amber: #eab308;
+      --person-Gold: #eab308;
+      --person-Emerald: #10b981;
+      --person-Teal: #14b8a6;
+      --person-Sky: #0ea5e9;
+      --person-Indigo: #6366f1;
+      --person-Violet: #ec4899;
+      --person-Slate: #71717a;
 
-/* ── BUTTONS ── */
-.btn-primary {
-  padding: 12px 24px; border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--primary), var(--deep));
-  color: #fff; font-family: var(--font-display); font-weight: 700;
-  font-size: 14px; transition: all var(--transition);
-  box-shadow: 0 4px 16px rgba(139,92,246,0.3);
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
-.btn-ghost {
-  padding: 8px 16px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); color: var(--ink-muted);
-  font-size: 13px; font-weight: 500; transition: all var(--transition);
-}
-.btn-ghost:hover { border-color: var(--primary); color: var(--ink); }
+      --radius-sm: 8px;
+      --radius: 14px;
+      --radius-lg: 18px;
+      --transition: 150ms ease;
+    }
 
-/* ── APP SHELL ── */
-.app { display: none; flex-direction: column; min-height: 100dvh; }
-.app.active { display: flex; }
+    html[data-theme="dark"] {
+      --bg-base: #050505;
+      --surface: #121214;
+      --surface-2: #1a1a1d;
+      --surface-strong: #202024;
+      --surface-solid: #121214;
 
-/* Header */
-.header {
-  display: flex; align-items: center; padding: 14px 16px; gap: 12px;
-  border-bottom: 1px solid var(--border);
-  background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  position: sticky; top: 0; z-index: 100;
-}
-.brand {
-  font-family: var(--font-display); font-weight: 800; font-size: 20px;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; flex-shrink: 0;
-}
-.header-spacer { flex: 1; }
-.sync-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
-  flex-shrink: 0; transition: background var(--transition);
-}
-.sync-dot.syncing { background: var(--pop); animation: pulse 1s infinite; }
-.sync-dot.error { background: var(--red); }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-.header-btn {
-  width: 32px; height: 32px; border-radius: var(--radius-xs);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--ink-muted); transition: all var(--transition); font-size: 16px;
-}
-.header-btn:hover { background: var(--glass); color: var(--ink); }
+      --ink: #ffffff;
+      --ink-2: #e4e4e7;
+      --ink-muted: #a1a1aa;
+      --ink-subtle: #71717a;
 
-/* Tab bar */
-.tab-bar {
-  display: flex; gap: 0; border-bottom: 1px solid var(--border);
-  background: var(--surface); overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab-item {
-  flex: 1; min-width: fit-content; padding: 12px 16px; text-align: center;
-  font-family: var(--font-display); font-weight: 600; font-size: 13px;
-  color: var(--ink-muted); border-bottom: 2px solid transparent;
-  transition: all var(--transition); white-space: nowrap;
-}
-.tab-item:hover { color: var(--ink); }
-.tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+      --border: #232326;
+      --border-strong: #303034;
+      --hover: #1c1c1f;
+      --scrim: rgba(0, 0, 0, 0.7);
+    }
 
-/* Content */
-.content { flex: 1; padding: 16px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeUp 0.25s ease-out; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    html[data-theme="light"] {
+      --bg-base: #f0f0f2;
+      --surface: #f9f9fa;
+      --surface-2: #eeeef0;
+      --surface-strong: #e6e6e9;
+      --surface-solid: #fbfbfc;
 
-/* ── GLASS CARD ── */
-.glass {
-  background: var(--surface); border: 1px solid var(--glass-border);
-  border-radius: var(--radius); backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px); transition: all var(--transition);
-}
-.glass:hover { border-color: var(--primary); }
+      --ink: #0a0a0a;
+      --ink-2: #3f3f46;
+      --ink-muted: #71717a;
+      --ink-subtle: #a1a1aa;
 
-/* ── DASHBOARD ── */
-.bento {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-}
-.bento-full { grid-column: 1 / -1; }
-.tile { padding: 16px; }
-.tile-label {
-  font-family: var(--font-display); font-weight: 700; font-size: 10px;
-  text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted);
-  margin-bottom: 10px;
-}
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.stat-item {
-  text-align: center; padding: 10px 4px; border-radius: var(--radius-sm);
-  background: var(--glass); cursor: pointer; transition: all var(--transition);
-}
-.stat-item:hover { background: var(--primary-glow); }
-.stat-num {
-  font-family: var(--font-display); font-weight: 800; font-size: 24px; line-height: 1;
-}
-.stat-label {
-  font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--ink-muted); margin-top: 4px;
-}
-.session-card { display: flex; align-items: center; gap: 12px; }
-.session-date-box {
-  width: 52px; height: 52px; border-radius: 14px;
-  background: linear-gradient(135deg, var(--primary), var(--deep));
-  color: #fff; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; flex-shrink: 0;
-}
-.session-date-month {
-  font-family: var(--font-display); font-size: 9px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8;
-}
-.session-date-day { font-family: var(--font-display); font-size: 22px; font-weight: 800; line-height: 1; }
-.session-info-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
-.session-info-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
-.session-countdown {
-  margin-left: auto; padding: 5px 12px; border-radius: var(--radius-xs);
-  background: var(--primary-glow); color: var(--primary);
-  font-family: var(--font-display); font-weight: 700; font-size: 12px; flex-shrink: 0;
-}
-.person-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.avatar {
-  width: 24px; height: 24px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 700; font-size: 10px; color: #fff;
-}
-.person-name { font-family: var(--font-display); font-weight: 600; font-size: 13px; }
-.mini-task { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12px; }
-.mini-check {
-  width: 14px; height: 14px; border-radius: 4px;
-  border: 2px solid var(--ink-muted); opacity: 0.4; flex-shrink: 0;
-}
-.roadmap-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.roadmap-pill {
-  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
-  border-radius: var(--radius-sm); background: var(--glass); font-size: 13px; font-weight: 500;
-}
-.roadmap-pill .phase-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.roadmap-pill .phase-count {
-  margin-left: auto; font-family: var(--font-display); font-weight: 700;
-  font-size: 12px; color: var(--ink-muted);
-}
-.notes-row { display: flex; gap: 10px; overflow-x: auto; }
-.note-preview {
-  flex: 1; min-width: 0; padding: 10px 12px; border-radius: var(--radius-sm);
-  background: var(--glass); font-size: 12px; line-height: 1.4;
-}
-.note-meta { font-size: 10px; color: var(--ink-muted); margin-top: 4px; }
-.empty-state {
-  text-align: center; padding: 32px 16px; color: var(--ink-muted); font-size: 14px;
-}
-.empty-state-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+      --border: #dcdce0;
+      --border-strong: #c8c8cd;
+      --hover: #eeeef0;
+      --scrim: rgba(10, 10, 10, 0.4);
+    }
 
-/* ── FILTER CHIPS ── */
-.filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-.chip {
-  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  border: 1px solid var(--border); color: var(--ink-muted);
-  font-family: var(--font-display); transition: all var(--transition);
-}
-.chip:hover { border-color: var(--primary); color: var(--ink); }
-.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      min-height: 100vh;
+      background: var(--bg-base);
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
+    input, textarea, select { font: inherit; color: inherit; }
 
-/* ── TASK CARDS ── */
-.task-group-label {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted);
-  margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
-}
-.task-group-label:first-child { margin-top: 0; }
-.task-group-count {
-  background: var(--glass); padding: 2px 8px; border-radius: 10px;
-  font-size: 10px; font-weight: 700;
-}
-.task-card {
-  background: var(--surface); border: 1px solid var(--glass-border);
-  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
-  transition: all var(--transition); cursor: pointer; position: relative;
-  border-left: 3px solid transparent;
-}
-.task-card:hover { border-color: var(--primary); transform: translateX(2px); }
-.task-card[data-status="On Deck"] { border-left-color: var(--primary); }
-.task-card[data-status="Tackling"] { border-left-color: var(--pink); }
-.task-card[data-status="Done"] { border-left-color: var(--green); opacity: 0.7; }
-.task-card[data-status="Backlog"] { border-left-color: var(--ink-muted); }
-.task-card-header { display: flex; align-items: center; gap: 8px; }
-.task-card-name {
-  font-family: var(--font-display); font-weight: 600; font-size: 14px; flex: 1;
-}
-.task-card[data-status="Done"] .task-card-name { text-decoration: line-through; opacity: 0.6; }
-.task-card-badge {
-  padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;
-  font-family: var(--font-display); letter-spacing: 0.04em;
-}
-.task-card-meta {
-  display: flex; align-items: center; gap: 10px; margin-top: 8px;
-  font-size: 11px; color: var(--ink-muted);
-}
-.task-card-actions {
-  display: flex; gap: 4px; margin-left: auto;
-}
-.task-action-btn {
-  width: 28px; height: 28px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: var(--ink-muted); transition: all var(--transition);
-}
-.task-action-btn:hover { background: var(--glass); color: var(--ink); }
+    .app { max-width: 1100px; margin: 0 auto; padding: 20px 16px 120px; }
+    @media (min-width: 768px) { .app { padding: 32px 32px 60px; } }
 
-/* ── CALENDAR (Session Timeline) ── */
-.timeline-event {
-  background: var(--surface); border: 1px solid var(--glass-border);
-  border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
-  border-left: 3px solid var(--primary); transition: all var(--transition);
-}
-.timeline-event:hover { border-color: var(--primary); }
-.timeline-date {
-  font-family: var(--font-display); font-weight: 700; font-size: 13px;
-  color: var(--primary); margin-bottom: 4px;
-}
-.timeline-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
-.timeline-desc { font-size: 13px; color: var(--ink-muted); margin-top: 6px; line-height: 1.4; }
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #050505;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand-name { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+    .brand-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .sync-status.syncing .sync-dot { background: var(--gold); }
+    .sync-status.error .sync-dot { background: var(--overdue); }
 
-/* ── NOTES ── */
-.note-card {
-  background: var(--surface); border: 1px solid var(--glass-border);
-  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
-  transition: all var(--transition);
-}
-.note-card:hover { border-color: var(--primary); }
-.note-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.note-card-author {
-  font-family: var(--font-display); font-weight: 600; font-size: 12px;
-}
-.note-card-time { font-size: 11px; color: var(--ink-muted); margin-left: auto; }
-.note-card-msg { font-size: 14px; line-height: 1.5; }
-.note-input-bar {
-  display: flex; gap: 8px; padding: 12px 16px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); margin-bottom: 16px;
-  position: sticky; top: 56px; z-index: 10;
-}
-.note-input-bar input {
-  flex: 1; background: transparent; font-size: 14px;
-}
-.note-input-bar input::placeholder { color: var(--ink-muted); }
-.note-send-btn {
-  width: 36px; height: 36px; border-radius: var(--radius-sm);
-  background: var(--primary); color: #fff;
-  display: flex; align-items: center; justify-content: center; font-size: 18px;
-  transition: all var(--transition); flex-shrink: 0;
-}
-.note-send-btn:hover { background: var(--primary-hover); }
-.note-author-toggle {
-  display: flex; gap: 4px; margin-bottom: 12px;
-}
-.note-author-btn {
-  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  border: 1px solid var(--border); font-family: var(--font-display);
-  transition: all var(--transition);
-}
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--ink-2);
+      transition: var(--transition);
+    }
+    .icon-btn:hover { background: var(--hover); border-color: var(--border-strong); }
+    .icon-btn svg { width: 17px; height: 17px; }
+    html[data-theme="dark"] .icon-sun { display: block; }
+    html[data-theme="dark"] .icon-moon { display: none; }
+    html[data-theme="light"] .icon-sun { display: none; }
+    html[data-theme="light"] .icon-moon { display: block; }
 
-/* ── ROADMAP ── */
-.roadmap-section { margin-bottom: 24px; }
-.roadmap-section-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-}
-.roadmap-section-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.roadmap-section-title {
-  font-family: var(--font-display); font-weight: 700; font-size: 16px;
-}
-.roadmap-section-count {
-  padding: 2px 10px; border-radius: 10px; background: var(--glass);
-  font-size: 11px; font-weight: 700; color: var(--ink-muted);
-  font-family: var(--font-display);
-}
-.roadmap-item {
-  background: var(--surface); border: 1px solid var(--glass-border);
-  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
-  transition: all var(--transition); cursor: pointer;
-}
-.roadmap-item:hover { border-color: var(--primary); }
-.roadmap-item-name { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
-.roadmap-item-desc { font-size: 12px; color: var(--ink-muted); margin-top: 4px; line-height: 1.4; }
-.roadmap-item-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    /* Page toggle */
+    .page-toggle {
+      display: inline-flex;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .page-toggle::-webkit-scrollbar { display: none; }
+    .page-toggle button {
+      padding: 8px 16px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .page-toggle button.active { color: #050505; background: var(--gold); }
 
-/* ── FAB ── */
-.fab {
-  position: fixed; bottom: 24px; right: 24px; z-index: 90;
-  width: 52px; height: 52px; border-radius: 16px;
-  background: linear-gradient(135deg, var(--primary), var(--deep));
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 28px; font-weight: 300;
-  box-shadow: 0 6px 24px rgba(139,92,246,0.4);
-  transition: all var(--transition);
-}
-.fab:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 32px rgba(139,92,246,0.5); }
-.fab:active { transform: scale(0.95); }
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+    .card + .card { margin-top: 14px; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 10px; }
+    .card-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 18px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 7px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--ink-2);
+    }
+    .card-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
 
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  z-index: 200; display: none; align-items: flex-end; justify-content: center;
-  animation: fadeIn 0.2s ease-out;
-}
-.modal-overlay.active { display: flex; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius) var(--radius) 0 0; padding: 24px 20px 32px;
-  width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
-  animation: slideUp 0.3s cubic-bezier(.4,0,.2,1);
-}
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
-@media (min-width: 600px) {
-  .modal-overlay { align-items: center; }
-  .modal { border-radius: var(--radius); max-height: 80vh; }
-}
-.modal-handle {
-  width: 36px; height: 4px; border-radius: 2px; background: var(--border);
-  margin: 0 auto 16px;
-}
-@media (min-width: 600px) { .modal-handle { display: none; } }
-.modal-title {
-  font-family: var(--font-display); font-weight: 700; font-size: 18px;
-  margin-bottom: 20px;
-}
-.form-group { margin-bottom: 16px; }
-.form-label {
-  display: block; font-weight: 600; font-size: 12px; color: var(--ink-muted);
-  margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em;
-}
-.form-input, .form-select, .form-textarea {
-  width: 100%; padding: 10px 14px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface2);
-  font-size: 14px; transition: border-color var(--transition);
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
-.form-select { appearance: none; cursor: pointer; }
-.form-textarea { min-height: 80px; resize: vertical; font-family: var(--font-body); }
-.form-actions { display: flex; gap: 8px; margin-top: 20px; }
-.form-actions .btn-primary { flex: 1; }
-.form-actions .btn-ghost { flex: 0; }
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat {
+      padding: 12px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--stat-color, var(--ink));
+      border-radius: 10px;
+    }
+    .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; color: var(--stat-color, var(--ink)); }
+    .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+    .streak-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .streak-pill {
+      display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px;
+      font-size: 12px; color: var(--ink-2);
+    }
+    .streak-pill-num { font-family: var(--font-display); font-weight: 700; color: var(--gold); }
 
-/* ── TOAST ── */
-.toast-container {
-  position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
-  z-index: 300; display: flex; flex-direction: column; gap: 8px;
-  align-items: center; pointer-events: none;
-}
-.toast {
-  padding: 10px 20px; border-radius: var(--radius-sm);
-  background: var(--ink); color: var(--bg);
-  font-size: 13px; font-weight: 500; pointer-events: auto;
-  animation: toastIn 0.3s ease-out;
-  display: flex; align-items: center; gap: 10px;
-  box-shadow: var(--shadow);
-}
-@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.toast-undo {
-  color: var(--primary); font-weight: 700; cursor: pointer;
-  font-family: var(--font-display);
-}
+    /* Filter chips */
+    .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; scrollbar-width: none; }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .chip:hover { color: var(--ink); border-color: var(--border-strong); }
+    .chip.active { color: #050505; background: var(--gold); border-color: var(--gold); }
+    .chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--ink-muted)); }
 
-/* ── SETTINGS PANEL ── */
-.settings-panel {
-  position: fixed; top: 0; right: -320px; width: 300px; height: 100dvh;
-  background: var(--surface); border-left: 1px solid var(--border);
-  z-index: 250; padding: 20px; overflow-y: auto;
-  transition: right 0.3s cubic-bezier(.4,0,.2,1);
-}
-.settings-panel.open { right: 0; }
-.settings-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.3);
-  z-index: 240; display: none;
-}
-.settings-backdrop.open { display: block; }
-.settings-title {
-  font-family: var(--font-display); font-weight: 700; font-size: 18px;
-  margin-bottom: 20px;
-}
-.settings-group { margin-bottom: 20px; }
-.settings-group-label {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted);
-  margin-bottom: 10px;
-}
-.theme-options { display: flex; gap: 6px; }
-.theme-opt {
-  flex: 1; padding: 8px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); text-align: center;
-  font-family: var(--font-display); font-weight: 600; font-size: 12px;
-  color: var(--ink-muted); transition: all var(--transition);
-}
-.theme-opt:hover { border-color: var(--primary); }
-.theme-opt.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.font-scale-row { display: flex; align-items: center; gap: 10px; }
-.font-scale-row span { font-size: 12px; color: var(--ink-muted); min-width: 28px; text-align: center; }
-.font-scale-slider {
-  flex: 1; -webkit-appearance: none; appearance: none;
-  height: 4px; border-radius: 2px; background: var(--border); outline: none;
-}
-.font-scale-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-  background: var(--primary); cursor: pointer;
-}
-.settings-danger-btn {
-  padding: 10px; width: 100%; border-radius: var(--radius-sm);
-  border: 1px solid var(--red); color: var(--red);
-  font-weight: 600; font-size: 13px; text-align: center;
-  transition: all var(--transition);
-}
-.settings-danger-btn:hover { background: var(--red); color: #fff; }
+    /* Buckets */
+    .buckets-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (max-width: 560px) { .buckets-grid { grid-template-columns: 1fr; } }
+    .bucket { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .bucket-overdue { border-left: 3px solid var(--overdue); }
+    .bucket-today { border-left: 3px solid var(--gold); }
+    .bucket-week { border-left: 3px solid var(--green); }
+    .bucket-later { border-left: 3px solid var(--border-strong); }
+    .bucket-head { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 4px; }
+    .bucket-title { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted); font-weight: 600; }
+    .bucket-overdue .bucket-title { color: var(--overdue); }
+    .bucket-today .bucket-title { color: var(--gold); }
+    .bucket-week .bucket-title { color: var(--green); }
+    .bucket-count { font-family: var(--font-mono); font-size: 11px; padding: 2px 7px; background: var(--surface-strong); border-radius: 999px; color: var(--ink-2); }
+    .task-mini {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      padding: 9px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      cursor: pointer;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .task-mini:hover { border-color: var(--border-strong); }
+    .task-mini-check {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition); flex-shrink: 0;
+    }
+    .task-mini-check:hover { border-color: var(--gold); }
+    .task-mini-check svg { width: 10px; height: 10px; stroke: transparent; stroke-width: 3; }
+    .task-mini-title { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .task-mini-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); margin-top: 2px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .task-mini.overdue .task-mini-meta-due { color: var(--overdue); font-weight: 600; }
+    .task-mini-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; font-family: var(--font-display);
+      background: var(--person-color, var(--surface-strong));
+      color: #050505;
+      flex-shrink: 0;
+    }
+    .bucket-empty { font-size: 12px; color: var(--ink-subtle); padding: 10px 4px; text-align: center; font-style: italic; }
+    .bucket-more { font-size: 11px; color: var(--ink-muted); font-family: var(--font-mono); padding: 4px 4px 0; text-align: center; letter-spacing: 0.06em; text-transform: uppercase; }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 420px) {
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .roadmap-row { grid-template-columns: 1fr; }
-  .notes-row { flex-direction: column; }
-}
-</style>
+    /* Task table */
+    .task-table { display: flex; flex-direction: column; gap: 4px; }
+    .task-table-head, .task-table-row {
+      display: grid;
+      grid-template-columns: 1fr 120px 90px 100px 32px;
+      gap: 10px;
+      padding: 10px 12px;
+      align-items: center;
+    }
+    .task-table-head {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 2px;
+    }
+    .task-table-row {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .task-table-row:hover { border-color: var(--border-strong); }
+    .task-table-row.overdue-row { border-left: 3px solid var(--overdue); }
+    .tt-title { font-weight: 500; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tt-cell { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tt-assigned { display: flex; align-items: center; gap: 7px; }
+    .tt-avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; font-family: var(--font-display);
+      background: var(--person-color, var(--surface-strong));
+      color: #050505;
+      flex-shrink: 0;
+    }
+    .tt-type-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    .tt-type-tag.chore, .tt-type-tag.task { background: var(--surface-strong); color: var(--ink-2); }
+    .tt-type-tag.project { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
+    .tt-due-overdue { color: var(--overdue); font-weight: 600; }
+    .tt-check {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .tt-check:hover { border-color: var(--gold); }
+    .tt-check svg { width: 10px; height: 10px; stroke: transparent; stroke-width: 3; }
+
+    @media (max-width: 720px) {
+      .task-table-head { display: none; }
+      .task-table-row {
+        grid-template-columns: 1fr auto;
+        grid-template-areas: "title check" "meta meta";
+        gap: 5px 10px;
+        padding: 10px 12px;
+      }
+      .tt-title { grid-area: title; }
+      .tt-check { grid-area: check; align-self: start; }
+      .tt-meta-row { grid-area: meta; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    }
+
+    /* Task list (calendar day modal) */
+    .empty { padding: 32px 16px; text-align: center; color: var(--ink-muted); font-size: 13px; background: var(--surface-2); border: 1px dashed var(--border-strong); border-radius: 10px; }
+    .empty-emoji { font-size: 24px; margin-bottom: 6px; }
+    .empty-title { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .event-row-editable:hover { background: var(--hover); }
+
+    /* Groceries */
+    .grocery-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 6px;
+    }
+    .grocery-item.checked .grocery-item-text { text-decoration: line-through; color: var(--ink-muted); }
+    .grocery-item-text {
+      flex: 1; font-size: 14px; overflow: hidden; text-overflow: ellipsis;
+      border: none; background: transparent; padding: 4px 2px; border-radius: 6px; color: var(--ink); font-family: inherit;
+    }
+    .grocery-item-text:focus { outline: none; background: var(--surface-strong); }
+    .grocery-item-check {
+      width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: var(--transition);
+    }
+    .grocery-item-check:hover { border-color: var(--gold); }
+    .grocery-item-check svg { width: 10px; height: 10px; stroke: transparent; stroke-width: 3; }
+    .grocery-item.checked .grocery-item-check { background: var(--green); border-color: var(--green); }
+    .grocery-item.checked .grocery-item-check svg { stroke: white; }
+    .grocery-item-delete {
+      width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      color: var(--ink-muted); flex-shrink: 0; transition: var(--transition);
+    }
+    .grocery-item-delete:hover { color: var(--overdue); background: var(--hover); }
+    .grocery-category-label {
+      font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted);
+      text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;
+      padding: 14px 4px 6px;
+    }
+    .grocery-category-label:first-child { padding-top: 2px; }
+    .grocery-item-cat {
+      font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px 6px; max-width: 108px; flex-shrink: 0;
+    }
+    .grocery-item-cat:focus { outline: none; border-color: var(--gold); }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: var(--gold);
+      color: #050505;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      transition: var(--transition);
+      z-index: 50;
+    }
+    .fab:hover { transform: translateY(-2px); }
+    .fab:active { transform: scale(0.96); }
+    .fab svg { width: 22px; height: 22px; }
+
+    /* Calendar */
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; flex-wrap: wrap; }
+    .cal-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; display: flex; align-items: baseline; gap: 8px; }
+    .cal-title-year { font-family: var(--font-mono); font-size: 13px; color: var(--ink-muted); font-weight: 400; }
+    .cal-arrow {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ink-2); transition: var(--transition);
+    }
+    .cal-arrow:hover { background: var(--hover); border-color: var(--border-strong); }
+    .cal-view-toggle { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; font-family: var(--font-mono); font-size: 11px; }
+    .cal-view-toggle button { padding: 6px 12px; border-radius: 6px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+    .cal-view-toggle button.active { background: var(--gold); color: #050505; }
+
+    .cal-grid { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; overflow-x: auto; }
+    .cal-weekdays { display: grid; grid-template-columns: repeat(7, minmax(74px, 1fr)); gap: 4px; margin-bottom: 6px; }
+    .cal-weekday { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 0; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, minmax(74px, 1fr)); gap: 4px; }
+    .cal-day {
+      border-radius: 9px;
+      padding: 6px 5px 5px;
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 3px;
+      background: transparent; border: 1px solid transparent;
+      cursor: pointer; min-height: 76px; transition: var(--transition);
+    }
+    .cal-day:hover:not(.empty-day) { background: var(--surface-2); border-color: var(--border); }
+    .cal-day.empty-day { pointer-events: none; }
+    .cal-day-num { font-size: 13px; font-weight: 500; color: var(--ink-2); font-family: var(--font-display); }
+    .cal-day.today .cal-day-num {
+      background: var(--gold); color: #050505;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+    }
+    .cal-day-events { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+    .cal-day-event-row { display: flex; align-items: center; gap: 5px; width: 100%; overflow: hidden; }
+    .cal-day-event-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot-color, var(--ink-muted)); flex-shrink: 0; }
+    .cal-day-event-name { font-size: 10px; font-family: var(--font-mono); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+    .cal-day-more { font-size: 9.5px; color: var(--ink-muted); font-family: var(--font-mono); padding-left: 13px; text-align: left; }
+    .cal-day.has-events .cal-day-num { font-weight: 700; }
+
+    /* Week view */
+    .cal-week { display: flex; flex-direction: column; gap: 8px; }
+    .cal-week-day {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px 14px; display: grid; grid-template-columns: 80px 1fr; gap: 14px; align-items: start;
+    }
+    .cal-week-day.today { border-left: 3px solid var(--gold); }
+    .cal-week-day-label { display: flex; flex-direction: column; gap: 2px; padding-top: 2px; }
+    .cal-week-day-name { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+    .cal-week-day.today .cal-week-day-name { color: var(--gold); }
+    .cal-week-day-num { font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1; }
+    .cal-week-day-events { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .cal-week-event {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px;
+      cursor: pointer; transition: var(--transition); border-left: 3px solid var(--dot-color, var(--ink-muted));
+    }
+    .cal-week-event:hover { border-color: var(--border-strong); }
+    .cal-week-event-icon { font-size: 13px; }
+    .cal-week-event-bullet { width: 10px; height: 10px; border-radius: 50%; background: var(--dot-color, var(--ink-muted)); flex-shrink: 0; }
+    .cal-week-event-body { min-width: 0; flex: 1; }
+    .cal-week-event-title { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cal-week-event-sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted); margin-top: 2px; text-transform: capitalize; }
+    .cal-week-day-empty { font-size: 12px; color: var(--ink-subtle); font-style: italic; padding: 3px 0; }
+
+    /* Upcoming / list view */
+    .upcoming { display: flex; flex-direction: column; gap: 6px; }
+    .upcoming-month { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 18px 4px 8px; font-weight: 600; }
+    .upcoming-item {
+      display: grid; grid-template-columns: 54px 1fr; align-items: center; gap: 12px;
+      padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      transition: var(--transition); border-left: 3px solid var(--dot-color, var(--ink-muted));
+    }
+    .upcoming-item:hover { border-color: var(--border-strong); }
+    .upcoming-date { text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .upcoming-date-day { font-family: var(--font-display); font-size: 22px; font-weight: 700; line-height: 1; }
+    .upcoming-date-month { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px; }
+    .upcoming-body { min-width: 0; }
+    .upcoming-title { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upcoming-sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted); margin-top: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .task-meta-sep { width: 3px; height: 3px; background: var(--ink-subtle); border-radius: 50%; }
+
+    /* Modal */
+    .modal-scrim {
+      position: fixed; inset: 0; background: var(--scrim);
+      display: none; align-items: flex-end; justify-content: center; z-index: 100;
+    }
+    .modal-scrim.open { display: flex; }
+    .modal {
+      background: var(--surface-solid); border: 1px solid var(--border); border-radius: 18px 18px 0 0;
+      padding: 20px 18px 28px; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+    }
+    @media (min-width: 640px) {
+      .modal-scrim { align-items: center; }
+      .modal { border-radius: 16px; margin: 20px; }
+    }
+    .modal-handle { width: 36px; height: 4px; background: var(--border-strong); border-radius: 2px; margin: -6px auto 18px; }
+    @media (min-width: 640px) { .modal-handle { display: none; } }
+    .modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin: 0 0 18px; }
+
+    .field { margin-bottom: 14px; }
+    .field-label { display: block; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; font-weight: 600; }
+    .field-input, .field-select, .field-textarea {
+      width: 100%; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 9px; font-size: 14px; color: var(--ink); transition: var(--transition); font-family: inherit;
+    }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { outline: none; border-color: var(--gold); }
+    .field-textarea { resize: vertical; min-height: 64px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .modal-actions { display: flex; gap: 8px; justify-content: space-between; margin-top: 20px; }
+    .btn { padding: 10px 18px; border-radius: 9px; font-size: 13.5px; font-weight: 600; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-display); }
+    .btn-primary { background: var(--gold); color: #050505; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { color: var(--ink-muted); }
+    .btn-ghost:hover { color: var(--ink); }
+    .btn-danger { color: var(--overdue); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.08); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--surface-strong); color: var(--ink); border: 1px solid var(--border-strong);
+      padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      font-family: var(--font-display); opacity: 0; transition: var(--transition); z-index: 200; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .action-toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--surface-strong); color: var(--ink); border: 1px solid var(--border-strong);
+      padding: 10px 12px 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 500;
+      display: none; align-items: center; gap: 12px; opacity: 0; transition: var(--transition);
+      z-index: 210; box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    }
+    .action-toast.show { display: flex; opacity: 1; transform: translateX(-50%) translateY(0); }
+    .action-toast-undo {
+      color: var(--gold); font-weight: 700; font-family: var(--font-display); font-size: 13px;
+      padding: 6px 12px; border-radius: 999px; background: var(--surface-2);
+    }
+    .action-toast-undo:hover { background: var(--hover); }
+
+    .snooze-btn {
+      font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; color: var(--gold);
+      background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3);
+      border-radius: 999px; padding: 3px 9px; flex-shrink: 0; white-space: nowrap;
+    }
+    .snooze-btn:hover { background: rgba(234, 179, 8, 0.2); }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    @media (max-width: 480px) {
+      .card { padding: 14px; }
+      .card-title { font-size: 16px; }
+      .cal-week-day { grid-template-columns: 64px 1fr; gap: 10px; padding: 10px 12px; }
+      .cal-week-day-num { font-size: 20px; }
+      .upcoming-item { grid-template-columns: 46px 1fr; gap: 10px; padding: 10px 12px; }
+      .stat-num { font-size: 22px; }
+      .cal-day { min-height: 62px; padding: 4px 3px 3px; }
+      .cal-day-event-name { font-size: 8.5px; }
+      .cal-day-event-dot { width: 7px; height: 7px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-logo">D4U</div>
+        <div class="brand-text">
+          <span class="brand-name">Day for Us</span>
+          <span class="brand-tag sync-status" id="sync-status" title="Live sync">
+            <span class="sync-dot"></span>
+            <span id="sync-label">Live</span>
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="font-scale-toggle" aria-label="Text size" style="font-family:var(--font-display);font-weight:700;font-size:13px;">Aa</button>
+        <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </header>
 
-<div class="setup" id="setupScreen">
-  <div class="setup-brand">Day for Us</div>
-  <p class="setup-sub">Collaborative working session hub</p>
-  <div class="setup-card">
-    <label>Airtable Personal Access Token</label>
-    <input type="password" id="tokenInput" placeholder="pat..." autocomplete="off">
-    <button class="btn-primary" onclick="saveToken()">Connect</button>
-  </div>
-</div>
+    <div class="page-toggle" role="tablist">
+      <button data-page="dashboard" class="active" role="tab">Dashboard</button>
+      <button data-page="tasks" role="tab">Tasks</button>
+      <button data-page="calendar" role="tab">Calendar</button>
+      <button data-page="roadmap" role="tab">Roadmap</button>
+    </div>
 
-<div class="app" id="app">
-  <div class="header">
-    <div class="brand">Day for Us</div>
-    <div class="header-spacer"></div>
-    <div class="sync-dot" id="syncDot" title="Synced"></div>
-    <button class="header-btn" onclick="toggleSettings()" title="Settings">&#9881;</button>
-  </div>
+    <div class="page active" id="page-dashboard">
+      <section class="card">
+        <div class="card-eyebrow">Status</div>
+        <div class="stats-grid">
+          <div class="stat" style="--stat-color:var(--gold)">
+            <div class="stat-num" id="stat-tackling">–</div>
+            <div class="stat-label">Tackling</div>
+          </div>
+          <div class="stat" style="--stat-color:var(--green)">
+            <div class="stat-num" id="stat-ondeck">–</div>
+            <div class="stat-label">On deck</div>
+          </div>
+          <div class="stat" style="--stat-color:var(--pink)">
+            <div class="stat-num" id="stat-projects">–</div>
+            <div class="stat-label">Projects</div>
+          </div>
+          <div class="stat" style="--stat-color:var(--ink-muted)">
+            <div class="stat-num" id="stat-backlog">–</div>
+            <div class="stat-label">Backlog</div>
+          </div>
+        </div>
+      </section>
 
-  <div class="tab-bar" id="tabBar">
-    <button class="tab-item active" data-tab="dashboard">Dashboard</button>
-    <button class="tab-item" data-tab="tasks">Tasks</button>
-    <button class="tab-item" data-tab="calendar">Calendar</button>
-    <button class="tab-item" data-tab="notes">Notes</button>
-    <button class="tab-item" data-tab="roadmap">Roadmap</button>
-  </div>
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Upcoming sessions</h2>
+        </div>
+        <div class="upcoming" id="dashboard-sessions"></div>
+      </section>
 
-  <div class="content">
-    <div class="tab-content active" id="tab-dashboard"></div>
-    <div class="tab-content" id="tab-tasks"></div>
-    <div class="tab-content" id="tab-calendar"></div>
-    <div class="tab-content" id="tab-notes"></div>
-    <div class="tab-content" id="tab-roadmap"></div>
-  </div>
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Notes</h2>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <select class="field-select" id="note-author" style="max-width:110px;flex-shrink:0">
+            <option value="">Anyone</option>
+            <option value="Anjanette">Anjanette</option>
+            <option value="Chanelle">Chanelle</option>
+          </select>
+          <input class="field-input" id="note-new-text" placeholder="Leave a note…" style="flex:1" />
+          <button class="btn btn-primary" id="note-add-btn">Post</button>
+        </div>
+        <div id="note-list"></div>
+      </section>
+    </div>
 
-  <button class="fab" id="fab" onclick="openAddModal()">+</button>
-</div>
+    <div class="page" id="page-tasks">
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Priorities<span class="card-title-count" id="bucket-total">0</span></h2>
+          <button class="btn btn-primary" id="add-task-btn">+ New task</button>
+        </div>
+        <div class="filter-row" id="task-filters"></div>
+        <div class="buckets-grid" id="buckets-grid"></div>
+      </section>
 
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modalContent">
-    <div class="modal-handle"></div>
-    <div id="modalBody"></div>
-  </div>
-</div>
+      <section class="card">
+        <div class="card-head" id="open-tasks-toggle" style="cursor:pointer">
+          <h2 class="card-title">All tasks<span class="card-title-count" id="all-count">0</span></h2>
+          <button class="icon-btn" id="open-tasks-chevron" aria-label="Toggle open tasks" style="pointer-events:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <div id="open-tasks-body" style="display:none">
+          <input class="field-input" id="task-search" placeholder="Search tasks…" style="margin-bottom:10px" />
+          <div class="filter-row" id="task-filters-2"></div>
+          <div class="task-table" id="task-table"></div>
+        </div>
+      </section>
+    </div>
 
-<div class="toast-container" id="toastContainer"></div>
+    <div class="page" id="page-calendar">
+      <div class="cal-nav">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="cal-arrow" id="cal-prev" aria-label="Previous">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="cal-title" id="cal-title"></div>
+          <button class="cal-arrow" id="cal-next" aria-label="Next">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <div class="cal-view-toggle">
+          <button data-view="week">Week</button>
+          <button data-view="grid" class="active">Month</button>
+          <button data-view="list">List</button>
+        </div>
+      </div>
 
-<div class="settings-backdrop" id="settingsBackdrop" onclick="toggleSettings()"></div>
-<div class="settings-panel" id="settingsPanel">
-  <div class="settings-title">Settings</div>
-  <div class="settings-group">
-    <div class="settings-group-label">Theme</div>
-    <div class="theme-options">
-      <button class="theme-opt" data-theme="light" onclick="setTheme('light')">Light</button>
-      <button class="theme-opt active" data-theme="system" onclick="setTheme(null)">System</button>
-      <button class="theme-opt" data-theme="dark" onclick="setTheme('dark')">Dark</button>
+      <div id="cal-grid-container">
+        <div class="cal-grid">
+          <div class="cal-weekdays">
+            <div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div><div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div><div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div><div class="cal-weekday">Sat</div>
+          </div>
+          <div class="cal-days" id="cal-days"></div>
+        </div>
+      </div>
+
+      <div id="cal-week-container" style="display:none">
+        <div class="cal-week" id="cal-week"></div>
+      </div>
+
+      <div id="cal-upcoming-container" style="display:none">
+        <div class="upcoming" id="cal-upcoming"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-roadmap">
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Roadmap</h2>
+        </div>
+        <div class="filter-row" id="roadmap-filters"></div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <input class="field-input" id="roadmap-new-item" placeholder="Add roadmap item…" style="flex:1" />
+          <button class="btn btn-primary" id="roadmap-add-btn">Add</button>
+        </div>
+        <div id="roadmap-list"></div>
+      </section>
     </div>
   </div>
-  <div class="settings-group">
-    <div class="settings-group-label">Font Size</div>
-    <div class="font-scale-row">
-      <span>A</span>
-      <input type="range" class="font-scale-slider" id="fontScale" min="80" max="130" value="100" step="5" oninput="setFontScale(this.value)">
-      <span style="font-size:16px">A</span>
+
+  <button class="fab" id="fab" aria-label="Add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+
+  <div class="modal-scrim" id="modal-scrim">
+    <div class="modal" id="modal">
+      <div class="modal-handle"></div>
+      <h3 class="modal-title" id="modal-title">New task</h3>
+      <div id="modal-body"></div>
     </div>
   </div>
-  <div class="settings-group">
-    <div class="settings-group-label">Data</div>
-    <button class="settings-danger-btn" onclick="logout()">Disconnect &amp; Clear</button>
+
+  <div class="toast" id="toast"></div>
+  <div class="action-toast" id="action-toast">
+    <span id="action-toast-msg"></span>
+    <button class="action-toast-undo" id="action-toast-undo">Undo</button>
   </div>
-</div>
 
-<script>
-const INJECTED_TOKEN = '__DFU_AIRTABLE_TOKEN__';
+  <script>
+    'use strict';
 
-const CFG = {
-  baseId: 'appRlcL5eYnjxfXV0',
-  tables: {
-    tasks: { id: 'tblK7L4tLSfhCW09B', fields: {
-      name: 'fldcH8NvHiS9xQw20', status: 'fldUEqIaK2bQVfrpZ',
-      assigned: 'fldIVuz1yJa70PWDl', otherAssignee: 'fldkqAQQUz3zc1io8',
-      type: 'fldWTi9f9tSwxofRg', sessionDate: 'fld1XSvF2EhaDubat',
-      notes: 'fldgjh4qtdpBIGDvz', created: 'fldw3LTGj5mKuFYXM'
-    }},
-    sessions: { id: 'tblUj37fhp2O1UAQ6', fields: {
-      name: 'fld7WmcEXjAIzKcl4', date: 'fldyvmr4xTVb4rmG8',
-      description: 'fldeyu19xWk9CUGYs', created: 'fldFOwoVhrcwLM85t'
-    }},
-    notes: { id: 'tblvmOOFMvW35yMk2', fields: {
-      message: 'fldLjMeDRbY4OU9fB', author: 'fldDJDdJIjz2N1ESd',
-      created: 'fldCz46I4Q9QxvDaz'
-    }},
-    roadmap: { id: 'tblSe6DM956iA6OVK', fields: {
-      name: 'fldQ2BeRrDfqAAMjM', phase: 'fldi8tRCnr316FF5v',
-      description: 'fldAuBHobur6EU5LX', assigned: 'fldeXwZMujDLPrE8p',
-      otherAssignee: 'fldxQvNRXBPYkOBH3', created: 'fldoZJlPHLI9SKhpT'
-    }}
-  }
-};
+    // Calls Airtable directly — no server proxy. Token is visible in page source;
+    // only use this link with people you trust.
+    const AIRTABLE_TOKEN = '__DFU_AIRTABLE_TOKEN__';
+    const AIRTABLE_BASE_ID = 'appRlcL5eYnjxfXV0';
+    const AIRTABLE_TABLE_IDS = { Tasks: 'tblK7L4tLSfhCW09B', Sessions: 'tblUj37fhp2O1UAQ6', Notes: 'tblvmOOFMvW35yMk2', Roadmap: 'tblSe6DM956iA6OVK' };
+    const POLL_MS = 15_000;
 
-let state = {
-  token: null, tab: 'dashboard',
-  tasks: [], sessions: [], notes: [], roadmap: [],
-  filter: 'All', noteAuthor: 'Anjanette',
-  undoTimers: {}
-};
-let pollInterval = null;
+    const F = {
+      tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM' },
+      sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t' },
+      notes: { Message: 'fldLjMeDRbY4OU9fB', Author: 'fldDJDdJIjz2N1ESd', Created: 'fldCz46I4Q9QxvDaz' },
+      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', Created: 'fldoZJlPHLI9SKhpT' },
+    };
 
-function init() {
-  const hasInjected = INJECTED_TOKEN !== '__DFU_AIRTABLE_TOKEN__';
-  const token = hasInjected ? INJECTED_TOKEN : localStorage.getItem('dfu_token');
-  const theme = localStorage.getItem('dfu_theme');
-  const scale = localStorage.getItem('dfu_scale') || '100';
+    const state = {
+      tasks: [], sessions: [], notes: [], roadmap: [],
+      currentPage: 'dashboard',
+      calDate: new Date(),
+      calView: 'grid',
+      taskFilter: 'all',
+      roadmapFilter: 'all',
+      taskSearch: '',
+    };
 
-  if (hasInjected) {
-    localStorage.removeItem('dfu_token');
-  }
+    (function initTheme() {
+      const saved = localStorage.getItem('familyhq.theme');
+      const theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
 
-  if (theme) {
-    if (theme === 'system') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', theme);
-  }
-  setFontScale(scale, true);
-
-  document.querySelectorAll('.theme-opt').forEach(b => {
-    const t = b.dataset.theme;
-    b.classList.toggle('active', theme ? t === theme : t === 'system');
-  });
-
-  if (token) {
-    state.token = token;
-    showApp();
-    fetchAll();
-    pollInterval = setInterval(fetchAll, 15000);
-  }
-
-  if (hasInjected) {
-    document.querySelector('.settings-danger-btn')?.remove();
-  }
-
-  document.querySelectorAll('.tab-item').forEach(t => {
-    t.addEventListener('click', () => switchTab(t.dataset.tab));
-  });
-}
-
-function saveToken() {
-  const v = document.getElementById('tokenInput').value.trim();
-  if (!v) return;
-  state.token = v;
-  localStorage.setItem('dfu_token', v);
-  showApp();
-  fetchAll();
-  pollInterval = setInterval(fetchAll, 15000);
-}
-
-function showApp() {
-  document.getElementById('setupScreen').style.display = 'none';
-  document.getElementById('app').classList.add('active');
-}
-
-function logout() {
-  localStorage.removeItem('dfu_token');
-  localStorage.removeItem('dfu_theme');
-  localStorage.removeItem('dfu_scale');
-  if (pollInterval) clearInterval(pollInterval);
-  location.reload();
-}
-
-async function airtableFetch(tableKey, params = '') {
-  const t = CFG.tables[tableKey];
-  const url = 'https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '?' + params;
-  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + state.token } });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`Airtable ${res.status}: ${body.slice(0, 200)}`);
-  }
-  return res.json();
-}
-
-async function airtableCreate(tableKey, fields) {
-  const t = CFG.tables[tableKey];
-  const res = await fetch('https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id, {
-    method: 'POST', headers: {
-      Authorization: 'Bearer ' + state.token, 'Content-Type': 'application/json'
-    }, body: JSON.stringify({ fields })
-  });
-  if (!res.ok) throw new Error('Create failed ' + res.status);
-  return res.json();
-}
-
-async function airtableUpdate(tableKey, id, fields) {
-  const t = CFG.tables[tableKey];
-  const res = await fetch('https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '/' + id, {
-    method: 'PATCH', headers: {
-      Authorization: 'Bearer ' + state.token, 'Content-Type': 'application/json'
-    }, body: JSON.stringify({ fields })
-  });
-  if (!res.ok) throw new Error('Update failed ' + res.status);
-  return res.json();
-}
-
-async function airtableDelete(tableKey, id) {
-  const t = CFG.tables[tableKey];
-  const res = await fetch('https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '/' + id, {
-    method: 'DELETE', headers: { Authorization: 'Bearer ' + state.token }
-  });
-  if (!res.ok) throw new Error('Delete failed ' + res.status);
-  return res.json();
-}
-
-async function fetchAll() {
-  setSyncState('syncing');
-  try {
-    const [tasks, sessions, notes, roadmap] = await Promise.all([
-      airtableFetch('tasks', 'sort%5B0%5D%5Bfield%5D=Created&sort%5B0%5D%5Bdirection%5D=desc'),
-      airtableFetch('sessions', 'sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=asc'),
-      airtableFetch('notes', 'sort%5B0%5D%5Bfield%5D=Created&sort%5B0%5D%5Bdirection%5D=desc'),
-      airtableFetch('roadmap', 'sort%5B0%5D%5Bfield%5D=Created&sort%5B0%5D%5Bdirection%5D=desc')
-    ]);
-    state.tasks = tasks.records || [];
-    state.sessions = sessions.records || [];
-    state.notes = notes.records || [];
-    state.roadmap = roadmap.records || [];
-    setSyncState('ok');
-    render();
-  } catch (e) {
-    console.error(e);
-    setSyncState('error', e.message);
-  }
-}
-
-function setSyncState(s, detail) {
-  const dot = document.getElementById('syncDot');
-  dot.className = 'sync-dot' + (s === 'syncing' ? ' syncing' : s === 'error' ? ' error' : '');
-  dot.title = s === 'syncing' ? 'Syncing...' : s === 'error' ? ('Sync error: ' + (detail || 'unknown')) : 'Synced';
-}
-
-function f(record, fieldName) {
-  return record.fields?.[fieldName] ?? '';
-}
-
-function personColor(name) {
-  if (name === 'Anjanette') return 'var(--pink)';
-  if (name === 'Chanelle') return 'var(--lavender)';
-  if (name === 'Both') return 'var(--primary)';
-  return 'var(--ink-muted)';
-}
-
-function personInitial(name) {
-  if (!name) return '?';
-  return name.charAt(0).toUpperCase();
-}
-
-function statusColor(s) {
-  if (s === 'On Deck') return 'var(--primary)';
-  if (s === 'Tackling') return 'var(--pink)';
-  if (s === 'Done') return 'var(--green)';
-  return 'var(--ink-muted)';
-}
-
-function formatDate(d) {
-  if (!d) return '';
-  const date = new Date(d + 'T00:00:00');
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function daysUntil(d) {
-  if (!d) return null;
-  const target = new Date(d + 'T00:00:00');
-  const now = new Date(); now.setHours(0,0,0,0);
-  return Math.ceil((target - now) / 86400000);
-}
-
-function timeAgo(iso) {
-  if (!iso) return '';
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return mins + 'm ago';
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return hrs + 'h ago';
-  const days = Math.floor(hrs / 24);
-  return days + 'd ago';
-}
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-function switchTab(tab) {
-  state.tab = tab;
-  document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
-  render();
-}
-
-function render() {
-  renderDashboard();
-  renderTasks();
-  renderCalendar();
-  renderNotes();
-  renderRoadmap();
-}
-
-function renderDashboard() {
-  const el = document.getElementById('tab-dashboard');
-  const tasks = state.tasks;
-  const onDeck = tasks.filter(t => f(t,'Status') === 'On Deck').length;
-  const tackling = tasks.filter(t => f(t,'Status') === 'Tackling').length;
-  const done = tasks.filter(t => f(t,'Status') === 'Done').length;
-  const backlog = tasks.filter(t => f(t,'Status') === 'Backlog').length;
-
-  const nextSession = state.sessions.find(s => {
-    const d = daysUntil(f(s,'Date'));
-    return d !== null && d >= 0;
-  });
-
-  const aTasks = tasks.filter(t => f(t,'Assigned') === 'Anjanette' && f(t,'Status') !== 'Done').slice(0,3);
-  const cTasks = tasks.filter(t => f(t,'Assigned') === 'Chanelle' && f(t,'Status') !== 'Done').slice(0,3);
-
-  const phases = { Now: 0, Next: 0, Future: 0 };
-  state.roadmap.forEach(r => { const p = f(r,'Phase'); if (phases[p] !== undefined) phases[p]++; });
-
-  const recentNotes = state.notes.slice(0, 2);
-
-  let html = '<div class="bento">';
-
-  html += '<div class="glass tile bento-full"><div class="tile-label">Overview</div><div class="stats-row">'
-    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--primary)">' + onDeck + '</div><div class="stat-label">On Deck</div></div>'
-    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--pink)">' + tackling + '</div><div class="stat-label">Tackling</div></div>'
-    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--green)">' + done + '</div><div class="stat-label">Done</div></div>'
-    + '<div class="stat-item" onclick="switchTab(\'tasks\')"><div class="stat-num" style="color:var(--ink-muted)">' + backlog + '</div><div class="stat-label">Backlog</div></div>'
-    + '</div></div>';
-
-  if (nextSession) {
-    const date = new Date(f(nextSession,'Date') + 'T00:00:00');
-    const days = daysUntil(f(nextSession,'Date'));
-    html += '<div class="glass tile bento-full"><div class="tile-label">Next Session</div>'
-      + '<div class="session-card"><div class="session-date-box">'
-      + '<div class="session-date-month">' + date.toLocaleDateString('en-US',{month:'short'}) + '</div>'
-      + '<div class="session-date-day">' + date.getDate() + '</div></div><div>'
-      + '<div class="session-info-title">' + esc(f(nextSession,'Name')) + '</div>'
-      + '<div class="session-info-sub">' + (onDeck + tackling) + ' tasks active</div></div>'
-      + '<div class="session-countdown">' + (days === 0 ? 'Today!' : days + 'd') + '</div></div></div>';
-  } else {
-    html += '<div class="glass tile bento-full"><div class="tile-label">Next Session</div>'
-      + '<div class="empty-state" style="padding:12px"><span style="opacity:0.5">No upcoming sessions</span></div></div>';
-  }
-
-  html += '<div class="glass tile"><div class="person-header">'
-    + '<div class="avatar" style="background:var(--pink)">A</div>'
-    + '<div class="person-name">Anjanette</div></div>'
-    + (aTasks.length ? aTasks.map(t => '<div class="mini-task"><div class="mini-check"></div>' + esc(f(t,'Name')) + '</div>').join('') :
-    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>')
-    + '</div>';
-
-  html += '<div class="glass tile"><div class="person-header">'
-    + '<div class="avatar" style="background:var(--lavender)">C</div>'
-    + '<div class="person-name">Chanelle</div></div>'
-    + (cTasks.length ? cTasks.map(t => '<div class="mini-task"><div class="mini-check"></div>' + esc(f(t,'Name')) + '</div>').join('') :
-    '<div style="font-size:12px;color:var(--ink-muted)">No active tasks</div>')
-    + '</div>';
-
-  html += '<div class="glass tile bento-full"><div class="tile-label">Roadmap</div><div class="roadmap-row">'
-    + '<div class="roadmap-pill" onclick="switchTab(\'roadmap\')"><div class="phase-dot" style="background:var(--primary)"></div><span>Now</span><span class="phase-count">' + phases.Now + '</span></div>'
-    + '<div class="roadmap-pill" onclick="switchTab(\'roadmap\')"><div class="phase-dot" style="background:var(--lavender)"></div><span>Next</span><span class="phase-count">' + phases.Next + '</span></div>'
-    + '<div class="roadmap-pill" onclick="switchTab(\'roadmap\')"><div class="phase-dot" style="background:var(--ink-muted)"></div><span>Future</span><span class="phase-count">' + phases.Future + '</span></div>'
-    + '</div></div>';
-
-  html += '<div class="glass tile bento-full"><div class="tile-label">Recent Notes</div>'
-    + (recentNotes.length ? '<div class="notes-row">' + recentNotes.map(n =>
-      '<div class="note-preview">' + esc(f(n,'Message')) + '<div class="note-meta">' + esc(f(n,'Author')) + ' &middot; ' + timeAgo(f(n,'Created')) + '</div></div>'
-    ).join('') + '</div>' :
-    '<div style="font-size:12px;color:var(--ink-muted)">No notes yet</div>')
-    + '</div>';
-
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-function renderTasks() {
-  const el = document.getElementById('tab-tasks');
-  let tasks = state.tasks;
-  if (state.filter !== 'All') {
-    tasks = tasks.filter(t => f(t,'Assigned') === state.filter);
-  }
-
-  const groups = ['Tackling', 'On Deck', 'Backlog', 'Done'];
-  let html = '<div class="filters">'
-    + ['All','Anjanette','Chanelle','Both'].map(v =>
-      '<button class="chip ' + (state.filter===v?'active':'') + '" onclick="state.filter=\'' + v + '\';render()">' + v + '</button>'
-    ).join('')
-    + '</div>';
-
-  groups.forEach(status => {
-    const items = tasks.filter(t => f(t,'Status') === status);
-    if (!items.length) return;
-    html += '<div class="task-group-label">' + status + ' <span class="task-group-count">' + items.length + '</span></div>';
-    items.forEach(t => {
-      const assigned = f(t,'Assigned');
-      const displayAssigned = assigned === 'Other' ? (f(t,'Other Assignee') || 'Other') : assigned;
-      const date = f(t,'Session Date');
-      html += '<div class="task-card" data-status="' + esc(status) + '">'
-        + '<div class="task-card-header"><div class="task-card-name">' + esc(f(t,'Name')) + '</div>'
-        + (f(t,'Type') === 'Project' ? '<span class="task-card-badge" style="background:var(--primary-glow);color:var(--primary)">Project</span>' : '')
-        + '</div><div class="task-card-meta">'
-        + '<div class="avatar" style="background:' + personColor(assigned) + ';width:18px;height:18px;font-size:8px">' + personInitial(displayAssigned) + '</div>'
-        + '<span>' + esc(displayAssigned) + '</span>'
-        + (date ? '<span>&middot; ' + formatDate(date) + '</span>' : '')
-        + '<div class="task-card-actions">'
-        + (status !== 'Done' ? '<button class="task-action-btn" onclick="event.stopPropagation();advanceTask(\'' + t.id + '\')" title="Advance">&#9654;</button>' : '')
-        + (status !== 'Backlog' && status !== 'Done' ? '<button class="task-action-btn" onclick="event.stopPropagation();bumpTask(\'' + t.id + '\')" title="Bump to Backlog">&#8630;</button>' : '')
-        + '<button class="task-action-btn" onclick="event.stopPropagation();openEditTask(\'' + t.id + '\')" title="Edit">&#9998;</button>'
-        + '<button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo(\'tasks\',\'' + t.id + '\',\'' + esc(f(t,'Name')) + '\')" title="Delete" style="color:var(--red)">&#10005;</button>'
-        + '</div></div></div>';
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('familyhq.theme', next);
     });
-  });
 
-  if (!tasks.length) {
-    html += '<div class="empty-state"><div class="empty-state-icon">&#9776;</div>No tasks yet. Tap + to add one.</div>';
-  }
-
-  el.innerHTML = html;
-}
-
-function renderCalendar() {
-  const el = document.getElementById('tab-calendar');
-  const sessions = state.sessions;
-  let html = '';
-
-  if (!sessions.length) {
-    html = '<div class="empty-state"><div class="empty-state-icon">&#128197;</div>No sessions scheduled. Tap + to create one.</div>';
-  } else {
-    const upcoming = sessions.filter(s => daysUntil(f(s,'Date')) >= 0);
-    const past = sessions.filter(s => daysUntil(f(s,'Date')) < 0).reverse();
-
-    if (upcoming.length) {
-      html += '<div class="task-group-label">Upcoming</div>';
-      upcoming.forEach(s => {
-        const days = daysUntil(f(s,'Date'));
-        html += '<div class="timeline-event" onclick="openEditSession(\'' + s.id + '\')">' 
-          + '<div class="timeline-date">' + formatDate(f(s,'Date')) + ' ' + (days === 0 ? '&mdash; Today!' : '&mdash; ' + days + 'd away') + '</div>'
-          + '<div class="timeline-name">' + esc(f(s,'Name')) + '</div>'
-          + (f(s,'Description') ? '<div class="timeline-desc">' + esc(f(s,'Description')) + '</div>' : '')
-          + '</div>';
+    (function initFontScale() {
+      const saved = parseInt(localStorage.getItem('familyhq.fontScalePct'), 10);
+      const pct = Number.isInteger(saved) ? saved : 100;
+      document.documentElement.style.zoom = pct / 100;
+    })();
+    function openFontScaleModal() {
+      const current = Math.round(parseFloat(document.documentElement.style.zoom || '1') * 100);
+      openModal('Text size', `
+        <div class="field">
+          <input type="range" id="font-scale-slider" min="90" max="160" step="5" value="${current}" style="width:100%;accent-color:var(--gold);">
+          <div style="text-align:center;font-family:var(--font-mono);font-size:13px;color:var(--ink-muted);margin-top:10px" id="font-scale-value">${current}%</div>
+        </div>
+        <div class="modal-actions" style="justify-content:flex-end">
+          <button class="btn btn-primary" data-close>Done</button>
+        </div>
+      `);
+      const slider = document.getElementById('font-scale-slider');
+      const label = document.getElementById('font-scale-value');
+      slider.addEventListener('input', () => {
+        const val = parseInt(slider.value, 10);
+        label.textContent = `${val}%`;
+        document.documentElement.style.zoom = val / 100;
+        localStorage.setItem('familyhq.fontScalePct', val);
       });
     }
-    if (past.length) {
-      html += '<div class="task-group-label" style="margin-top:24px">Past Sessions</div>';
-      past.forEach(s => {
-        html += '<div class="timeline-event" style="opacity:0.6" onclick="openEditSession(\'' + s.id + '\')">' 
-          + '<div class="timeline-date">' + formatDate(f(s,'Date')) + '</div>'
-          + '<div class="timeline-name">' + esc(f(s,'Name')) + '</div></div>';
+    document.getElementById('font-scale-toggle').addEventListener('click', openFontScaleModal);
+
+    function airtableUrl(table, suffix = '') {
+      const tableId = AIRTABLE_TABLE_IDS[table] || table;
+      return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${tableId}${suffix}`;
+    }
+
+    async function api(method, table, opts = {}) {
+      const { id, body } = opts;
+      const params = new URLSearchParams({ returnFieldsByFieldId: 'true' });
+      const url = `${airtableUrl(table, id ? `/${id}` : '')}?${params.toString()}`;
+      let payload = body;
+      if (method === 'POST' && body && body.fields) {
+        payload = { records: [{ fields: body.fields }], typecast: true, returnFieldsByFieldId: true };
+      } else if (method === 'PATCH' && body && body.fields) {
+        payload = { fields: body.fields, typecast: true, returnFieldsByFieldId: true };
+      }
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: payload ? JSON.stringify(payload) : undefined,
+      });
+      if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+      const data = await res.json();
+      if (method === 'POST' && data.records) return data.records[0];
+      return data;
+    }
+
+    async function listAll(table) {
+      const acc = [];
+      let offset;
+      do {
+        const params = new URLSearchParams({ pageSize: '100', returnFieldsByFieldId: 'true' });
+        if (offset) params.set('offset', offset);
+        const res = await fetch(`${airtableUrl(table)}?${params.toString()}`, {
+          headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` },
+        });
+        if (!res.ok) throw new Error(`Failed to load ${table}`);
+        const data = await res.json();
+        acc.push(...(data.records || []));
+        offset = data.offset;
+      } while (offset);
+      return acc;
+    }
+
+    const f = (rec, id) => rec?.fields?.[id];
+
+    // People are handled via a singleSelect field (Assigned): Anjanette, Chanelle, Both, Other.
+    const PERSON_COLORS = { Anjanette: 'var(--person-Rose)', Chanelle: 'var(--person-Indigo)', Both: 'var(--person-Sky)', Other: 'var(--person-Slate)' };
+    function personColor(name) { return PERSON_COLORS[name] || null; }
+    function initials(name) { if (!name) return '?'; const parts = name.trim().split(/\s+/); return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase(); }
+    function personCssVars(name) { const color = personColor(name); return color ? `--person-color:${color}` : ''; }
+
+    // Simple assignee display: shows the Assigned value directly. If "Other", also shows
+    // the OtherAssignee text field when present.
+    function assigneeMeta(record, assignedField, otherField) {
+      const assigned = f(record, assignedField) || '';
+      let label = assigned;
+      if (assigned === 'Other') {
+        const other = f(record, otherField);
+        label = other ? `Other: ${other}` : 'Other';
+      }
+      const avatarInitials = assigned === 'Other' ? 'OT' : (assigned ? initials(assigned) : '');
+      return { assigned, label, avatarInitials, colorName: assigned };
+    }
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const toISODate = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const parseISODate = s => { if (!s) return null; const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+    const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+    const daysBetween = (a, b) => Math.round((b - a) / DAY_MS);
+
+    function formatDateLabel(dateStr) {
+      if (!dateStr) return '';
+      const d = parseISODate(dateStr);
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    }
+
+    function setSync(status, label) {
+      const el = document.getElementById('sync-status');
+      el.classList.remove('syncing', 'error');
+      if (status !== 'ok') el.classList.add(status);
+      document.getElementById('sync-label').textContent = label || (status === 'ok' ? 'Live' : status);
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function showActionToast(msg, onUndo) {
+      const el = document.getElementById('action-toast');
+      document.getElementById('action-toast-msg').textContent = msg;
+      const undoBtn = document.getElementById('action-toast-undo');
+      el.classList.add('show');
+      const hide = () => el.classList.remove('show');
+      undoBtn.onclick = () => { onUndo(); hide(); };
+      return hide;
+    }
+
+    // Optimistically removes an item, waits ~5s before actually deleting on the server,
+    // and lets the user undo within that window.
+    function scheduleUndoableDelete({ getArray, setArray, id, render, deleteApi, label }) {
+      const arr = getArray();
+      const idx = arr.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      const [removed] = arr.splice(idx, 1);
+      render();
+      let undone = false;
+      const timeoutId = setTimeout(async () => {
+        if (undone) return;
+        try {
+          await deleteApi();
+        } catch (err) {
+          console.error(err);
+          toast('Delete failed');
+          loadAll();
+        }
+      }, 5000);
+      showActionToast(`${label} deleted`, () => {
+        undone = true;
+        clearTimeout(timeoutId);
+        const current = getArray();
+        current.splice(idx, 0, removed);
+        setArray(current);
+        render();
       });
     }
-  }
 
-  el.innerHTML = html;
-}
-
-function renderNotes() {
-  const el = document.getElementById('tab-notes');
-  let html = '<div class="note-author-toggle">'
-    + '<button class="note-author-btn ' + (state.noteAuthor==='Anjanette'?'active':'') + '"'
-    + ' style="' + (state.noteAuthor==='Anjanette'?'background:var(--pink);color:#fff;border-color:var(--pink)':'') + '"'
-    + ' onclick="state.noteAuthor=\'Anjanette\';render()">Anjanette</button>'
-    + '<button class="note-author-btn ' + (state.noteAuthor==='Chanelle'?'active':'') + '"'
-    + ' style="' + (state.noteAuthor==='Chanelle'?'background:var(--lavender);color:#fff;border-color:var(--lavender)':'') + '"'
-    + ' onclick="state.noteAuthor=\'Chanelle\';render()">Chanelle</button>'
-    + '</div>';
-
-  html += '<div class="note-input-bar">'
-    + '<input type="text" id="noteInput" placeholder="Type a quick message..." onkeydown="if(event.key===\'Enter\')sendNote()">'
-    + '<button class="note-send-btn" onclick="sendNote()">&#10148;</button></div>';
-
-  state.notes.forEach(n => {
-    const author = f(n,'Author');
-    html += '<div class="note-card"><div class="note-card-header">'
-      + '<div class="avatar" style="background:' + personColor(author) + ';width:20px;height:20px;font-size:9px">' + personInitial(author) + '</div>'
-      + '<span class="note-card-author">' + esc(author) + '</span>'
-      + '<span class="note-card-time">' + timeAgo(f(n,'Created')) + '</span></div>'
-      + '<div class="note-card-msg">' + esc(f(n,'Message')) + '</div></div>';
-  });
-
-  if (!state.notes.length) {
-    html += '<div class="empty-state" style="margin-top:20px"><div class="empty-state-icon">&#128172;</div>No messages yet</div>';
-  }
-
-  el.innerHTML = html;
-}
-
-function renderRoadmap() {
-  const el = document.getElementById('tab-roadmap');
-  const phases = [
-    { key: 'Now', color: 'var(--primary)' },
-    { key: 'Next', color: 'var(--lavender)' },
-    { key: 'Future', color: 'var(--ink-muted)' }
-  ];
-  let html = '';
-  phases.forEach(phase => {
-    const items = state.roadmap.filter(r => f(r,'Phase') === phase.key);
-    html += '<div class="roadmap-section"><div class="roadmap-section-header">'
-      + '<div class="roadmap-section-dot" style="background:' + phase.color + '"></div>'
-      + '<div class="roadmap-section-title">' + phase.key + '</div>'
-      + '<div class="roadmap-section-count">' + items.length + '</div></div>';
-    if (items.length) {
-      items.forEach(r => {
-        const assigned = f(r,'Assigned');
-        const displayAssigned = assigned === 'Other' ? (f(r,'Other Assignee') || 'Other') : assigned;
-        html += '<div class="roadmap-item" onclick="openEditRoadmap(\'' + r.id + '\')">' 
-          + '<div class="roadmap-item-name">' + esc(f(r,'Name')) + '</div>'
-          + (f(r,'Description') ? '<div class="roadmap-item-desc">' + esc(f(r,'Description')) + '</div>' : '')
-          + '<div class="roadmap-item-meta">'
-          + (assigned ? '<div class="avatar" style="background:' + personColor(assigned) + ';width:18px;height:18px;font-size:8px">' + personInitial(displayAssigned) + '</div><span style="font-size:11px;color:var(--ink-muted)">' + esc(displayAssigned) + '</span>' : '')
-          + '<button class="task-action-btn" onclick="event.stopPropagation();deleteWithUndo(\'roadmap\',\'' + r.id + '\',\'' + esc(f(r,'Name')) + '\')" title="Delete" style="color:var(--red);margin-left:auto">&#10005;</button>'
-          + '</div></div>';
-      });
-    } else {
-      html += '<div style="font-size:12px;color:var(--ink-muted);padding:8px 0">No items</div>';
+    async function loadAll() {
+      setSync('syncing', 'Syncing');
+      try {
+        const [tasks, sessions, notes, roadmap] = await Promise.all([
+          listAll('Tasks'), listAll('Sessions'), listAll('Notes'), listAll('Roadmap')
+        ]);
+        state.tasks = tasks;
+        state.sessions = sessions;
+        state.notes = notes;
+        state.roadmap = roadmap;
+        setSync('ok');
+        renderAll();
+      } catch (err) {
+        console.error(err);
+        setSync('error', 'Error');
+      }
     }
-    html += '</div>';
-  });
-  el.innerHTML = html;
-}
 
-async function advanceTask(id) {
-  const task = state.tasks.find(t => t.id === id);
-  if (!task) return;
-  const flow = { 'Backlog': 'On Deck', 'On Deck': 'Tackling', 'Tackling': 'Done' };
-  const next = flow[f(task,'Status')];
-  if (!next) return;
-  try {
-    await airtableUpdate('tasks', id, { Status: next });
-    toast('Moved to ' + next);
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function renderTaskFilters() {
+      const chips = [
+        { key: 'all', label: 'Everyone' },
+        { key: 'Anjanette', label: 'Anjanette' },
+        { key: 'Chanelle', label: 'Chanelle' },
+        { key: 'Other', label: 'Other' },
+      ];
+      const html = chips.map(c => {
+        const active = state.taskFilter === c.key ? 'active' : '';
+        const color = c.key !== 'all' ? personColor(c.key) : null;
+        return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
+      }).join('');
+      ['task-filters', 'task-filters-2'].forEach(id => {
+        const wrap = document.getElementById(id);
+        if (!wrap) return;
+        wrap.innerHTML = html;
+        wrap.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.taskFilter = btn.dataset.filter;
+            renderTaskFilters();
+            renderTasks();
+          });
+        });
+      });
+    }
 
-async function bumpTask(id) {
-  try {
-    await airtableUpdate('tasks', id, { Status: 'Backlog' });
-    toast('Bumped to Backlog');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function matchesTaskFilter(task) {
+      if (state.taskFilter === 'all') return true;
+      return (f(task, F.tasks.Assigned) || '') === state.taskFilter;
+    }
 
-async function sendNote() {
-  const input = document.getElementById('noteInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  try {
-    await airtableCreate('notes', { Message: msg, Author: { name: state.noteAuthor } });
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function renderTasks() {
+      const filtered = state.tasks.filter(matchesTaskFilter);
+      const openTasks = filtered.filter(t => f(t, F.tasks.Status) !== 'Done');
 
-function deleteWithUndo(tableKey, id, name) {
-  const record = state[tableKey === 'tasks' ? 'tasks' : tableKey].find(r => r.id === id);
-  if (!record) return;
+      const buckets = { tackling: [], ondeck: [], backlog: [] };
+      openTasks.forEach(t => {
+        const status = f(t, F.tasks.Status);
+        if (status === 'Tackling') buckets.tackling.push(t);
+        else if (status === 'On Deck') buckets.ondeck.push(t);
+        else buckets.backlog.push(t);
+      });
 
-  if (tableKey === 'tasks') state.tasks = state.tasks.filter(t => t.id !== id);
-  else if (tableKey === 'roadmap') state.roadmap = state.roadmap.filter(r => r.id !== id);
-  render();
+      const sortByName = (a, b) => (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
+      Object.values(buckets).forEach(list => list.sort(sortByName));
 
-  const undoId = Date.now().toString();
-  let cancelled = false;
+      const MAX_TOTAL = 15;
+      const order = ['tackling', 'ondeck', 'backlog'];
+      const perBucketShown = { tackling: 0, ondeck: 0, backlog: 0 };
+      let remaining = MAX_TOTAL;
+      const softCaps = { tackling: 8, ondeck: 8, backlog: 6 };
+      order.forEach(k => {
+        const take = Math.min(buckets[k].length, softCaps[k], remaining);
+        perBucketShown[k] = take;
+        remaining -= take;
+      });
+      order.forEach(k => {
+        if (remaining <= 0) return;
+        const extra = Math.min(buckets[k].length - perBucketShown[k], remaining);
+        perBucketShown[k] += extra;
+        remaining -= extra;
+      });
 
-  showUndoToast(name, () => {
-    cancelled = true;
-    if (tableKey === 'tasks') state.tasks.push(record);
-    else if (tableKey === 'roadmap') state.roadmap.push(record);
-    render();
-    toast('Restored');
-  });
+      const bucketMeta = [
+        { key: 'tackling', label: 'Tackling', cls: 'bucket-today' },
+        { key: 'ondeck', label: 'On Deck', cls: 'bucket-week' },
+        { key: 'backlog', label: 'Backlog', cls: 'bucket-later' },
+      ];
 
-  setTimeout(async () => {
-    if (cancelled) return;
-    try {
-      await airtableDelete(tableKey, id);
-    } catch(e) { toast('Delete error'); fetchAll(); }
-  }, 5000);
-}
+      document.getElementById('bucket-total').textContent = openTasks.length;
 
-function openModal(html) {
-  document.getElementById('modalBody').innerHTML = html;
-  document.getElementById('modalOverlay').classList.add('active');
-}
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('active');
-}
+      document.getElementById('buckets-grid').innerHTML = bucketMeta.map(b => {
+        const items = buckets[b.key];
+        const shown = perBucketShown[b.key];
+        const more = items.length - shown;
+        const list = shown === 0
+          ? `<div class="bucket-empty">${items.length === 0 ? 'Nothing here' : `${items.length} hidden`}</div>`
+          : items.slice(0, shown).map(taskMini).join('') + (more > 0 ? `<div class="bucket-more">+${more} more</div>` : '');
+        return `
+          <div class="bucket ${b.cls}">
+            <div class="bucket-head">
+              <span class="bucket-title">${b.label}</span>
+              <span class="bucket-count">${items.length}</span>
+            </div>
+            ${list}
+          </div>
+        `;
+      }).join('');
 
-function openAddModal() {
-  const tab = state.tab;
-  if (tab === 'tasks' || tab === 'dashboard') openAddTask();
-  else if (tab === 'calendar') openAddSession();
-  else if (tab === 'notes') document.getElementById('noteInput')?.focus();
-  else if (tab === 'roadmap') openAddRoadmap();
-}
+      const searchTerm = (state.taskSearch || '').trim().toLowerCase();
+      const tableTasks = searchTerm
+        ? filtered.filter(t => (f(t, F.tasks.Name) || '').toLowerCase().includes(searchTerm))
+        : filtered;
 
-function openAddTask() {
-  openModal(
-    '<div class="modal-title">New Task</div>'
-    + '<div class="form-group"><label class="form-label">Name</label>'
-    + '<input class="form-input" id="m_name" placeholder="What needs to be done?"></div>'
-    + '<div class="form-group"><label class="form-label">Status</label>'
-    + '<select class="form-select" id="m_status"><option>Backlog</option><option selected>On Deck</option><option>Tackling</option></select></div>'
-    + '<div class="form-group"><label class="form-label">Assigned</label>'
-    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
-    + '<option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option></select></div>'
-    + '<div class="form-group" id="m_other_row" style="display:none"><label class="form-label">Other Name</label>'
-    + '<input class="form-input" id="m_other" placeholder="Name"></div>'
-    + '<div class="form-group"><label class="form-label">Type</label>'
-    + '<select class="form-select" id="m_type"><option>Task</option><option>Project</option></select></div>'
-    + '<div class="form-group"><label class="form-label">Session Date</label>'
-    + '<input class="form-input" id="m_date" type="date"></div>'
-    + '<div class="form-group"><label class="form-label">Notes</label>'
-    + '<textarea class="form-textarea" id="m_notes" placeholder="Optional details..."></textarea></div>'
-    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn-primary" onclick="submitTask()">Add Task</button></div>'
-  );
-  setTimeout(function() { document.getElementById('m_name')?.focus(); }, 100);
-}
+      const statusOrder = { 'Tackling': 0, 'On Deck': 1, 'Backlog': 2, 'Done': 3 };
+      const sortedAll = [...tableTasks].sort((a, b) => {
+        const aStatus = statusOrder[f(a, F.tasks.Status)] ?? 4;
+        const bStatus = statusOrder[f(b, F.tasks.Status)] ?? 4;
+        if (aStatus !== bStatus) return aStatus - bStatus;
+        return (f(a, F.tasks.Name) || '').localeCompare(f(b, F.tasks.Name) || '');
+      });
+      document.getElementById('all-count').textContent = sortedAll.length;
 
-async function submitTask() {
-  const name = document.getElementById('m_name').value.trim();
-  if (!name) return;
-  const fields = {
-    Name: name,
-    Status: { name: document.getElementById('m_status').value },
-    Assigned: { name: document.getElementById('m_assigned').value },
-    Type: { name: document.getElementById('m_type').value }
-  };
-  const other = document.getElementById('m_other')?.value.trim();
-  if (other) fields['Other Assignee'] = other;
-  const date = document.getElementById('m_date').value;
-  if (date) fields['Session Date'] = date;
-  const notes = document.getElementById('m_notes').value.trim();
-  if (notes) fields.Notes = notes;
+      const table = document.getElementById('task-table');
+      if (sortedAll.length === 0) {
+        table.innerHTML = searchTerm
+          ? `<div class="empty"><div class="empty-emoji">🔍</div><div class="empty-title">No matches</div>Try a different search.</div>`
+          : `<div class="empty"><div class="empty-emoji">✨</div><div class="empty-title">All clear</div>No tasks yet.</div>`;
+      } else {
+        table.innerHTML = `
+          <div class="task-table-head">
+            <div>Task</div>
+            <div>Assigned</div>
+            <div>Status</div>
+            <div>Type</div>
+            <div></div>
+          </div>
+          ${sortedAll.map(taskRow).join('')}
+        `;
+      }
 
-  try {
-    closeModal();
-    await airtableCreate('tasks', fields);
-    toast('Task added');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+      const tacklingCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Tackling').length;
+      const ondeckCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'On Deck').length;
+      const projectsCount = state.tasks.filter(t => f(t, F.tasks.Type) === 'Project' && f(t, F.tasks.Status) !== 'Done').length;
+      const backlogCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Backlog').length;
+      document.getElementById('stat-tackling').textContent = tacklingCount;
+      document.getElementById('stat-ondeck').textContent = ondeckCount;
+      document.getElementById('stat-projects').textContent = projectsCount;
+      document.getElementById('stat-backlog').textContent = backlogCount;
 
-function openEditTask(id) {
-  const task = state.tasks.find(t => t.id === id);
-  if (!task) return;
-  const assigned = f(task,'Assigned');
-  openModal(
-    '<div class="modal-title">Edit Task</div>'
-    + '<div class="form-group"><label class="form-label">Name</label>'
-    + '<input class="form-input" id="m_name" value="' + esc(f(task,'Name')) + '"></div>'
-    + '<div class="form-group"><label class="form-label">Status</label>'
-    + '<select class="form-select" id="m_status">'
-    + ['Backlog','On Deck','Tackling','Done'].map(s => '<option ' + (f(task,'Status')===s?'selected':'') + '>' + s + '</option>').join('')
-    + '</select></div>'
-    + '<div class="form-group"><label class="form-label">Assigned</label>'
-    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
-    + ['Anjanette','Chanelle','Both','Other'].map(a => '<option ' + (assigned===a?'selected':'') + '>' + a + '</option>').join('')
-    + '</select></div>'
-    + '<div class="form-group" id="m_other_row" style="display:' + (assigned==='Other'?'block':'none') + '"><label class="form-label">Other Name</label>'
-    + '<input class="form-input" id="m_other" value="' + esc(f(task,'Other Assignee')) + '"></div>'
-    + '<div class="form-group"><label class="form-label">Type</label>'
-    + '<select class="form-select" id="m_type">'
-    + ['Task','Project'].map(t => '<option ' + (f(task,'Type')===t?'selected':'') + '>' + t + '</option>').join('')
-    + '</select></div>'
-    + '<div class="form-group"><label class="form-label">Session Date</label>'
-    + '<input class="form-input" id="m_date" type="date" value="' + f(task,'Session Date') + '"></div>'
-    + '<div class="form-group"><label class="form-label">Notes</label>'
-    + '<textarea class="form-textarea" id="m_notes">' + esc(f(task,'Notes')) + '</textarea></div>'
-    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn-primary" onclick="submitEditTask(\'' + id + '\')">Save</button></div>'
-  );
-}
+      document.querySelectorAll('[data-task-id]').forEach(el => {
+        el.addEventListener('click', e => {
+          if (e.target.closest('[data-action="check"]')) return;
+          openTaskModal(el.dataset.taskId);
+        });
+      });
+      document.querySelectorAll('[data-action="check"]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          completeTask(el.dataset.taskId);
+        });
+      });
+    }
 
-async function submitEditTask(id) {
-  const fields = {
-    Name: document.getElementById('m_name').value.trim(),
-    Status: { name: document.getElementById('m_status').value },
-    Assigned: { name: document.getElementById('m_assigned').value },
-    Type: { name: document.getElementById('m_type').value },
-    'Other Assignee': document.getElementById('m_other')?.value.trim() || '',
-    'Session Date': document.getElementById('m_date').value || null,
-    Notes: document.getElementById('m_notes').value.trim()
-  };
-  if (!fields.Name) return;
-  try {
-    closeModal();
-    await airtableUpdate('tasks', id, fields);
-    toast('Task updated');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function taskMini(task) {
+      const title = f(task, F.tasks.Name) || 'Untitled';
+      const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
+      const styleVars = personCssVars(meta.colorName);
+      return `
+        <div class="task-mini" data-task-id="${task.id}" style="${styleVars}">
+          <button class="task-mini-check" data-action="check" data-task-id="${task.id}" aria-label="Mark done">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+          <div class="task-mini-body">
+            <div class="task-mini-title">${escapeHtml(title)}</div>
+            ${meta.label ? `<div class="task-mini-meta"><span>${escapeHtml(meta.label)}</span></div>` : ''}
+          </div>
+          ${meta.label ? `<div class="task-mini-avatar" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
+        </div>
+      `;
+    }
 
-function openAddSession() {
-  openModal(
-    '<div class="modal-title">New Session</div>'
-    + '<div class="form-group"><label class="form-label">Session Name</label>'
-    + '<input class="form-input" id="m_name" placeholder="e.g. Fall Planning Sprint"></div>'
-    + '<div class="form-group"><label class="form-label">Date</label>'
-    + '<input class="form-input" id="m_date" type="date"></div>'
-    + '<div class="form-group"><label class="form-label">Description</label>'
-    + '<textarea class="form-textarea" id="m_desc" placeholder="What\'s the focus?"></textarea></div>'
-    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn-primary" onclick="submitSession()">Create Session</button></div>'
-  );
-  setTimeout(function() { document.getElementById('m_name')?.focus(); }, 100);
-}
+    function taskRow(task) {
+      const title = f(task, F.tasks.Name) || 'Untitled';
+      const type = f(task, F.tasks.Type) || 'Task';
+      const status = f(task, F.tasks.Status) || 'Backlog';
+      const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
+      const styleVars = personCssVars(meta.colorName);
+      return `
+        <div class="task-table-row" data-task-id="${task.id}" style="${styleVars}">
+          <div class="tt-title">${escapeHtml(title)}</div>
+          <div class="tt-cell tt-assigned">
+            ${meta.label ? `<span class="tt-avatar">${escapeHtml(meta.avatarInitials)}</span><span>${escapeHtml(meta.label)}</span>` : '<span>—</span>'}
+          </div>
+          <div class="tt-cell tt-status">${escapeHtml(status)}</div>
+          <div class="tt-cell tt-type"><span class="tt-type-tag ${type.toLowerCase()}">${escapeHtml(type)}</span></div>
+          <button class="tt-check" data-action="check" data-task-id="${task.id}" aria-label="Mark done">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      `;
+    }
 
-async function submitSession() {
-  const name = document.getElementById('m_name').value.trim();
-  if (!name) return;
-  const fields = { Name: name };
-  const date = document.getElementById('m_date').value;
-  if (date) fields.Date = date;
-  const desc = document.getElementById('m_desc').value.trim();
-  if (desc) fields.Description = desc;
-  try {
-    closeModal();
-    await airtableCreate('sessions', fields);
-    toast('Session created');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    async function completeTask(id) {
+      const task = state.tasks.find(t => t.id === id);
+      if (!task) return;
+      const currentStatus = f(task, F.tasks.Status);
+      const isDone = currentStatus === 'Done';
+      const newStatus = isDone ? 'Tackling' : 'Done';
+      const updates = { [F.tasks.Status]: newStatus };
+      Object.assign(task.fields, updates);
+      renderTasks();
+      try {
+        await api('PATCH', 'Tasks', { id, body: { fields: updates } });
+        toast(isDone ? 'Back to tackling' : 'Done ✓');
+      } catch (err) {
+        console.error(err);
+        toast('Sync failed');
+        loadAll();
+      }
+    }
 
-function openEditSession(id) {
-  const s = state.sessions.find(s => s.id === id);
-  if (!s) return;
-  openModal(
-    '<div class="modal-title">Edit Session</div>'
-    + '<div class="form-group"><label class="form-label">Session Name</label>'
-    + '<input class="form-input" id="m_name" value="' + esc(f(s,'Name')) + '"></div>'
-    + '<div class="form-group"><label class="form-label">Date</label>'
-    + '<input class="form-input" id="m_date" type="date" value="' + f(s,'Date') + '"></div>'
-    + '<div class="form-group"><label class="form-label">Description</label>'
-    + '<textarea class="form-textarea" id="m_desc">' + esc(f(s,'Description')) + '</textarea></div>'
-    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn-primary" onclick="submitEditSession(\'' + id + '\')">Save</button>'
-    + '<button class="btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="deleteSession(\'' + id + '\')">Delete</button></div>'
-  );
-}
+    const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-async function submitEditSession(id) {
-  const fields = {
-    Name: document.getElementById('m_name').value.trim(),
-    Date: document.getElementById('m_date').value || null,
-    Description: document.getElementById('m_desc').value.trim()
-  };
-  if (!fields.Name) return;
-  try {
-    closeModal();
-    await airtableUpdate('sessions', id, fields);
-    toast('Session updated');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function eventsForDate(d) {
+      const iso = toISODate(d);
+      const results = [];
+      state.sessions.forEach(s => {
+        const dateStr = f(s, F.sessions.Date);
+        if (dateStr !== iso) return;
+        results.push({
+          title: f(s, F.sessions.Name) || 'Untitled',
+          date: d,
+          description: f(s, F.sessions.Description) || '',
+          id: s.id,
+        });
+      });
+      return results;
+    }
 
-async function deleteSession(id) {
-  try {
-    closeModal();
-    await airtableDelete('sessions', id);
-    toast('Session deleted');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function renderCalendar() {
+      const gridEl = document.getElementById('cal-grid-container');
+      const weekEl = document.getElementById('cal-week-container');
+      const listEl = document.getElementById('cal-upcoming-container');
+      gridEl.style.display = 'none';
+      weekEl.style.display = 'none';
+      listEl.style.display = 'none';
 
-function openAddRoadmap() {
-  openModal(
-    '<div class="modal-title">New Roadmap Item</div>'
-    + '<div class="form-group"><label class="form-label">Name</label>'
-    + '<input class="form-input" id="m_name" placeholder="What\'s the idea?"></div>'
-    + '<div class="form-group"><label class="form-label">Phase</label>'
-    + '<select class="form-select" id="m_phase"><option>Now</option><option>Next</option><option selected>Future</option></select></div>'
-    + '<div class="form-group"><label class="form-label">Description</label>'
-    + '<textarea class="form-textarea" id="m_desc" placeholder="Details..."></textarea></div>'
-    + '<div class="form-group"><label class="form-label">Assigned</label>'
-    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
-    + '<option value="">Unassigned</option><option>Anjanette</option><option>Chanelle</option><option>Both</option><option>Other</option></select></div>'
-    + '<div class="form-group" id="m_other_row" style="display:none"><label class="form-label">Other Name</label>'
-    + '<input class="form-input" id="m_other" placeholder="Name"></div>'
-    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn-primary" onclick="submitRoadmap()">Add Item</button></div>'
-  );
-  setTimeout(function() { document.getElementById('m_name')?.focus(); }, 100);
-}
+      if (state.calView === 'week') {
+        weekEl.style.display = 'block';
+        renderCalWeek();
+      } else if (state.calView === 'list') {
+        listEl.style.display = 'block';
+        const y = state.calDate.getFullYear();
+        const m = state.calDate.getMonth();
+        document.getElementById('cal-title').innerHTML = `${MONTH_NAMES[m]}<span class="cal-title-year">${y}</span>`;
+        renderCalUpcoming();
+      } else {
+        gridEl.style.display = 'block';
+        const y = state.calDate.getFullYear();
+        const m = state.calDate.getMonth();
+        document.getElementById('cal-title').innerHTML = `${MONTH_NAMES[m]}<span class="cal-title-year">${y}</span>`;
+        renderCalGrid(y, m);
+      }
+    }
 
-async function submitRoadmap() {
-  const name = document.getElementById('m_name').value.trim();
-  if (!name) return;
-  const fields = {
-    Name: name,
-    Phase: { name: document.getElementById('m_phase').value }
-  };
-  const desc = document.getElementById('m_desc').value.trim();
-  if (desc) fields.Description = desc;
-  const assigned = document.getElementById('m_assigned').value;
-  if (assigned) fields.Assigned = { name: assigned };
-  const other = document.getElementById('m_other')?.value.trim();
-  if (other) fields['Other Assignee'] = other;
-  try {
-    closeModal();
-    await airtableCreate('roadmap', fields);
-    toast('Roadmap item added');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+    function startOfWeek(d) {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      x.setDate(x.getDate() - x.getDay());
+      return x;
+    }
 
-function openEditRoadmap(id) {
-  const r = state.roadmap.find(r => r.id === id);
-  if (!r) return;
-  const assigned = f(r,'Assigned');
-  openModal(
-    '<div class="modal-title">Edit Roadmap Item</div>'
-    + '<div class="form-group"><label class="form-label">Name</label>'
-    + '<input class="form-input" id="m_name" value="' + esc(f(r,'Name')) + '"></div>'
-    + '<div class="form-group"><label class="form-label">Phase</label>'
-    + '<select class="form-select" id="m_phase">'
-    + ['Now','Next','Future'].map(p => '<option ' + (f(r,'Phase')===p?'selected':'') + '>' + p + '</option>').join('')
-    + '</select></div>'
-    + '<div class="form-group"><label class="form-label">Description</label>'
-    + '<textarea class="form-textarea" id="m_desc">' + esc(f(r,'Description')) + '</textarea></div>'
-    + '<div class="form-group"><label class="form-label">Assigned</label>'
-    + '<select class="form-select" id="m_assigned" onchange="document.getElementById(\'m_other_row\').style.display=this.value===\'Other\'?\'block\':\'none\'">'
-    + '<option value="">Unassigned</option>'
-    + ['Anjanette','Chanelle','Both','Other'].map(a => '<option ' + (assigned===a?'selected':'') + '>' + a + '</option>').join('')
-    + '</select></div>'
-    + '<div class="form-group" id="m_other_row" style="display:' + (assigned==='Other'?'block':'none') + '"><label class="form-label">Other Name</label>'
-    + '<input class="form-input" id="m_other" value="' + esc(f(r,'Other Assignee')) + '"></div>'
-    + '<div class="form-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn-primary" onclick="submitEditRoadmap(\'' + id + '\')">Save</button></div>'
-  );
-}
+    function renderCalWeek() {
+      const start = startOfWeek(state.calDate);
+      const end = new Date(start.getTime() + 6 * DAY_MS);
+      const sameMonth = start.getMonth() === end.getMonth();
+      const title = sameMonth
+        ? `${MONTH_SHORT[start.getMonth()]} ${start.getDate()}–${end.getDate()}`
+        : `${MONTH_SHORT[start.getMonth()]} ${start.getDate()} – ${MONTH_SHORT[end.getMonth()]} ${end.getDate()}`;
+      document.getElementById('cal-title').innerHTML = `${title}<span class="cal-title-year">${start.getFullYear()}</span>`;
 
-async function submitEditRoadmap(id) {
-  const fields = {
-    Name: document.getElementById('m_name').value.trim(),
-    Phase: { name: document.getElementById('m_phase').value },
-    Description: document.getElementById('m_desc').value.trim()
-  };
-  const assigned = document.getElementById('m_assigned').value;
-  if (assigned) fields.Assigned = { name: assigned };
-  else fields.Assigned = null;
-  const other = document.getElementById('m_other')?.value.trim();
-  fields['Other Assignee'] = other || '';
-  if (!fields.Name) return;
-  try {
-    closeModal();
-    await airtableUpdate('roadmap', id, fields);
-    toast('Roadmap item updated');
-    fetchAll();
-  } catch(e) { toast('Error: ' + e.message); }
-}
+      const t = today();
+      const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const cells = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(start.getTime() + i * DAY_MS);
+        const isToday = d.getTime() === t.getTime();
+        const events = eventsForDate(d);
+        const evHtml = events.length
+          ? events.map(e => `
+              <div class="cal-week-event" data-event-id="${e.id}">
+                <span class="cal-week-event-bullet"></span>
+                <div class="cal-week-event-body">
+                  <div class="cal-week-event-title">${escapeHtml(e.title)}</div>
+                  ${e.description ? `<div class="cal-week-event-sub">${escapeHtml(e.description)}</div>` : ''}
+                </div>
+              </div>
+            `).join('')
+          : `<div class="cal-week-day-empty">Nothing scheduled</div>`;
+        cells.push(`
+          <div class="cal-week-day ${isToday ? 'today' : ''}">
+            <div class="cal-week-day-label">
+              <span class="cal-week-day-name">${DAY_NAMES[i]}</span>
+              <span class="cal-week-day-num">${d.getDate()}</span>
+            </div>
+            <div class="cal-week-day-events">${evHtml}</div>
+          </div>
+        `);
+      }
+      document.getElementById('cal-week').innerHTML = cells.join('');
+      document.querySelectorAll('[data-event-id]').forEach(el => {
+        el.addEventListener('click', () => openSessionModal(el.dataset.eventId));
+      });
+    }
 
-function toast(msg) {
-  const c = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  c.appendChild(t);
-  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 3000);
-}
+    function renderCalGrid(y, m) {
+      const first = new Date(y, m, 1);
+      const startWeekday = first.getDay();
+      const lastDay = new Date(y, m + 1, 0).getDate();
+      const t = today();
+      const cells = [];
+      for (let i = 0; i < startWeekday; i++) cells.push(`<div class="cal-day empty-day"></div>`);
+      for (let d = 1; d <= lastDay; d++) {
+        const date = new Date(y, m, d);
+        const events = eventsForDate(date);
+        const isToday = date.getTime() === t.getTime();
+        const shown = events.slice(0, 2);
+        const more = events.length - shown.length;
+        const rows = shown.map(e => `
+          <div class="cal-day-event-row">
+            <span class="cal-day-event-dot" style="--dot-color:${e.color || 'var(--ink-muted)'}"></span>
+            <span class="cal-day-event-name">${escapeHtml(e.title)}</span>
+          </div>
+        `).join('') + (more > 0 ? `<div class="cal-day-more">+${more} more</div>` : '');
+        cells.push(`
+          <button class="cal-day ${isToday ? 'today' : ''} ${events.length ? 'has-events' : ''}" data-date="${toISODate(date)}">
+            <span class="cal-day-num">${d}</span>
+            <div class="cal-day-events">${rows}</div>
+          </button>
+        `);
+      }
+      document.getElementById('cal-days').innerHTML = cells.join('');
+      document.querySelectorAll('.cal-day[data-date]').forEach(el => {
+        el.addEventListener('click', () => showDayEvents(el.dataset.date));
+      });
+    }
 
-function showUndoToast(name, onUndo) {
-  const c = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = 'Deleted "' + esc(name) + '" <span class="toast-undo" onclick="this.parentElement.remove()">Undo</span>';
-  t.querySelector('.toast-undo').addEventListener('click', function(e) {
-    e.stopPropagation();
-    onUndo();
-    t.remove();
-  });
-  c.appendChild(t);
-  setTimeout(function() { if (t.parentElement) { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); } }, 5000);
-}
+    function renderCalUpcoming() {
+      const start = today();
+      const items = [];
+      for (let i = 0; i < 180; i++) {
+        const d = new Date(start.getTime() + i * DAY_MS);
+        const evs = eventsForDate(d);
+        evs.forEach(e => items.push(e));
+      }
+      if (items.length === 0) {
+        document.getElementById('cal-upcoming').innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">Wide open</div>The next 6 months are clear.</div>`;
+        return;
+      }
+      const grouped = {};
+      items.forEach(e => {
+        const key = `${e.date.getFullYear()}-${String(e.date.getMonth()+1).padStart(2,'0')}`;
+        (grouped[key] = grouped[key] || []).push(e);
+      });
+      const html = Object.entries(grouped).map(([key, list]) => {
+        const [y, m] = key.split('-');
+        const label = `${MONTH_NAMES[parseInt(m,10)-1]} ${y}`;
+        return `<div class="upcoming-month">${label}</div>${list.map(upcomingItem).join('')}`;
+      }).join('');
+      document.getElementById('cal-upcoming').innerHTML = html;
+    }
 
-function toggleSettings() {
-  document.getElementById('settingsPanel').classList.toggle('open');
-  document.getElementById('settingsBackdrop').classList.toggle('open');
-}
+    function upcomingItem(e) {
+      const day = e.date.getDate();
+      const month = MONTH_SHORT[e.date.getMonth()];
+      return `
+        <div class="upcoming-item">
+          <div class="upcoming-date">
+            <div class="upcoming-date-day">${day}</div>
+            <div class="upcoming-date-month">${month}</div>
+          </div>
+          <div class="upcoming-body">
+            <div class="upcoming-title">${escapeHtml(e.title)}</div>
+            ${e.description ? `<div class="upcoming-sub">${escapeHtml(e.description)}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }
 
-function setTheme(theme) {
-  if (theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('dfu_theme', theme);
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('dfu_theme', 'system');
-  }
-  document.querySelectorAll('.theme-opt').forEach(b => {
-    const t = b.dataset.theme;
-    b.classList.toggle('active', theme === null ? t === 'system' : t === theme);
-  });
-}
+    function showDayEvents(dateStr) {
+      const d = parseISODate(dateStr);
+      const events = eventsForDate(d);
+      const dateLabel = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+      const body = events.length
+        ? events.map(e => `
+            <div class="event-row-editable" data-event-id="${e.id}" style="padding:12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:8px;">
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:600;font-family:var(--font-display)">${escapeHtml(e.title)}</div>
+                ${e.description ? `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);margin-top:3px">${escapeHtml(e.description)}</div>` : ''}
+              </div>
+              <span style="color:var(--ink-muted);font-size:12px">Edit ›</span>
+            </div>
+          `).join('')
+        : `<div class="empty"><div class="empty-emoji">🌤️</div><div class="empty-title">Nothing scheduled</div></div>`;
+      openModal(dateLabel, `
+        ${body}
+        <div class="modal-actions" style="justify-content:flex-end">
+          <button class="btn btn-ghost" data-close>Close</button>
+          <button class="btn btn-primary" id="add-event-for-day" data-date="${dateStr}">Add session</button>
+        </div>
+      `);
+      document.getElementById('add-event-for-day').addEventListener('click', () => openSessionModal(null, dateStr));
+      document.querySelectorAll('#modal-body [data-event-id]').forEach(el => {
+        const eid = el.dataset.eventId;
+        if (!eid) return;
+        el.addEventListener('click', () => openSessionModal(eid));
+      });
+    }
 
-function setFontScale(val, skipSave) {
-  document.documentElement.style.setProperty('--zoom', val / 100);
-  const slider = document.getElementById('fontScale');
-  if (slider) slider.value = val;
-  if (!skipSave) localStorage.setItem('dfu_scale', val);
-}
+    function openModal(title, body) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = body;
+      document.getElementById('modal-scrim').classList.add('open');
+      document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModal));
+    }
+    function closeModal() { document.getElementById('modal-scrim').classList.remove('open'); }
+    document.getElementById('modal-scrim').addEventListener('click', e => { if (e.target.id === 'modal-scrim') closeModal(); });
 
-init();
-</script>
+    function openTaskModal(id = null) {
+      const task = id ? state.tasks.find(t => t.id === id) : null;
+      const t = task || {};
+      const title = f(t, F.tasks.Name) || '';
+      const type = f(t, F.tasks.Type) || 'Task';
+      const status = f(t, F.tasks.Status) || 'Backlog';
+      const assigned = f(t, F.tasks.Assigned) || '';
+      const otherAssignee = f(t, F.tasks.OtherAssignee) || '';
+      const sessionDate = f(t, F.tasks.SessionDate) || '';
+      const notes = f(t, F.tasks.Notes) || '';
+
+      openModal(id ? 'Edit task' : 'New task', `
+        <div class="field"><label class="field-label" for="t-title">Title</label><input class="field-input" id="t-title" value="${escapeAttr(title)}" placeholder="e.g. Plan the trip" /></div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="t-type">Type</label><select class="field-select" id="t-type"><option ${type === 'Task' ? 'selected' : ''}>Task</option><option ${type === 'Project' ? 'selected' : ''}>Project</option></select></div>
+          <div class="field"><label class="field-label" for="t-status">Status</label><select class="field-select" id="t-status">
+            <option ${status === 'Backlog' ? 'selected' : ''}>Backlog</option>
+            <option ${status === 'On Deck' ? 'selected' : ''}>On Deck</option>
+            <option ${status === 'Tackling' ? 'selected' : ''}>Tackling</option>
+            <option ${status === 'Done' ? 'selected' : ''}>Done</option>
+          </select></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="t-assigned">Assigned</label><select class="field-select" id="t-assigned">
+            <option value="" ${!assigned ? 'selected' : ''}>—</option>
+            <option ${assigned === 'Anjanette' ? 'selected' : ''}>Anjanette</option>
+            <option ${assigned === 'Chanelle' ? 'selected' : ''}>Chanelle</option>
+            <option ${assigned === 'Both' ? 'selected' : ''}>Both</option>
+            <option ${assigned === 'Other' ? 'selected' : ''}>Other</option>
+          </select></div>
+          <div class="field" id="t-other-field" style="display:${assigned === 'Other' ? 'block' : 'none'}">
+            <label class="field-label" for="t-other-name">Other name</label>
+            <input class="field-input" id="t-other-name" value="${escapeAttr(otherAssignee)}" placeholder="Who?" />
+          </div>
+        </div>
+        <div class="field"><label class="field-label" for="t-session-date">Session date</label><input class="field-input" id="t-session-date" type="date" value="${sessionDate}" /></div>
+        <div class="field"><label class="field-label" for="t-notes">Notes</label><textarea class="field-textarea" id="t-notes" placeholder="Optional">${escapeHtml(notes)}</textarea></div>
+        <div class="modal-actions">
+          ${id ? '<button class="btn btn-danger" id="t-delete">Delete</button>' : '<span></span>'}
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" id="t-save">Save</button></div>
+        </div>
+      `);
+
+      document.getElementById('t-assigned').addEventListener('change', e => {
+        document.getElementById('t-other-field').style.display = e.target.value === 'Other' ? 'block' : 'none';
+      });
+
+      document.getElementById('t-save').addEventListener('click', async () => {
+        const title = document.getElementById('t-title').value.trim();
+        if (!title) { toast('Give it a title'); return; }
+        const assignedVal = document.getElementById('t-assigned').value || null;
+        const fields = {
+          [F.tasks.Name]: title,
+          [F.tasks.Type]: document.getElementById('t-type').value,
+          [F.tasks.Status]: document.getElementById('t-status').value,
+          [F.tasks.Assigned]: assignedVal,
+          [F.tasks.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('t-other-name').value.trim() || null) : null,
+          [F.tasks.SessionDate]: document.getElementById('t-session-date').value || null,
+          [F.tasks.Notes]: document.getElementById('t-notes').value.trim() || null,
+        };
+        try {
+          if (id) {
+            const updated = await api('PATCH', 'Tasks', { id, body: { fields } });
+            const idx = state.tasks.findIndex(t => t.id === id);
+            if (idx >= 0) state.tasks[idx] = updated;
+          } else {
+            const created = await api('POST', 'Tasks', { body: { fields } });
+            state.tasks.push(created);
+          }
+          closeModal();
+          renderTasks();
+          toast(id ? 'Saved' : 'Added');
+        } catch (err) {
+          console.error(err);
+          toast('Save failed');
+        }
+      });
+
+      if (id) {
+        document.getElementById('t-delete').addEventListener('click', () => {
+          closeModal();
+          scheduleUndoableDelete({
+            getArray: () => state.tasks,
+            setArray: (arr) => { state.tasks = arr; },
+            id,
+            render: renderTasks,
+            deleteApi: () => api('DELETE', 'Tasks', { id }),
+            label: 'Task',
+          });
+        });
+      }
+    }
+
+    function openSessionModal(id = null, defaultDate = null) {
+      const session = id ? state.sessions.find(s => s.id === id) : null;
+      const s = session || {};
+      const title = f(s, F.sessions.Name) || '';
+      const date = f(s, F.sessions.Date) || defaultDate || toISODate(today());
+      const description = f(s, F.sessions.Description) || '';
+
+      openModal(id ? 'Edit session' : 'New session', `
+        <div class="field"><label class="field-label" for="e-title">Name</label><input class="field-input" id="e-title" value="${escapeAttr(title)}" placeholder="e.g. Planning session" /></div>
+        <div class="field"><label class="field-label" for="e-date">Date</label><input class="field-input" id="e-date" type="date" value="${date}" /></div>
+        <div class="field"><label class="field-label" for="e-notes">Description</label><textarea class="field-textarea" id="e-notes" placeholder="Optional">${escapeHtml(description)}</textarea></div>
+        <div class="modal-actions">
+          ${id ? '<button class="btn btn-danger" id="e-delete">Delete</button>' : '<span></span>'}
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" id="e-save">Save</button></div>
+        </div>
+      `);
+
+      document.getElementById('e-save').addEventListener('click', async () => {
+        const title = document.getElementById('e-title').value.trim();
+        if (!title) { toast('Give it a name'); return; }
+        const fields = {
+          [F.sessions.Name]: title,
+          [F.sessions.Date]: document.getElementById('e-date').value,
+          [F.sessions.Description]: document.getElementById('e-notes').value.trim() || null,
+        };
+        try {
+          if (id) {
+            const updated = await api('PATCH', 'Sessions', { id, body: { fields } });
+            const idx = state.sessions.findIndex(ev => ev.id === id);
+            if (idx >= 0) state.sessions[idx] = updated;
+          } else {
+            const created = await api('POST', 'Sessions', { body: { fields } });
+            state.sessions.push(created);
+          }
+          closeModal();
+          renderCalendar();
+          renderDashboardSessions();
+          toast(id ? 'Saved' : 'Added');
+        } catch (err) { toast('Save failed'); }
+      });
+
+      if (id) {
+        document.getElementById('e-delete').addEventListener('click', () => {
+          closeModal();
+          scheduleUndoableDelete({
+            getArray: () => state.sessions,
+            setArray: (arr) => { state.sessions = arr; },
+            id,
+            render: () => { renderCalendar(); renderDashboardSessions(); },
+            deleteApi: () => api('DELETE', 'Sessions', { id }),
+            label: 'Session',
+          });
+        });
+      }
+    }
+
+    function setPage(page) {
+      state.currentPage = page;
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(`page-${page}`).classList.add('active');
+      document.querySelectorAll('.page-toggle button').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+    }
+    document.querySelectorAll('.page-toggle button[data-page]').forEach(b => {
+      b.addEventListener('click', () => setPage(b.dataset.page));
+    });
+
+    document.getElementById('cal-prev').addEventListener('click', () => {
+      if (state.calView === 'week') {
+        state.calDate = new Date(state.calDate.getTime() - 7 * DAY_MS);
+      } else {
+        state.calDate = new Date(state.calDate.getFullYear(), state.calDate.getMonth() - 1, 1);
+      }
+      renderCalendar();
+    });
+    document.getElementById('cal-next').addEventListener('click', () => {
+      if (state.calView === 'week') {
+        state.calDate = new Date(state.calDate.getTime() + 7 * DAY_MS);
+      } else {
+        state.calDate = new Date(state.calDate.getFullYear(), state.calDate.getMonth() + 1, 1);
+      }
+      renderCalendar();
+    });
+    document.querySelectorAll('.cal-view-toggle button').forEach(b => {
+      b.addEventListener('click', () => {
+        state.calView = b.dataset.view;
+        document.querySelectorAll('.cal-view-toggle button').forEach(x => x.classList.toggle('active', x === b));
+        renderCalendar();
+      });
+    });
+
+    document.getElementById('fab').addEventListener('click', () => {
+      if (state.currentPage === 'tasks' || state.currentPage === 'dashboard') openTaskModal();
+      else if (state.currentPage === 'calendar') openSessionModal();
+      else if (state.currentPage === 'roadmap') document.getElementById('roadmap-new-item')?.focus();
+    });
+    document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
+
+    document.getElementById('task-search').addEventListener('input', e => {
+      state.taskSearch = e.target.value;
+      renderTasks();
+    });
+
+    (function initOpenTasksCollapse() {
+      const body = document.getElementById('open-tasks-body');
+      const chevron = document.getElementById('open-tasks-chevron');
+      const saved = localStorage.getItem('familyhq.openTasksExpanded');
+      let expanded = saved === 'true';
+      function apply() {
+        body.style.display = expanded ? 'block' : 'none';
+        chevron.style.transform = expanded ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
+      apply();
+      document.getElementById('open-tasks-toggle').addEventListener('click', () => {
+        expanded = !expanded;
+        localStorage.setItem('familyhq.openTasksExpanded', expanded);
+        apply();
+      });
+    })();
+
+    // Roadmap — synced via Airtable (Roadmap table), grouped by Phase.
+    function renderRoadmapFilters() {
+      const chips = [
+        { key: 'all', label: 'Everyone' },
+        { key: 'Anjanette', label: 'Anjanette' },
+        { key: 'Chanelle', label: 'Chanelle' },
+        { key: 'Other', label: 'Other' },
+      ];
+      const wrap = document.getElementById('roadmap-filters');
+      wrap.innerHTML = chips.map(c => {
+        const active = state.roadmapFilter === c.key ? 'active' : '';
+        const color = c.key !== 'all' ? personColor(c.key) : null;
+        return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
+      }).join('');
+      wrap.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.roadmapFilter = btn.dataset.filter;
+          renderRoadmapFilters();
+          renderRoadmap();
+        });
+      });
+    }
+
+    function matchesRoadmapFilter(item) {
+      if (state.roadmapFilter === 'all') return true;
+      return (f(item, F.roadmap.Assigned) || '') === state.roadmapFilter;
+    }
+
+    function roadmapMini(item) {
+      const name = f(item, F.roadmap.Name) || 'Untitled';
+      const desc = f(item, F.roadmap.Description) || '';
+      const descShort = desc.length > 60 ? desc.slice(0, 57) + '…' : desc;
+      const meta = assigneeMeta(item, F.roadmap.Assigned, F.roadmap.OtherAssignee);
+      const styleVars = personCssVars(meta.colorName);
+      return `
+        <div class="task-mini" data-roadmap-id="${item.id}" style="${styleVars}">
+          <div class="task-mini-body" style="grid-column: 1 / 3;">
+            <div class="task-mini-title">${escapeHtml(name)}</div>
+            <div class="task-mini-meta">
+              ${descShort ? `<span>${escapeHtml(descShort)}</span>${meta.label ? '<span class="task-meta-sep"></span>' : ''}` : ''}
+              ${meta.label ? `<span>${escapeHtml(meta.label)}</span>` : ''}
+            </div>
+          </div>
+          ${meta.label ? `<div class="task-mini-avatar" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function renderRoadmap() {
+      const items = state.roadmap.filter(matchesRoadmapFilter);
+      const groups = { Now: [], Next: [], Future: [] };
+      items.forEach(item => {
+        const phase = f(item, F.roadmap.Phase) || 'Future';
+        (groups[phase] || groups.Future).push(item);
+      });
+      const sortByName = (a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      Object.values(groups).forEach(list => list.sort(sortByName));
+
+      const meta = [
+        { key: 'Now', cls: 'bucket-today' },
+        { key: 'Next', cls: 'bucket-week' },
+        { key: 'Future', cls: 'bucket-later' },
+      ];
+
+      const wrap = document.getElementById('roadmap-list');
+      wrap.innerHTML = `<div class="buckets-grid">${meta.map(m => {
+        const list = groups[m.key];
+        const body = list.length === 0
+          ? `<div class="bucket-empty">Nothing here</div>`
+          : list.map(roadmapMini).join('');
+        return `
+          <div class="bucket ${m.cls}">
+            <div class="bucket-head">
+              <span class="bucket-title">${m.key}</span>
+              <span class="bucket-count">${list.length}</span>
+            </div>
+            ${body}
+          </div>
+        `;
+      }).join('')}</div>`;
+
+      wrap.querySelectorAll('[data-roadmap-id]').forEach(el => {
+        el.addEventListener('click', () => openRoadmapModal(el.dataset.roadmapId));
+      });
+    }
+
+    async function addRoadmapItem() {
+      const input = document.getElementById('roadmap-new-item');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      const fields = { [F.roadmap.Name]: text, [F.roadmap.Phase]: 'Future' };
+      try {
+        const created = await api('POST', 'Roadmap', { body: { fields } });
+        state.roadmap.push(created);
+        renderRoadmap();
+      } catch (err) {
+        console.error(err);
+        toast('Add failed');
+      }
+    }
+    document.getElementById('roadmap-add-btn').addEventListener('click', addRoadmapItem);
+    document.getElementById('roadmap-new-item').addEventListener('keydown', e => { if (e.key === 'Enter') addRoadmapItem(); });
+
+    function openRoadmapModal(id = null) {
+      const item = id ? state.roadmap.find(r => r.id === id) : null;
+      const r = item || {};
+      const name = f(r, F.roadmap.Name) || '';
+      const phase = f(r, F.roadmap.Phase) || 'Future';
+      const description = f(r, F.roadmap.Description) || '';
+      const assigned = f(r, F.roadmap.Assigned) || '';
+      const otherAssignee = f(r, F.roadmap.OtherAssignee) || '';
+
+      openModal(id ? 'Edit roadmap item' : 'New roadmap item', `
+        <div class="field"><label class="field-label" for="r-name">Name</label><input class="field-input" id="r-name" value="${escapeAttr(name)}" placeholder="e.g. Plan Italy trip" /></div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="r-phase">Phase</label><select class="field-select" id="r-phase">
+            <option ${phase === 'Now' ? 'selected' : ''}>Now</option>
+            <option ${phase === 'Next' ? 'selected' : ''}>Next</option>
+            <option ${phase === 'Future' ? 'selected' : ''}>Future</option>
+          </select></div>
+          <div class="field"><label class="field-label" for="r-assigned">Assigned</label><select class="field-select" id="r-assigned">
+            <option value="" ${!assigned ? 'selected' : ''}>—</option>
+            <option ${assigned === 'Anjanette' ? 'selected' : ''}>Anjanette</option>
+            <option ${assigned === 'Chanelle' ? 'selected' : ''}>Chanelle</option>
+            <option ${assigned === 'Both' ? 'selected' : ''}>Both</option>
+            <option ${assigned === 'Other' ? 'selected' : ''}>Other</option>
+          </select></div>
+        </div>
+        <div class="field" id="r-other-field" style="display:${assigned === 'Other' ? 'block' : 'none'}">
+          <label class="field-label" for="r-other-name">Other name</label>
+          <input class="field-input" id="r-other-name" value="${escapeAttr(otherAssignee)}" placeholder="Who?" />
+        </div>
+        <div class="field"><label class="field-label" for="r-desc">Description</label><textarea class="field-textarea" id="r-desc" placeholder="Optional">${escapeHtml(description)}</textarea></div>
+        <div class="modal-actions">
+          ${id ? '<button class="btn btn-danger" id="r-delete">Delete</button>' : '<span></span>'}
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" id="r-save">Save</button></div>
+        </div>
+      `);
+
+      document.getElementById('r-assigned').addEventListener('change', e => {
+        document.getElementById('r-other-field').style.display = e.target.value === 'Other' ? 'block' : 'none';
+      });
+
+      document.getElementById('r-save').addEventListener('click', async () => {
+        const name = document.getElementById('r-name').value.trim();
+        if (!name) { toast('Give it a name'); return; }
+        const assignedVal = document.getElementById('r-assigned').value || null;
+        const fields = {
+          [F.roadmap.Name]: name,
+          [F.roadmap.Phase]: document.getElementById('r-phase').value,
+          [F.roadmap.Description]: document.getElementById('r-desc').value.trim() || null,
+          [F.roadmap.Assigned]: assignedVal,
+          [F.roadmap.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('r-other-name').value.trim() || null) : null,
+        };
+        try {
+          if (id) {
+            const updated = await api('PATCH', 'Roadmap', { id, body: { fields } });
+            const idx = state.roadmap.findIndex(x => x.id === id);
+            if (idx >= 0) state.roadmap[idx] = updated;
+          } else {
+            const created = await api('POST', 'Roadmap', { body: { fields } });
+            state.roadmap.push(created);
+          }
+          closeModal();
+          renderRoadmap();
+          toast(id ? 'Saved' : 'Added');
+        } catch (err) {
+          console.error(err);
+          toast('Save failed');
+        }
+      });
+
+      if (id) {
+        document.getElementById('r-delete').addEventListener('click', () => {
+          closeModal();
+          scheduleUndoableDelete({
+            getArray: () => state.roadmap,
+            setArray: (arr) => { state.roadmap = arr; },
+            id,
+            render: renderRoadmap,
+            deleteApi: () => api('DELETE', 'Roadmap', { id }),
+            label: 'Roadmap item',
+          });
+        });
+      }
+    }
+
+    renderRoadmapFilters();
+    renderRoadmap();
+
+    // Notes — needs a Notes table (Message, Author, Created) in Airtable to sync.
+    function renderNotes() {
+      const wrap = document.getElementById('note-list');
+      if (!AIRTABLE_TABLE_IDS.Notes) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">💬</div><div class="empty-title">Not set up yet</div>Add a Notes table in Airtable, then ask Claude to finish wiring it up.</div>`;
+        return;
+      }
+      if (state.notes.length === 0) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">💬</div><div class="empty-title">No notes yet</div>Leave a note above.</div>`;
+        return;
+      }
+      const sorted = [...state.notes].sort((a, b) => (f(b, F.notes.Created) || '').localeCompare(f(a, F.notes.Created) || ''));
+      wrap.innerHTML = sorted.map(m => {
+        const text = f(m, F.notes.Message) || '';
+        const author = f(m, F.notes.Author) || '';
+        const created = f(m, F.notes.Created);
+        const dateLabel = created ? (() => { const d = parseISODate(created); return `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`; })() : '';
+        const meta = [author, dateLabel].filter(Boolean).join(' · ');
+        return `
+          <div class="grocery-item" style="align-items:flex-start">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:14px;color:var(--ink)">${escapeHtml(text)}</div>
+              ${meta ? `<div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-muted);margin-top:3px">${escapeHtml(meta)}</div>` : ''}
+            </div>
+            <button class="grocery-item-delete" data-action="note-delete" data-item-id="${m.id}" aria-label="Delete">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+      wrap.querySelectorAll('[data-action="note-delete"]').forEach(btn => {
+        btn.addEventListener('click', () => deleteNote(btn.dataset.itemId));
+      });
+    }
+
+    async function postNote() {
+      const input = document.getElementById('note-new-text');
+      const authorSel = document.getElementById('note-author');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!AIRTABLE_TABLE_IDS.Notes) { toast('Notes table not set up yet'); return; }
+      input.value = '';
+      const fields = { [F.notes.Message]: text, [F.notes.Created]: toISODate(today()) };
+      if (authorSel.value) fields[F.notes.Author] = authorSel.value;
+      try {
+        const created = await api('POST', 'Notes', { body: { fields } });
+        state.notes.push(created);
+        renderNotes();
+      } catch (err) {
+        console.error(err);
+        toast('Post failed');
+      }
+    }
+
+    function deleteNote(id) {
+      scheduleUndoableDelete({
+        getArray: () => state.notes,
+        setArray: (arr) => { state.notes = arr; },
+        id,
+        render: renderNotes,
+        deleteApi: () => api('DELETE', 'Notes', { id }),
+        label: 'Note',
+      });
+    }
+
+    document.getElementById('note-add-btn').addEventListener('click', postNote);
+    document.getElementById('note-new-text').addEventListener('keydown', e => { if (e.key === 'Enter') postNote(); });
+    renderNotes();
+
+    function renderDashboardSessions() {
+      const start = today();
+      const items = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(start.getTime() + i * DAY_MS);
+        eventsForDate(d).forEach(e => items.push(e));
+      }
+      const wrap = document.getElementById('dashboard-sessions');
+      if (items.length === 0) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">Nothing this week</div></div>`;
+        return;
+      }
+      wrap.innerHTML = items.map(upcomingItem).join('');
+    }
+
+    function renderAll() {
+      renderTaskFilters();
+      renderTasks();
+      renderCalendar();
+      renderRoadmap();
+      renderDashboardSessions();
+      renderNotes();
+    }
+
+    let pollTimer;
+    function startPolling() {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') loadAll();
+      }, POLL_MS);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        loadAll();
+      }
+    });
+
+    function escapeHtml(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function escapeAttr(s) { return escapeHtml(s); }
+
+    loadAll().then(() => { startPolling(); });
+  </script>
 </body>
 </html>
