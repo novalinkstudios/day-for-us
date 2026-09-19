@@ -241,7 +241,10 @@
     .streak-pill-num { font-family: var(--font-display); font-weight: 700; color: var(--primary); }
 
     /* Filter chips */
-    .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; scrollbar-width: none; }
+    .filter-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; scrollbar-width: none; align-items: center; flex-wrap: wrap; }
+    .filter-spacer { flex: 1; min-width: 8px; }
+    .sort-group { display: flex; gap: 4px; align-items: center; }
+    .sort-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-subtle); margin-right: 2px; }
     .filter-row::-webkit-scrollbar { display: none; }
     .chip {
       padding: 6px 12px;
@@ -330,10 +333,16 @@
     .projects-view-toggle button.active { color: white; background: var(--primary); border-color: var(--primary); }
 
     .projects-section { margin-bottom: 24px; }
-    .projects-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 0 2px; }
+    .projects-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 0 2px; cursor: pointer; user-select: none; }
+    .projects-section-head:hover { opacity: 0.8; }
     .projects-section-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
     .projects-section-count { font-family: var(--font-mono); font-size: 11px; color: var(--ink-subtle); }
     .projects-section-line { flex: 1; height: 1px; background: var(--border); }
+    .projects-section-toggle { font-size: 10px; color: var(--ink-subtle); transition: transform 200ms ease; }
+    .projects-section.collapsed .projects-section-toggle { transform: rotate(-90deg); }
+    .projects-section-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 300ms ease; }
+    .projects-section.collapsed .projects-section-body { grid-template-rows: 0fr; }
+    .projects-section-body-inner { overflow: hidden; }
     .project-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
     .project-card-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; border-radius: 12px; transition: var(--transition); }
     .project-card-head:hover { background: var(--hover); }
@@ -864,7 +873,7 @@
       tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM', Project: 'fld0KivgIckrmKkoR' },
       sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t', Project: null },
       notes: { Message: 'fldLjMeDRbY4OU9fB', Author: 'fldDJDdJIjz2N1ESd', Created: 'fldCz46I4Q9QxvDaz' },
-      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Status: 'fldd2DFCOPsbjO2Mg', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', TargetStart: 'fldg1td99z1d9tr76', Created: 'fldoZJlPHLI9SKhpT' },
+      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Status: 'fldd2DFCOPsbjO2Mg', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', TargetStart: 'fldg1td99z1d9tr76', TargetEnd: 'fldlhQI739omV9Qxz', Created: 'fldoZJlPHLI9SKhpT' },
     };
 
     const state = {
@@ -876,6 +885,8 @@
       roadmapFilter: 'all',
       taskSearch: '',
       projectsFilter: 'all',
+      roadmapSort: 'date',
+      projectsSort: 'date',
     };
 
     (function initTheme() {
@@ -1751,14 +1762,23 @@
         { key: 'Other', label: 'Other' },
       ];
       const wrap = document.getElementById('roadmap-filters');
-      wrap.innerHTML = chips.map(c => {
+      const filterHtml = chips.map(c => {
         const active = state.roadmapFilter === c.key ? 'active' : '';
         const color = c.key !== 'all' ? personColor(c.key) : null;
         return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
       }).join('');
-      wrap.querySelectorAll('button').forEach(btn => {
+      const sortHtml = `<span class="filter-spacer"></span><div class="sort-group"><span class="sort-label">Sort</span><button class="chip ${state.roadmapSort === 'date' ? 'active' : ''}" data-sort="date">Date</button><button class="chip ${state.roadmapSort === 'name' ? 'active' : ''}" data-sort="name">Name</button></div>`;
+      wrap.innerHTML = filterHtml + sortHtml;
+      wrap.querySelectorAll('[data-filter]').forEach(btn => {
         btn.addEventListener('click', () => {
           state.roadmapFilter = btn.dataset.filter;
+          renderRoadmapFilters();
+          renderRoadmap();
+        });
+      });
+      wrap.querySelectorAll('[data-sort]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.roadmapSort = btn.dataset.sort;
           renderRoadmapFilters();
           renderRoadmap();
         });
@@ -1800,8 +1820,17 @@
         const phase = f(item, F.roadmap.Phase) || 'Future';
         (groups[phase] || groups.Future).push(item);
       });
-      const sortByName = (a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
-      Object.values(groups).forEach(list => list.sort(sortByName));
+      const sortFn = state.roadmapSort === 'date'
+        ? (a, b) => {
+            const da = f(a, F.roadmap.TargetStart) || '';
+            const db = f(b, F.roadmap.TargetStart) || '';
+            if (da && !db) return -1;
+            if (!da && db) return 1;
+            if (da && db) return da.localeCompare(db);
+            return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+          }
+        : (a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      Object.values(groups).forEach(list => list.sort(sortFn));
 
       const meta = [
         { key: 'Now', cls: 'bucket-today' },
@@ -1857,14 +1886,23 @@
       ];
       const wrap = document.getElementById('projects-filters');
       if (!wrap) return;
-      wrap.innerHTML = chips.map(c => {
+      const filterHtml = chips.map(c => {
         const active = state.projectsFilter === c.key ? 'active' : '';
         const color = c.key !== 'all' ? personColor(c.key) : null;
         return `<button class="chip ${active}" data-filter="${c.key}">${color ? `<span class="chip-dot" style="--dot:${color}"></span>` : ''}${c.label}</button>`;
       }).join('');
-      wrap.querySelectorAll('button').forEach(btn => {
+      const sortHtml = `<span class="filter-spacer"></span><div class="sort-group"><span class="sort-label">Sort</span><button class="chip ${state.projectsSort === 'date' ? 'active' : ''}" data-sort="date">Date</button><button class="chip ${state.projectsSort === 'name' ? 'active' : ''}" data-sort="name">Name</button></div>`;
+      wrap.innerHTML = filterHtml + sortHtml;
+      wrap.querySelectorAll('[data-filter]').forEach(btn => {
         btn.addEventListener('click', () => {
           state.projectsFilter = btn.dataset.filter;
+          renderProjectsFilters();
+          renderProjectsList();
+        });
+      });
+      wrap.querySelectorAll('[data-sort]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.projectsSort = btn.dataset.sort;
           renderProjectsFilters();
           renderProjectsList();
         });
@@ -1889,14 +1927,17 @@
         if (!grouped[phase]) grouped[phase] = [];
         grouped[phase].push(item);
       });
-      phases.forEach(p => grouped[p].sort((a, b) => {
-        const da = f(a, F.roadmap.TargetStart) || '';
-        const db = f(b, F.roadmap.TargetStart) || '';
-        if (da && !db) return -1;
-        if (!da && db) return 1;
-        if (da && db) return da.localeCompare(db);
-        return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
-      }));
+      const pSortFn = state.projectsSort === 'date'
+        ? (a, b) => {
+            const da = f(a, F.roadmap.TargetStart) || '';
+            const db = f(b, F.roadmap.TargetStart) || '';
+            if (da && !db) return -1;
+            if (!da && db) return 1;
+            if (da && db) return da.localeCompare(db);
+            return (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+          }
+        : (a, b) => (f(a, F.roadmap.Name) || '').localeCompare(f(b, F.roadmap.Name) || '');
+      phases.forEach(p => grouped[p].sort(pSortFn));
 
       const wrap = document.getElementById('projects-list');
       document.getElementById('projects-count').textContent = state.roadmap.length;
@@ -1911,6 +1952,7 @@
         const status = F.roadmap.Status ? (f(item, F.roadmap.Status) || '') : '';
         const desc = f(item, F.roadmap.Description) || '';
         const targetStart = f(item, F.roadmap.TargetStart) || '';
+        const targetEnd = f(item, F.roadmap.TargetEnd) || '';
         const meta = assigneeMeta(item, F.roadmap.Assigned, F.roadmap.OtherAssignee);
         const tasks = getTasksForProject(item.id);
         const collapsed = state.projectListCollapsed?.[item.id] ? ' collapsed' : '';
@@ -1944,7 +1986,14 @@
             </div>
             <div class="project-card-body"><div class="project-card-body-inner">
               ${desc ? `<div class="project-card-desc">${escapeHtml(desc)}</div>` : ''}
-              ${targetStart ? (() => { const d = parseISODate(targetStart); return `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);padding:0 16px 10px;display:flex;align-items:center;gap:6px"><span style="opacity:0.6">&#128197;</span> Target: ${MONTH_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</div>`; })() : ''}
+              ${(targetStart || targetEnd) ? (() => {
+                const fmtD = s => { const d = parseISODate(s); return `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; };
+                let label = '';
+                if (targetStart && targetEnd) label = fmtD(targetStart) + ' → ' + fmtD(targetEnd);
+                else if (targetStart) label = 'Starts ' + fmtD(targetStart);
+                else label = 'Due ' + fmtD(targetEnd);
+                return `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);padding:0 16px 10px;display:flex;align-items:center;gap:6px"><span style="opacity:0.6">&#128197;</span> ${label}</div>`;
+              })() : ''}
               <div class="project-card-tasks">
                 <div class="project-card-tasks-label"><span>Tasks ${sortedTasks.length > 0 ? `(${sortedTasks.length})` : ''}</span></div>
                 ${taskRows}
@@ -1957,16 +2006,21 @@
 
       wrap.innerHTML = phases
         .filter(p => grouped[p].length > 0)
-        .map(p => `
-          <div class="projects-section">
-            <div class="projects-section-head">
+        .map(p => {
+          const secCollapsed = state.projectsSectionCollapsed?.[p] ? ' collapsed' : '';
+          return `
+          <div class="projects-section${secCollapsed}" data-projects-section="${p}">
+            <div class="projects-section-head" data-toggle-section="${p}">
+              <span class="projects-section-toggle">&#9660;</span>
               <span class="projects-section-title">${p}</span>
               <span class="projects-section-count">${grouped[p].length}</span>
               <span class="projects-section-line"></span>
             </div>
-            ${grouped[p].map(renderCard).join('')}
+            <div class="projects-section-body"><div class="projects-section-body-inner">
+              ${grouped[p].map(renderCard).join('')}
+            </div></div>
           </div>
-        `).join('');
+        `;}).join('');
 
       wrap.querySelectorAll('[data-project-toggle]').forEach(el => {
         el.addEventListener('click', e => {
@@ -1994,6 +2048,16 @@
         el.addEventListener('click', e => {
           e.stopPropagation();
           openRoadmapModal(el.dataset.editProject);
+        });
+      });
+
+      wrap.querySelectorAll('[data-toggle-section]').forEach(el => {
+        el.addEventListener('click', () => {
+          const key = el.dataset.toggleSection;
+          if (!state.projectsSectionCollapsed) state.projectsSectionCollapsed = {};
+          state.projectsSectionCollapsed[key] = !state.projectsSectionCollapsed[key];
+          const sec = document.querySelector(`[data-projects-section="${key}"]`);
+          if (sec) sec.classList.toggle('collapsed');
         });
       });
     }
@@ -2030,6 +2094,7 @@
       const assigned = f(r, F.roadmap.Assigned) || '';
       const otherAssignee = f(r, F.roadmap.OtherAssignee) || '';
       const targetStart = f(r, F.roadmap.TargetStart) || '';
+      const targetEnd = f(r, F.roadmap.TargetEnd) || '';
 
       const statusField = F.roadmap.Status ? `
           <div class="field"><label class="field-label" for="r-status">Status</label><select class="field-select" id="r-status">
@@ -2060,7 +2125,10 @@
           <label class="field-label" for="r-other-name">Other name</label>
           <input class="field-input" id="r-other-name" value="${escapeAttr(otherAssignee)}" placeholder="Who?" />
         </div>
-        <div class="field"><label class="field-label" for="r-target-start">Target start date</label><input class="field-input" id="r-target-start" type="date" value="${targetStart}" /></div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="r-target-start">Target start</label><input class="field-input" id="r-target-start" type="date" value="${targetStart}" /></div>
+          <div class="field"><label class="field-label" for="r-target-end">Target completion</label><input class="field-input" id="r-target-end" type="date" value="${targetEnd}" /></div>
+        </div>
         <div class="field"><label class="field-label" for="r-desc">Description</label><textarea class="field-textarea" id="r-desc" placeholder="Optional">${escapeHtml(description)}</textarea></div>
         <div class="modal-actions">
           ${id ? '<button class="btn btn-danger" id="r-delete">Delete</button>' : '<span></span>'}
@@ -2083,6 +2151,7 @@
           [F.roadmap.Assigned]: assignedVal,
           [F.roadmap.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('r-other-name').value.trim() || null) : null,
           [F.roadmap.TargetStart]: document.getElementById('r-target-start').value || null,
+          [F.roadmap.TargetEnd]: document.getElementById('r-target-end').value || null,
         };
         if (F.roadmap.Status) {
           const statusEl = document.getElementById('r-status');
