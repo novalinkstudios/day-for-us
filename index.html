@@ -330,10 +330,15 @@
     .project-card-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; border-radius: 12px; transition: var(--transition); }
     .project-card-head:hover { background: var(--hover); }
     .project-card-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .project-card-phase { font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
-    .project-card-phase.now { background: rgba(59,130,246,0.15); color: var(--primary); }
-    .project-card-phase.next { background: rgba(5,150,105,0.15); color: var(--green); }
-    .project-card-phase.future { background: var(--surface-strong); color: var(--ink-muted); }
+    .project-card-badge { font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
+    .project-card-badge.phase-now { background: rgba(59,130,246,0.15); color: var(--primary); }
+    .project-card-badge.phase-next { background: rgba(5,150,105,0.15); color: var(--green); }
+    .project-card-badge.phase-future { background: var(--surface-strong); color: var(--ink-muted); }
+    .project-card-badge.status-tackling { background: rgba(5,150,105,0.15); color: var(--green); }
+    .project-card-badge.status-on-deck { background: rgba(245,158,11,0.15); color: var(--pop); }
+    .project-card-badge.status-future { background: var(--surface-strong); color: var(--ink-muted); }
+    .project-card-edit { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: none; background: transparent; color: var(--ink-muted); cursor: pointer; font-size: 14px; flex-shrink: 0; transition: var(--transition); }
+    .project-card-edit:hover { background: var(--hover); color: var(--ink); }
     .project-card-desc { font-size: 13px; color: var(--ink-muted); padding: 0 16px 10px; line-height: 1.5; }
     .project-card-tasks { border-top: 1px solid var(--border); padding: 10px 16px 14px; }
     .project-card-tasks-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
@@ -850,7 +855,7 @@
       tasks: { Name: 'fldcH8NvHiS9xQw20', Status: 'fldUEqIaK2bQVfrpZ', Assigned: 'fldIVuz1yJa70PWDl', OtherAssignee: 'fldkqAQQUz3zc1io8', Type: 'fldWTi9f9tSwxofRg', SessionDate: 'fld1XSvF2EhaDubat', Notes: 'fldgjh4qtdpBIGDvz', Created: 'fldw3LTGj5mKuFYXM', Project: null },
       sessions: { Name: 'fld7WmcEXjAIzKcl4', Date: 'fldyvmr4xTVb4rmG8', Description: 'fldeyu19xWk9CUGYs', Created: 'fldFOwoVhrcwLM85t', Project: null },
       notes: { Message: 'fldLjMeDRbY4OU9fB', Author: 'fldDJDdJIjz2N1ESd', Created: 'fldCz46I4Q9QxvDaz' },
-      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', Created: 'fldoZJlPHLI9SKhpT' },
+      roadmap: { Name: 'fldQ2BeRrDfqAAMjM', Phase: 'fldi8tRCnr316FF5v', Status: null, Description: 'fldAuBHobur6EU5LX', Assigned: 'fldeXwZMujDLPrE8p', OtherAssignee: 'fldxQvNRXBPYkOBH3', Created: 'fldoZJlPHLI9SKhpT' },
     };
 
     const state = {
@@ -1871,6 +1876,7 @@
       wrap.innerHTML = sorted.map(item => {
         const name = f(item, F.roadmap.Name) || 'Untitled';
         const phase = f(item, F.roadmap.Phase) || 'Future';
+        const status = F.roadmap.Status ? (f(item, F.roadmap.Status) || '') : '';
         const desc = f(item, F.roadmap.Description) || '';
         const meta = assigneeMeta(item, F.roadmap.Assigned, F.roadmap.OtherAssignee);
         const tasks = getTasksForProject(item.id);
@@ -1891,12 +1897,16 @@
             }).join('')
           : `<div style="font-size:12px;color:var(--ink-subtle);padding:4px 0;font-style:italic">${F.tasks.Project ? 'No tasks linked yet' : 'Link tasks after adding the Project field in Airtable'}</div>`;
 
+        const statusBadge = status ? `<span class="project-card-badge status-${status.toLowerCase().replace(/\s+/g, '-')}">${status}</span>` : '';
+
         return `
           <div class="project-card${collapsed}" data-project-card="${item.id}">
             <div class="project-card-head" data-project-toggle="${item.id}">
               ${meta.label ? `<div class="task-mini-avatar" style="${personCssVars(meta.colorName)}" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
               <div class="project-card-name">${escapeHtml(name)}</div>
-              <span class="project-card-phase ${phase.toLowerCase()}">${phase}</span>
+              ${statusBadge}
+              <span class="project-card-badge phase-${phase.toLowerCase()}">${phase}</span>
+              <button class="project-card-edit" data-edit-project="${item.id}" title="Edit project">&#9998;</button>
               <span class="project-card-toggle">&#9660;</span>
             </div>
             <div class="project-card-body"><div class="project-card-body-inner">
@@ -1913,7 +1923,7 @@
 
       wrap.querySelectorAll('[data-project-toggle]').forEach(el => {
         el.addEventListener('click', e => {
-          if (e.target.closest('[data-task-id]') || e.target.closest('[data-add-task-project]')) return;
+          if (e.target.closest('[data-task-id]') || e.target.closest('[data-add-task-project]') || e.target.closest('[data-edit-project]')) return;
           const pid = el.dataset.projectToggle;
           if (!state.projectListCollapsed) state.projectListCollapsed = {};
           state.projectListCollapsed[pid] = !state.projectListCollapsed[pid];
@@ -1933,13 +1943,10 @@
         });
       });
 
-      wrap.querySelectorAll('.project-card-name').forEach(el => {
-        const card = el.closest('.project-card');
-        if (!card) return;
-        const pid = card.dataset.projectCard;
-        el.addEventListener('dblclick', e => {
+      wrap.querySelectorAll('[data-edit-project]').forEach(el => {
+        el.addEventListener('click', e => {
           e.stopPropagation();
-          openRoadmapModal(pid);
+          openRoadmapModal(el.dataset.editProject);
         });
       });
     }
@@ -1971,9 +1978,18 @@
       const r = item || {};
       const name = f(r, F.roadmap.Name) || '';
       const phase = f(r, F.roadmap.Phase) || 'Future';
+      const status = F.roadmap.Status ? (f(r, F.roadmap.Status) || '') : '';
       const description = f(r, F.roadmap.Description) || '';
       const assigned = f(r, F.roadmap.Assigned) || '';
       const otherAssignee = f(r, F.roadmap.OtherAssignee) || '';
+
+      const statusField = F.roadmap.Status ? `
+          <div class="field"><label class="field-label" for="r-status">Status</label><select class="field-select" id="r-status">
+            <option value="" ${!status ? 'selected' : ''}>—</option>
+            <option ${status === 'Tackling' ? 'selected' : ''}>Tackling</option>
+            <option value="On Deck" ${status === 'On Deck' ? 'selected' : ''}>On Deck</option>
+            <option ${status === 'Future' ? 'selected' : ''}>Future</option>
+          </select></div>` : '';
 
       openModal(id ? 'Edit project' : 'New project', `
         <div class="field"><label class="field-label" for="r-name">Name</label><input class="field-input" id="r-name" value="${escapeAttr(name)}" placeholder="e.g. Plan Italy trip" /></div>
@@ -1983,6 +1999,7 @@
             <option ${phase === 'Next' ? 'selected' : ''}>Next</option>
             <option ${phase === 'Future' ? 'selected' : ''}>Future</option>
           </select></div>
+          ${statusField}
           <div class="field"><label class="field-label" for="r-assigned">Assigned</label><select class="field-select" id="r-assigned">
             <option value="" ${!assigned ? 'selected' : ''}>—</option>
             <option ${assigned === 'Anjanette' ? 'selected' : ''}>Anjanette</option>
@@ -2017,6 +2034,10 @@
           [F.roadmap.Assigned]: assignedVal,
           [F.roadmap.OtherAssignee]: assignedVal === 'Other' ? (document.getElementById('r-other-name').value.trim() || null) : null,
         };
+        if (F.roadmap.Status) {
+          const statusEl = document.getElementById('r-status');
+          fields[F.roadmap.Status] = statusEl ? (statusEl.value || null) : null;
+        }
         try {
           if (id) {
             const updated = await api('PATCH', 'Roadmap', { id, body: { fields } });
