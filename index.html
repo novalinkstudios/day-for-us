@@ -358,6 +358,10 @@
     .project-card-edit:hover { background: var(--hover); color: var(--ink); }
     .project-card-desc { font-size: 13px; color: var(--ink-muted); padding: 0 16px 10px; line-height: 1.5; overflow-wrap: anywhere; word-break: break-word; }
     .project-card-tasks { border-top: 1px solid var(--border); padding: 10px 16px 14px; }
+    .project-progress { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; }
+    .project-progress-track { flex: 1; height: 6px; background: var(--surface-strong); border-radius: 3px; overflow: hidden; }
+    .project-progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.3s ease; }
+    .project-progress-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); white-space: nowrap; }
     .project-card-tasks-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
     .project-task-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 0; }
     .project-task-row > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
@@ -419,6 +423,9 @@
     .tt-type-tag.project { background: rgba(236, 72, 153, 0.15); color: var(--pink); }
     .tt-due { font-size: 11px; }
     .tt-due-overdue { color: var(--red); font-weight: 600; }
+    .due-badge { font-family: var(--font-mono); font-size: 10px; padding: 1px 6px; border-radius: 999px; background: var(--surface-strong); color: var(--ink-muted); }
+    .due-badge.overdue { background: rgba(220, 38, 38, 0.15); color: var(--red); font-weight: 600; }
+    .due-badge.soon { background: rgba(245, 158, 11, 0.15); color: var(--pop); font-weight: 600; }
     .tt-check {
       width: 20px; height: 20px; border-radius: 6px;
       border: 2px solid var(--border-strong);
@@ -485,6 +492,26 @@
     }
     .grocery-item-cat:focus { outline: none; border-color: var(--primary); }
 
+    /* Timeline */
+    .timeline-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+    .timeline-chart { position: relative; min-width: 600px; }
+    .timeline-header { display: flex; border-bottom: 1px solid var(--border); padding-left: 140px; }
+    .timeline-month { flex-shrink: 0; font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 0 6px; text-align: center; border-left: 1px solid var(--border); }
+    .timeline-body { position: relative; }
+    .timeline-row { display: flex; align-items: center; border-bottom: 1px solid var(--border); min-height: 32px; }
+    .timeline-row:hover { background: var(--hover); }
+    .timeline-row-label { width: 140px; flex-shrink: 0; font-size: 12px; font-weight: 500; padding: 4px 8px 4px 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .timeline-row-track { flex: 1; position: relative; height: 32px; }
+    .timeline-bar { position: absolute; top: 6px; height: 20px; border-radius: 6px; min-width: 8px; cursor: pointer; transition: filter 150ms ease; }
+    .timeline-bar:hover { filter: brightness(1.15); }
+    .timeline-bar-label { font-family: var(--font-mono); font-size: 9px; color: white; padding: 0 6px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .timeline-today { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--red); z-index: 2; opacity: 0.7; }
+    .timeline-today::before { content: 'Today'; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 8px; color: var(--red); text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+    .timeline-no-dates { font-size: 12px; color: var(--ink-subtle); padding: 8px 2px; font-style: italic; }
+    .timeline-legend { display: flex; gap: 12px; padding: 8px 2px 0; flex-wrap: wrap; }
+    .timeline-legend-item { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .timeline-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
     /* FAB */
     .fab {
       position: fixed;
@@ -545,6 +572,7 @@
     .cal-day-event-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot-color, var(--ink-muted)); flex-shrink: 0; }
     .cal-day-event-name { font-size: 10px; font-family: var(--font-mono); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
     .cal-day-more { font-size: 9.5px; color: var(--ink-muted); font-family: var(--font-mono); padding-left: 13px; text-align: left; }
+    .cal-task-name { font-style: italic; }
     .cal-day.has-events .cal-day-num { font-weight: 700; }
 
     /* Week view */
@@ -727,6 +755,14 @@
             <div class="stat-num" id="stat-backlog">–</div>
             <div class="stat-label">Backlog</div>
           </div>
+          <div class="stat" style="--stat-color:var(--red)" data-goto="tasks">
+            <div class="stat-num" id="stat-overdue">–</div>
+            <div class="stat-label">Overdue</div>
+          </div>
+          <div class="stat" style="--stat-color:var(--pop)" data-goto="tasks">
+            <div class="stat-num" id="stat-duesoon">–</div>
+            <div class="stat-label">Due soon</div>
+          </div>
         </div>
       </section>
 
@@ -822,11 +858,20 @@
           <button class="btn btn-primary" id="roadmap-add-btn-top">+ New project</button>
         </div>
         <div class="filter-row" id="roadmap-filters"></div>
+        <input class="field-input" id="roadmap-search" placeholder="Search projects…" style="margin-bottom:10px" />
         <div style="display:flex;gap:8px;margin-bottom:14px">
           <input class="field-input" id="roadmap-new-item" placeholder="Quick add project…" style="flex:1" />
           <button class="btn btn-primary" id="roadmap-add-btn">Add</button>
         </div>
         <div id="roadmap-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">Timeline</h2>
+        </div>
+        <div class="filter-row" id="timeline-range-filters"></div>
+        <div class="timeline-wrap" id="timeline-wrap"></div>
       </section>
     </div>
 
@@ -889,6 +934,8 @@
       roadmapSort: 'date',
       projectsSort: 'date',
       tasksSort: 'date',
+      timelineRange: 'future6',
+      roadmapSearch: '',
       projectsSectionCollapsed: { Now: true, Next: true, Future: true },
     };
 
@@ -1240,10 +1287,25 @@
       const ondeckCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'On Deck').length;
       const projectsCount = state.roadmap.length;
       const backlogCount = state.tasks.filter(t => f(t, F.tasks.Status) === 'Backlog').length;
+      const t0 = today();
+      const overdueCount = state.tasks.filter(t => {
+        if (f(t, F.tasks.Status) === 'Done') return false;
+        const d = f(t, F.tasks.SessionDate);
+        return d && parseISODate(d) < t0;
+      }).length;
+      const dueSoonCount = state.tasks.filter(t => {
+        if (f(t, F.tasks.Status) === 'Done') return false;
+        const d = f(t, F.tasks.SessionDate);
+        if (!d) return false;
+        const diff = Math.round((parseISODate(d) - t0) / DAY_MS);
+        return diff >= 0 && diff <= 3;
+      }).length;
       document.getElementById('stat-tackling').textContent = tacklingCount;
       document.getElementById('stat-ondeck').textContent = ondeckCount;
       document.getElementById('stat-projects').textContent = projectsCount;
       document.getElementById('stat-backlog').textContent = backlogCount;
+      document.getElementById('stat-overdue').textContent = overdueCount;
+      document.getElementById('stat-duesoon').textContent = dueSoonCount;
 
       document.querySelectorAll('[data-task-id]').forEach(el => {
         el.addEventListener('click', e => {
@@ -1259,8 +1321,20 @@
       });
     }
 
+    function dueDateBadge(dateStr) {
+      if (!dateStr) return '';
+      const d = parseISODate(dateStr);
+      const t = today();
+      const diff = Math.round((d - t) / DAY_MS);
+      const label = `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`;
+      if (diff < 0) return `<span class="due-badge overdue" title="Overdue">${label}</span>`;
+      if (diff <= 3) return `<span class="due-badge soon" title="Due soon">${label}</span>`;
+      return `<span class="due-badge">${label}</span>`;
+    }
+
     function taskMini(task) {
       const title = f(task, F.tasks.Name) || 'Untitled';
+      const dueDate = f(task, F.tasks.SessionDate) || '';
       const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
       const styleVars = personCssVars(meta.colorName);
       return `
@@ -1270,7 +1344,10 @@
           </button>
           <div class="task-mini-body">
             <div class="task-mini-title">${escapeHtml(title)}</div>
-            ${meta.label ? `<div class="task-mini-meta"><span>${escapeHtml(meta.label)}</span></div>` : ''}
+            <div class="task-mini-meta">
+              ${dueDateBadge(dueDate)}
+              ${meta.label ? `${dueDate ? '<span class="task-meta-sep"></span>' : ''}<span>${escapeHtml(meta.label)}</span>` : ''}
+            </div>
           </div>
           ${meta.label ? `<div class="task-mini-avatar" title="${escapeAttr(meta.label)}">${escapeHtml(meta.avatarInitials)}</div>` : ''}
         </div>
@@ -1284,9 +1361,17 @@
       const dueDate = f(task, F.tasks.SessionDate) || '';
       const meta = assigneeMeta(task, F.tasks.Assigned, F.tasks.OtherAssignee);
       const styleVars = personCssVars(meta.colorName);
-      const dueFmt = dueDate ? (() => { const d = parseISODate(dueDate); return `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`; })() : '';
+      const dueFmt = dueDate ? (() => {
+        const d = parseISODate(dueDate);
+        const diff = Math.round((d - today()) / DAY_MS);
+        const label = `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`;
+        if (status !== 'Done' && diff < 0) return `<span class="tt-due-overdue">${label}</span>`;
+        if (status !== 'Done' && diff <= 3) return `<span style="color:var(--pop);font-weight:600">${label}</span>`;
+        return label;
+      })() : '';
+      const overdueRow = dueDate && status !== 'Done' && Math.round((parseISODate(dueDate) - today()) / DAY_MS) < 0;
       return `
-        <div class="task-table-row" data-task-id="${task.id}" style="${styleVars}">
+        <div class="task-table-row${overdueRow ? ' overdue-row' : ''}" data-task-id="${task.id}" style="${styleVars}">
           <div class="tt-title">${escapeHtml(title)}</div>
           <div class="tt-cell tt-due">${dueFmt || '<span style="opacity:0.35">—</span>'}</div>
           <div class="tt-cell tt-assigned">
@@ -1334,6 +1419,21 @@
           date: d,
           description: f(s, F.sessions.Description) || '',
           id: s.id,
+          type: 'session',
+        });
+      });
+      state.tasks.forEach(t => {
+        const dateStr = f(t, F.tasks.SessionDate);
+        if (dateStr !== iso) return;
+        if (f(t, F.tasks.Status) === 'Done') return;
+        const meta = assigneeMeta(t, F.tasks.Assigned, F.tasks.OtherAssignee);
+        results.push({
+          title: f(t, F.tasks.Name) || 'Untitled',
+          date: d,
+          description: (f(t, F.tasks.Status) || 'Backlog') + (meta.label ? ' · ' + meta.label : ''),
+          id: t.id,
+          type: 'task',
+          color: meta.colorName ? `var(--person-${meta.colorName})` : 'var(--pop)',
         });
       });
       return results;
@@ -1389,10 +1489,10 @@
         const events = eventsForDate(d);
         const evHtml = events.length
           ? events.map(e => `
-              <div class="cal-week-event" data-event-id="${e.id}">
+              <div class="cal-week-event" data-event-id="${e.id}" data-event-type="${e.type || 'session'}" style="--dot-color:${e.color || 'var(--ink-muted)'}">
                 <span class="cal-week-event-bullet"></span>
                 <div class="cal-week-event-body">
-                  <div class="cal-week-event-title">${escapeHtml(e.title)}</div>
+                  <div class="cal-week-event-title${e.type === 'task' ? ' cal-task-name' : ''}">${escapeHtml(e.title)}</div>
                   ${e.description ? `<div class="cal-week-event-sub">${escapeHtml(e.description)}</div>` : ''}
                 </div>
               </div>
@@ -1410,7 +1510,10 @@
       }
       document.getElementById('cal-week').innerHTML = cells.join('');
       document.querySelectorAll('[data-event-id]').forEach(el => {
-        el.addEventListener('click', () => openSessionModal(el.dataset.eventId));
+        el.addEventListener('click', () => {
+          if (el.dataset.eventType === 'task') openTaskModal(el.dataset.eventId);
+          else openSessionModal(el.dataset.eventId);
+        });
       });
     }
 
@@ -1430,7 +1533,7 @@
         const rows = shown.map(e => `
           <div class="cal-day-event-row">
             <span class="cal-day-event-dot" style="--dot-color:${e.color || 'var(--ink-muted)'}"></span>
-            <span class="cal-day-event-name">${escapeHtml(e.title)}</span>
+            <span class="cal-day-event-name${e.type === 'task' ? ' cal-task-name' : ''}">${escapeHtml(e.title)}</span>
           </div>
         `).join('') + (more > 0 ? `<div class="cal-day-more">+${more} more</div>` : '');
         cells.push(`
@@ -1475,13 +1578,13 @@
       const day = e.date.getDate();
       const month = MONTH_SHORT[e.date.getMonth()];
       return `
-        <div class="upcoming-item">
+        <div class="upcoming-item" style="--dot-color:${e.color || 'var(--ink-muted)'}">
           <div class="upcoming-date">
             <div class="upcoming-date-day">${day}</div>
             <div class="upcoming-date-month">${month}</div>
           </div>
           <div class="upcoming-body">
-            <div class="upcoming-title">${escapeHtml(e.title)}</div>
+            <div class="upcoming-title${e.type === 'task' ? ' cal-task-name' : ''}">${escapeHtml(e.title)}</div>
             ${e.description ? `<div class="upcoming-sub">${escapeHtml(e.description)}</div>` : ''}
           </div>
         </div>
@@ -1494,12 +1597,12 @@
       const dateLabel = d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
       const body = events.length
         ? events.map(e => `
-            <div class="event-row-editable" data-event-id="${e.id}" style="padding:12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:8px;">
+            <div class="event-row-editable" data-event-id="${e.id}" data-event-type="${e.type || 'session'}" style="padding:12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:8px;">
               <div style="flex:1;min-width:0">
-                <div style="font-weight:600;font-family:var(--font-display)">${escapeHtml(e.title)}</div>
+                <div style="font-weight:600;font-family:var(--font-display);${e.type === 'task' ? 'font-style:italic' : ''}">${escapeHtml(e.title)}</div>
                 ${e.description ? `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);margin-top:3px">${escapeHtml(e.description)}</div>` : ''}
               </div>
-              <span style="color:var(--ink-muted);font-size:12px">Edit ›</span>
+              <span style="color:var(--ink-muted);font-size:12px">${e.type === 'task' ? 'Task' : 'Edit'} ›</span>
             </div>
           `).join('')
         : `<div class="empty"><div class="empty-emoji">🌤️</div><div class="empty-title">Nothing scheduled</div></div>`;
@@ -1514,7 +1617,10 @@
       document.querySelectorAll('#modal-body [data-event-id]').forEach(el => {
         const eid = el.dataset.eventId;
         if (!eid) return;
-        el.addEventListener('click', () => openSessionModal(eid));
+        el.addEventListener('click', () => {
+          if (el.dataset.eventType === 'task') openTaskModal(eid);
+          else openSessionModal(eid);
+        });
       });
     }
 
@@ -1817,6 +1923,12 @@
     }
 
     function matchesRoadmapFilter(item) {
+      if (state.roadmapSearch) {
+        const q = state.roadmapSearch.toLowerCase();
+        const name = (f(item, F.roadmap.Name) || '').toLowerCase();
+        const desc = (f(item, F.roadmap.Description) || '').toLowerCase();
+        if (!name.includes(q) && !desc.includes(q)) return false;
+      }
       if (state.roadmapFilter === 'all') return true;
       const assigned = f(item, F.roadmap.Assigned) || '';
       if (assigned === state.roadmapFilter) return true;
@@ -1898,6 +2010,139 @@
       state.roadmapCollapsed[key] = !state.roadmapCollapsed[key];
       const section = document.getElementById('roadmap-' + key);
       if (section) section.classList.toggle('collapsed');
+    }
+
+    function renderTimeline() {
+      const wrap = document.getElementById('timeline-wrap');
+      const filterWrap = document.getElementById('timeline-range-filters');
+      if (!wrap || !filterWrap) return;
+
+      const ranges = [
+        { key: 'future6', label: 'Next 6 mo' },
+        { key: 'past6', label: 'Past 6 mo' },
+        { key: 'all', label: 'All time' },
+        { key: 'year', label: 'This year' },
+      ];
+      filterWrap.innerHTML = ranges.map(r =>
+        `<button class="chip ${state.timelineRange === r.key ? 'active' : ''}" data-trange="${r.key}">${r.label}</button>`
+      ).join('');
+      filterWrap.querySelectorAll('[data-trange]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.timelineRange = btn.dataset.trange;
+          renderTimeline();
+        });
+      });
+
+      const now = today();
+      let rangeStart, rangeEnd;
+      if (state.timelineRange === 'future6') {
+        rangeStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        rangeEnd = new Date(now.getFullYear(), now.getMonth() + 7, 0);
+      } else if (state.timelineRange === 'past6') {
+        rangeStart = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+        rangeEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      } else if (state.timelineRange === 'year') {
+        rangeStart = new Date(now.getFullYear(), 0, 1);
+        rangeEnd = new Date(now.getFullYear(), 11, 31);
+      } else {
+        let earliest = null, latest = null;
+        state.roadmap.forEach(item => {
+          const s = f(item, F.roadmap.TargetStart);
+          const e = f(item, F.roadmap.TargetEnd);
+          [s, e].forEach(d => {
+            if (!d) return;
+            if (!earliest || d < earliest) earliest = d;
+            if (!latest || d > latest) latest = d;
+          });
+        });
+        if (!earliest) { wrap.innerHTML = '<div class="timeline-no-dates">No projects have dates set.</div>'; return; }
+        rangeStart = new Date(parseISODate(earliest).getFullYear(), parseISODate(earliest).getMonth(), 1);
+        rangeEnd = new Date(parseISODate(latest).getFullYear(), parseISODate(latest).getMonth() + 1, 0);
+        if (rangeEnd - rangeStart < 60 * DAY_MS) rangeEnd = new Date(rangeStart.getTime() + 180 * DAY_MS);
+      }
+
+      const totalDays = Math.round((rangeEnd - rangeStart) / DAY_MS) + 1;
+      if (totalDays <= 0) { wrap.innerHTML = ''; return; }
+
+      const months = [];
+      let cursor = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), 1);
+      while (cursor <= rangeEnd) {
+        const mEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
+        const visStart = cursor < rangeStart ? rangeStart : cursor;
+        const visEnd = mEnd > rangeEnd ? rangeEnd : mEnd;
+        const days = Math.round((visEnd - visStart) / DAY_MS) + 1;
+        months.push({ label: MONTH_SHORT[cursor.getMonth()] + (cursor.getMonth() === 0 || cursor === rangeStart ? ' ' + cursor.getFullYear() : ''), days });
+        cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+      }
+
+      const phaseColor = { Now: 'var(--primary)', Next: 'var(--green)', Future: 'var(--ink-muted)' };
+      const items = state.roadmap.filter(item => {
+        const s = f(item, F.roadmap.TargetStart);
+        const e = f(item, F.roadmap.TargetEnd);
+        return s || e;
+      }).sort((a, b) => {
+        const sa = f(a, F.roadmap.TargetStart) || f(a, F.roadmap.TargetEnd) || '';
+        const sb = f(b, F.roadmap.TargetStart) || f(b, F.roadmap.TargetEnd) || '';
+        return sa.localeCompare(sb);
+      });
+
+      const noDateItems = state.roadmap.filter(item => !f(item, F.roadmap.TargetStart) && !f(item, F.roadmap.TargetEnd));
+
+      const pxPerDay = Math.max(4, 800 / totalDays);
+      const trackWidth = totalDays * pxPerDay;
+
+      const headerHtml = months.map(m =>
+        `<div class="timeline-month" style="width:${m.days * pxPerDay}px">${m.label}</div>`
+      ).join('');
+
+      const todayOffset = Math.round((now - rangeStart) / DAY_MS);
+      const todayPx = todayOffset * pxPerDay;
+      const showToday = todayOffset >= 0 && todayOffset <= totalDays;
+
+      const rowsHtml = items.map(item => {
+        const name = f(item, F.roadmap.Name) || 'Untitled';
+        const phase = f(item, F.roadmap.Phase) || 'Future';
+        const sDate = f(item, F.roadmap.TargetStart) ? parseISODate(f(item, F.roadmap.TargetStart)) : null;
+        const eDate = f(item, F.roadmap.TargetEnd) ? parseISODate(f(item, F.roadmap.TargetEnd)) : null;
+        const barStart = sDate || eDate;
+        const barEnd = eDate || sDate;
+        const startDay = Math.max(0, Math.round((barStart - rangeStart) / DAY_MS));
+        const endDay = Math.min(totalDays, Math.round((barEnd - rangeStart) / DAY_MS) + 1);
+        if (endDay <= 0 || startDay >= totalDays) return '';
+        const leftPx = startDay * pxPerDay;
+        const widthPx = Math.max(8, (endDay - startDay) * pxPerDay);
+        const color = phaseColor[phase] || 'var(--ink-muted)';
+        return `
+          <div class="timeline-row">
+            <div class="timeline-row-label" data-roadmap-id="${item.id}" title="${escapeAttr(name)}">${escapeHtml(name)}</div>
+            <div class="timeline-row-track" style="width:${trackWidth}px">
+              <div class="timeline-bar" data-roadmap-id="${item.id}" style="left:${leftPx}px;width:${widthPx}px;background:${color}">
+                <span class="timeline-bar-label">${widthPx > 50 ? escapeHtml(name) : ''}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      wrap.innerHTML = `
+        <div class="timeline-chart" style="width:${trackWidth + 140}px">
+          <div class="timeline-header">${headerHtml}</div>
+          <div class="timeline-body">
+            ${showToday ? `<div class="timeline-today" style="left:${140 + todayPx}px"></div>` : ''}
+            ${rowsHtml}
+          </div>
+        </div>
+        ${noDateItems.length > 0 ? `<div class="timeline-no-dates">${noDateItems.length} project${noDateItems.length > 1 ? 's' : ''} without dates</div>` : ''}
+        <div class="timeline-legend">
+          <div class="timeline-legend-item"><span class="timeline-legend-dot" style="background:var(--primary)"></span>Now</div>
+          <div class="timeline-legend-item"><span class="timeline-legend-dot" style="background:var(--green)"></span>Next</div>
+          <div class="timeline-legend-item"><span class="timeline-legend-dot" style="background:var(--ink-muted)"></span>Future</div>
+        </div>
+      `;
+
+      wrap.querySelectorAll('[data-roadmap-id]').forEach(el => {
+        el.addEventListener('click', () => openRoadmapModal(el.dataset.roadmapId));
+      });
     }
 
     function getTasksForProject(projectId) {
@@ -1995,6 +2240,11 @@
           return as - bs;
         });
 
+        const doneCount = tasks.filter(t => f(t, F.tasks.Status) === 'Done').length;
+        const totalCount = tasks.length;
+        const pctDone = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+        const progressBar = totalCount > 0 ? `<div class="project-progress"><div class="project-progress-track"><div class="project-progress-fill" style="width:${pctDone}%"></div></div><span class="project-progress-label">${doneCount}/${totalCount} done</span></div>` : '';
+
         const taskRows = sortedTasks.length > 0
           ? sortedTasks.map(t => {
               const tName = f(t, F.tasks.Name) || 'Untitled';
@@ -2025,6 +2275,7 @@
                 else label = 'Due ' + fmtD(targetEnd);
                 return `<div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);padding:0 16px 10px;display:flex;align-items:center;gap:6px"><span style="opacity:0.6">&#128197;</span> ${label}</div>`;
               })() : ''}
+              ${progressBar}
               <div class="project-card-tasks">
                 <div class="project-card-tasks-label"><span>Tasks ${sortedTasks.length > 0 ? `(${sortedTasks.length})` : ''}</span></div>
                 ${taskRows}
@@ -2106,6 +2357,7 @@
         const created = await api('POST', 'Roadmap', { body: { fields } });
         state.roadmap.push(created);
         renderRoadmap();
+        renderTimeline();
         renderProjectsList();
       } catch (err) {
         console.error(err);
@@ -2114,6 +2366,10 @@
     }
     document.getElementById('roadmap-add-btn').addEventListener('click', addRoadmapItem);
     document.getElementById('roadmap-new-item').addEventListener('keydown', e => { if (e.key === 'Enter') addRoadmapItem(); });
+    document.getElementById('roadmap-search').addEventListener('input', e => {
+      state.roadmapSearch = e.target.value.trim();
+      renderRoadmap();
+    });
 
     function openRoadmapModal(id = null) {
       const item = id ? state.roadmap.find(r => r.id === id) : null;
@@ -2199,6 +2455,7 @@
           }
           closeModal();
           renderRoadmap();
+          renderTimeline();
           renderProjectsList();
           toast(id ? 'Saved' : 'Added');
         } catch (err) {
@@ -2214,7 +2471,7 @@
             getArray: () => state.roadmap,
             setArray: (arr) => { state.roadmap = arr; },
             id,
-            render: () => { renderRoadmap(); renderProjectsList(); },
+            render: () => { renderRoadmap(); renderTimeline(); renderProjectsList(); },
             deleteApi: () => api('DELETE', 'Roadmap', { id }),
             label: 'Project',
           });
@@ -2335,6 +2592,7 @@
       renderTasks();
       renderCalendar();
       renderRoadmap();
+      renderTimeline();
       renderProjectsFilters();
       renderProjectsList();
       renderDashboardSessions();
