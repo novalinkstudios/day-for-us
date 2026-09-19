@@ -652,9 +652,13 @@ let pollInterval = null;
 
 function init() {
   const hasInjected = INJECTED_TOKEN !== '__DFU_AIRTABLE_TOKEN__';
-  const token = localStorage.getItem('dfu_token') || (hasInjected ? INJECTED_TOKEN : null);
+  const token = hasInjected ? INJECTED_TOKEN : localStorage.getItem('dfu_token');
   const theme = localStorage.getItem('dfu_theme');
   const scale = localStorage.getItem('dfu_scale') || '100';
+
+  if (hasInjected) {
+    localStorage.removeItem('dfu_token');
+  }
 
   if (theme) {
     if (theme === 'system') document.documentElement.removeAttribute('data-theme');
@@ -710,7 +714,10 @@ async function airtableFetch(tableKey, params = '') {
   const t = CFG.tables[tableKey];
   const url = 'https://api.airtable.com/v0/' + CFG.baseId + '/' + t.id + '?' + params;
   const res = await fetch(url, { headers: { Authorization: 'Bearer ' + state.token } });
-  if (!res.ok) throw new Error('Airtable ' + res.status);
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Airtable ${res.status}: ${body.slice(0, 200)}`);
+  }
   return res.json();
 }
 
@@ -762,14 +769,14 @@ async function fetchAll() {
     render();
   } catch (e) {
     console.error(e);
-    setSyncState('error');
+    setSyncState('error', e.message);
   }
 }
 
-function setSyncState(s) {
+function setSyncState(s, detail) {
   const dot = document.getElementById('syncDot');
   dot.className = 'sync-dot' + (s === 'syncing' ? ' syncing' : s === 'error' ? ' error' : '');
-  dot.title = s === 'syncing' ? 'Syncing...' : s === 'error' ? 'Sync error' : 'Synced';
+  dot.title = s === 'syncing' ? 'Syncing...' : s === 'error' ? ('Sync error: ' + (detail || 'unknown')) : 'Synced';
 }
 
 function f(record, fieldName) {
