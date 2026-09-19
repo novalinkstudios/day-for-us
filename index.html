@@ -300,6 +300,16 @@
     .bucket-empty { font-size: 12px; color: var(--ink-subtle); padding: 10px 4px; text-align: center; font-style: italic; }
     .bucket-more { font-size: 11px; color: var(--ink-muted); font-family: var(--font-mono); padding: 4px 4px 0; text-align: center; letter-spacing: 0.06em; text-transform: uppercase; }
 
+    #roadmap-list .bucket-head { cursor: pointer; user-select: none; }
+    #roadmap-list .bucket-head:hover { opacity: 0.8; }
+    .roadmap-section-toggle {
+      width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--ink-muted); transition: transform var(--transition);
+      margin-left: auto; flex-shrink: 0;
+    }
+    .bucket.collapsed .roadmap-section-toggle { transform: rotate(-90deg); }
+    .bucket.collapsed .bucket-body { display: none; }
+
     /* Task table */
     .task-table { display: flex; flex-direction: column; gap: 4px; }
     .task-table-head, .task-table-row {
@@ -1676,16 +1686,18 @@
       const wrap = document.getElementById('roadmap-list');
       wrap.innerHTML = `<div class="buckets-grid">${meta.map(m => {
         const list = groups[m.key];
+        const collapsed = state.roadmapCollapsed?.[m.key] ? ' collapsed' : '';
         const body = list.length === 0
           ? `<div class="bucket-empty">Nothing here</div>`
           : list.map(roadmapMini).join('');
         return `
-          <div class="bucket ${m.cls}">
-            <div class="bucket-head">
+          <div class="bucket ${m.cls}${collapsed}" id="roadmap-${m.key}">
+            <div class="bucket-head" onclick="toggleRoadmapSection('${m.key}')">
               <span class="bucket-title">${m.key}</span>
               <span class="bucket-count">${list.length}</span>
+              <span class="roadmap-section-toggle">&#9660;</span>
             </div>
-            ${body}
+            <div class="bucket-body">${body}</div>
           </div>
         `;
       }).join('')}</div>`;
@@ -1693,6 +1705,13 @@
       wrap.querySelectorAll('[data-roadmap-id]').forEach(el => {
         el.addEventListener('click', () => openRoadmapModal(el.dataset.roadmapId));
       });
+    }
+
+    function toggleRoadmapSection(key) {
+      if (!state.roadmapCollapsed) state.roadmapCollapsed = {};
+      state.roadmapCollapsed[key] = !state.roadmapCollapsed[key];
+      const section = document.getElementById('roadmap-' + key);
+      if (section) section.classList.toggle('collapsed');
     }
 
     async function addRoadmapItem() {
@@ -1878,7 +1897,28 @@
       }
       const wrap = document.getElementById('dashboard-sessions');
       if (items.length === 0) {
-        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">Nothing this week</div></div>`;
+        const pastSessions = state.sessions.filter(s => f(s, F.sessions.Date)).sort((a, b) => new Date(f(b, F.sessions.Date)) - new Date(f(a, F.sessions.Date)));
+        if (pastSessions.length > 0) {
+          const last = pastSessions[0];
+          const lastDate = parseISODate(f(last, F.sessions.Date));
+          const daysAgo = daysBetween(lastDate, start);
+          const title = f(last, F.sessions.Name) || 'Untitled';
+          const description = f(last, F.sessions.Description) || '';
+          wrap.innerHTML = `
+            <div class="upcoming-item" style="--dot-color:var(--ink-muted)">
+              <div class="upcoming-date">
+                <div class="upcoming-date-day">${lastDate.getDate()}</div>
+                <div class="upcoming-date-month">${MONTH_SHORT[lastDate.getMonth()]}</div>
+              </div>
+              <div class="upcoming-body">
+                <div class="upcoming-title">${escapeHtml(title)}</div>
+                <div class="upcoming-sub">Last session &middot; ${daysAgo === 0 ? 'Today' : daysAgo + 'd ago'}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">Nothing this week</div></div>`;
+        }
         return;
       }
       wrap.innerHTML = items.map(upcomingItem).join('');
