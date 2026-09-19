@@ -226,7 +226,10 @@
       border: 1px solid var(--border);
       border-left: 3px solid var(--stat-color, var(--ink));
       border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
     }
+    .stat:hover { background: var(--hover); }
     .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; color: var(--stat-color, var(--ink)); }
     .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
     .streak-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
@@ -697,26 +700,26 @@
       <section class="card">
         <div class="card-eyebrow">Status</div>
         <div class="stats-grid">
-          <div class="stat" style="--stat-color:var(--primary)">
+          <div class="stat" style="--stat-color:var(--primary)" data-goto="tasks">
             <div class="stat-num" id="stat-tackling">–</div>
             <div class="stat-label">Tackling</div>
           </div>
-          <div class="stat" style="--stat-color:var(--green)">
+          <div class="stat" style="--stat-color:var(--green)" data-goto="tasks">
             <div class="stat-num" id="stat-ondeck">–</div>
             <div class="stat-label">On deck</div>
           </div>
-          <div class="stat" style="--stat-color:var(--pink)">
+          <div class="stat" style="--stat-color:var(--pink)" data-goto="projects">
             <div class="stat-num" id="stat-projects">–</div>
             <div class="stat-label">Projects</div>
           </div>
-          <div class="stat" style="--stat-color:var(--ink-muted)">
+          <div class="stat" style="--stat-color:var(--ink-muted)" data-goto="tasks">
             <div class="stat-num" id="stat-backlog">–</div>
             <div class="stat-label">Backlog</div>
           </div>
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" data-goto="calendar" style="cursor:pointer">
         <div class="card-head">
           <h2 class="card-title">Upcoming sessions</h2>
         </div>
@@ -1670,6 +1673,10 @@
       b.addEventListener('click', () => setPage(b.dataset.page));
     });
 
+    document.querySelectorAll('[data-goto]').forEach(el => {
+      el.addEventListener('click', () => setPage(el.dataset.goto));
+    });
+
     function handleHash() {
       const raw = location.hash.replace('#', '').toLowerCase();
       if (raw) setPage(raw, false);
@@ -2137,7 +2144,7 @@
       if (!text) return;
       if (!AIRTABLE_TABLE_IDS.Notes) { toast('Notes table not set up yet'); return; }
       input.value = '';
-      const fields = { [F.notes.Message]: text, [F.notes.Created]: toISODate(today()) };
+      const fields = { [F.notes.Message]: text };
       if (authorSel.value) fields[F.notes.Author] = authorSel.value;
       try {
         const created = await api('POST', 'Notes', { body: { fields } });
