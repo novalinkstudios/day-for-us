@@ -2556,7 +2556,7 @@
       const items = [];
       for (let i = 0; i < 7; i++) {
         const d = new Date(start.getTime() + i * DAY_MS);
-        eventsForDate(d).forEach(e => items.push(e));
+        eventsForDate(d).filter(e => e.type === 'session').forEach(e => items.push(e));
       }
       const wrap = document.getElementById('dashboard-sessions');
       if (items.length === 0) {
