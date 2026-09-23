@@ -314,6 +314,14 @@
     .bucket-empty { font-size: 12px; color: var(--ink-subtle); padding: 10px 4px; text-align: center; font-style: italic; }
     .bucket-more { font-size: 11px; color: var(--ink-muted); font-family: var(--font-mono); padding: 4px 4px 0; text-align: center; letter-spacing: 0.06em; text-transform: uppercase; }
 
+    #roadmap-list .buckets-grid {
+      display: flex; gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin; padding-bottom: 4px; scroll-snap-type: x proximity;
+    }
+    #roadmap-list .buckets-grid::-webkit-scrollbar { height: 6px; }
+    #roadmap-list .buckets-grid::-webkit-scrollbar-track { background: transparent; }
+    #roadmap-list .buckets-grid::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    #roadmap-list .bucket { min-width: 260px; flex: 1 0 0; scroll-snap-align: start; }
     #roadmap-list .bucket-head { cursor: pointer; user-select: none; }
     #roadmap-list .bucket-head:hover { opacity: 0.8; }
     .roadmap-section-toggle {
