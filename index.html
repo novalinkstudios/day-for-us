@@ -625,6 +625,21 @@
     .upcoming-sub { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-muted); margin-top: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .task-meta-sep { width: 3px; height: 3px; background: var(--ink-subtle); border-radius: 50%; }
 
+    /* Session toggle on dashboard */
+    .session-toggle-btn {
+      display: flex; align-items: center; justify-content: space-between; width: 100%;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; margin-top: 10px; cursor: pointer; color: var(--ink-muted);
+      font-family: var(--font-body); font-size: 12.5px; font-weight: 500; transition: var(--transition);
+    }
+    .session-toggle-btn:hover { color: var(--ink); border-color: var(--border-strong); }
+    .session-toggle-btn.open svg { transform: rotate(180deg); }
+    #session-items-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+
+    /* Session Agenda page */
+    .session-agenda-date { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-bottom: 4px; }
+    .session-agenda-desc { font-family: var(--font-body); font-size: 13px; color: var(--ink-muted); margin-bottom: 12px; }
+
     /* Modal */
     .modal-scrim {
       position: fixed; inset: 0; background: var(--scrim);
@@ -737,6 +752,7 @@
 
     <div class="page-toggle" role="tablist">
       <button data-page="dashboard" class="active" role="tab">Dashboard</button>
+      <button data-page="session" role="tab">Session Agenda</button>
       <button data-page="tasks" role="tab">Tasks</button>
       <button data-page="calendar" role="tab">Calendar</button>
       <button data-page="projects" role="tab">Projects</button>
@@ -774,11 +790,18 @@
         </div>
       </section>
 
-      <section class="card" data-goto="calendar" style="cursor:pointer">
+      <section class="card">
         <div class="card-head">
-          <h2 class="card-title">Upcoming sessions</h2>
+          <h2 class="card-title">Next Session</h2>
         </div>
         <div class="upcoming" id="dashboard-sessions"></div>
+        <div id="dashboard-session-toggle" style="display:none">
+          <button class="session-toggle-btn" id="session-items-toggle">
+            <span id="session-toggle-label">Show session items</span>
+            <svg id="session-toggle-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="session-items-list" style="display:none"></div>
+        </div>
       </section>
 
       <section class="card">
@@ -795,6 +818,16 @@
           <button class="btn btn-primary" id="note-add-btn">Post</button>
         </div>
         <div id="note-list"></div>
+      </section>
+    </div>
+
+    <div class="page" id="page-session">
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title" id="session-agenda-title">Session Agenda</h2>
+        </div>
+        <div id="session-agenda-info" style="margin-bottom:12px"></div>
+        <div id="session-agenda-list"></div>
       </section>
     </div>
 
@@ -1816,7 +1849,7 @@
 
     const PAGE_ALIASES = {};
     const PAGE_HASH_NAMES = {};
-    const VALID_PAGES = ['dashboard', 'tasks', 'calendar', 'roadmap', 'projects'];
+    const VALID_PAGES = ['dashboard', 'session', 'tasks', 'calendar', 'roadmap', 'projects'];
 
     function setPage(page, pushHash = true) {
       const resolved = PAGE_ALIASES[page] || page;
@@ -1870,7 +1903,7 @@
     });
 
     document.getElementById('fab').addEventListener('click', () => {
-      if (state.currentPage === 'tasks' || state.currentPage === 'dashboard') openTaskModal();
+      if (state.currentPage === 'tasks' || state.currentPage === 'dashboard' || state.currentPage === 'session') openTaskModal();
       else if (state.currentPage === 'calendar') openSessionModal();
       else if (state.currentPage === 'roadmap' || state.currentPage === 'projects') openRoadmapModal();
     });
@@ -2559,40 +2592,99 @@
     document.getElementById('note-new-text').addEventListener('keydown', e => { if (e.key === 'Enter') postNote(); });
     renderNotes();
 
+    function getNextSession() {
+      const t = today();
+      return state.sessions
+        .filter(s => { const d = parseISODate(f(s, F.sessions.Date)); return d && d >= t; })
+        .sort((a, b) => new Date(f(a, F.sessions.Date)) - new Date(f(b, F.sessions.Date)))[0] || null;
+    }
+
+    function getSessionTasks(sessionDateStr) {
+      if (!sessionDateStr) return [];
+      return state.tasks.filter(t => f(t, F.tasks.SessionDate) === sessionDateStr && f(t, F.tasks.Status) !== 'Done');
+    }
+
     function renderDashboardSessions() {
-      const start = today();
-      const items = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(start.getTime() + i * DAY_MS);
-        eventsForDate(d).filter(e => e.type === 'session').forEach(e => items.push(e));
-      }
       const wrap = document.getElementById('dashboard-sessions');
-      if (items.length === 0) {
-        const pastSessions = state.sessions.filter(s => f(s, F.sessions.Date)).sort((a, b) => new Date(f(b, F.sessions.Date)) - new Date(f(a, F.sessions.Date)));
-        if (pastSessions.length > 0) {
-          const last = pastSessions[0];
-          const lastDate = parseISODate(f(last, F.sessions.Date));
-          const daysAgo = daysBetween(lastDate, start);
-          const title = f(last, F.sessions.Name) || 'Untitled';
-          const description = f(last, F.sessions.Description) || '';
-          wrap.innerHTML = `
-            <div class="upcoming-item" style="--dot-color:var(--ink-muted)">
-              <div class="upcoming-date">
-                <div class="upcoming-date-day">${lastDate.getDate()}</div>
-                <div class="upcoming-date-month">${MONTH_SHORT[lastDate.getMonth()]}</div>
-              </div>
-              <div class="upcoming-body">
-                <div class="upcoming-title">${escapeHtml(title)}</div>
-                <div class="upcoming-sub">Last session &middot; ${daysAgo === 0 ? 'Today' : daysAgo + 'd ago'}</div>
-              </div>
-            </div>
-          `;
-        } else {
-          wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">Nothing this week</div></div>`;
-        }
+      const toggleWrap = document.getElementById('dashboard-session-toggle');
+      const next = getNextSession();
+
+      if (!next) {
+        wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">No upcoming sessions</div></div>`;
+        toggleWrap.style.display = 'none';
         return;
       }
-      wrap.innerHTML = items.map(upcomingItem).join('');
+
+      const d = parseISODate(f(next, F.sessions.Date));
+      const title = f(next, F.sessions.Name) || 'Untitled';
+      const diff = daysBetween(today(), d);
+      const relLabel = diff === 0 ? 'Today' : diff === 1 ? 'Tomorrow' : `in ${diff} days`;
+
+      wrap.innerHTML = `
+        <div class="upcoming-item" style="--dot-color:var(--primary)">
+          <div class="upcoming-date">
+            <div class="upcoming-date-day">${d.getDate()}</div>
+            <div class="upcoming-date-month">${MONTH_SHORT[d.getMonth()]}</div>
+          </div>
+          <div class="upcoming-body">
+            <div class="upcoming-title">${escapeHtml(title)}</div>
+            <div class="upcoming-sub">${relLabel}</div>
+          </div>
+        </div>
+      `;
+
+      const sessionDate = f(next, F.sessions.Date);
+      const tasks = getSessionTasks(sessionDate);
+      if (tasks.length > 0) {
+        toggleWrap.style.display = 'block';
+        const listEl = document.getElementById('session-items-list');
+        listEl.innerHTML = tasks.map(t => taskMini(t)).join('');
+        document.getElementById('session-toggle-label').textContent = `${tasks.length} item${tasks.length !== 1 ? 's' : ''} for this session`;
+      } else {
+        toggleWrap.style.display = 'none';
+      }
+    }
+
+    document.getElementById('session-items-toggle').addEventListener('click', () => {
+      const btn = document.getElementById('session-items-toggle');
+      const list = document.getElementById('session-items-list');
+      const open = list.style.display !== 'none';
+      list.style.display = open ? 'none' : 'flex';
+      btn.classList.toggle('open', !open);
+    });
+
+    function renderSessionAgenda() {
+      const titleEl = document.getElementById('session-agenda-title');
+      const infoEl = document.getElementById('session-agenda-info');
+      const listEl = document.getElementById('session-agenda-list');
+      const next = getNextSession();
+
+      if (!next) {
+        titleEl.textContent = 'Session Agenda';
+        infoEl.innerHTML = '';
+        listEl.innerHTML = `<div class="empty"><div class="empty-emoji">📅</div><div class="empty-title">No upcoming sessions</div></div>`;
+        return;
+      }
+
+      const d = parseISODate(f(next, F.sessions.Date));
+      const title = f(next, F.sessions.Name) || 'Untitled';
+      const desc = f(next, F.sessions.Description) || '';
+      const diff = daysBetween(today(), d);
+      const relLabel = diff === 0 ? 'Today' : diff === 1 ? 'Tomorrow' : `in ${diff} days`;
+
+      titleEl.textContent = escapeHtml(title);
+      infoEl.innerHTML = `
+        <div class="session-agenda-date">${d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })} &middot; ${relLabel}</div>
+        ${desc ? `<div class="session-agenda-desc">${escapeHtml(desc)}</div>` : ''}
+      `;
+
+      const tasks = getSessionTasks(f(next, F.sessions.Date));
+      if (tasks.length === 0) {
+        listEl.innerHTML = `<div class="empty"><div class="empty-emoji">✅</div><div class="empty-title">No items assigned to this session</div></div>`;
+        return;
+      }
+
+      listEl.innerHTML = tasks.map(t => taskMini(t)).join('');
     }
 
     function renderAll() {
@@ -2604,6 +2696,7 @@
       renderProjectsFilters();
       renderProjectsList();
       renderDashboardSessions();
+      renderSessionAgenda();
       renderNotes();
     }
 
